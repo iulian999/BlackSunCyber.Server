@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>BlackSunCyber.Server</RootNamespace>
+		<UserSecretsId>blacksun-cyber-server</UserSecretsId>
+		<InvariantGlobalization>true</InvariantGlobalization>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Permite rularea ca Windows Service (pornește automat la boot, fără fereastră) -->
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
+
+		<!--
+      Notă: NU folosim pachetul supabase-csharp. Vorbim cu Supabase direct
+      prin HttpClient (vezi Services/SupabaseRestClient.cs), folosind
+      Supabase REST API (PostgREST) simplu. Asta elimină orice risc de
+      incompatibilitate cu formatul nou de chei (sb_secret_/sb_publishable_)
+      și nu depinde de un pachet terț care s-ar putea să nu fie la zi.
+      SignalR e inclus deja în Microsoft.NET.Sdk.Web, nu necesită pachet separat.
+    -->
+	</ItemGroup>
+
+
+
+</Project>

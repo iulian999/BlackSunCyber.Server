@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../BlackSunCyber.ClientAgent/BlackSunCyber.ClientAgent.csproj" />
+  <Project Path="BlackSunCyber.Server.csproj" />
+</Solution>

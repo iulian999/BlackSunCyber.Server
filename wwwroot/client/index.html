@@ -1,0 +1,631 @@
+﻿<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamer Portal — BlackSun Cyber</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #07070f;
+            --surface: #0f0f1a;
+            --border: rgba(255,255,255,0.07);
+            --accent: #F39C12;
+            --green: #2ECC71;
+            --red: #E74C3C;
+            --text: #e0e0f0;
+            --muted: #555570;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+            body::before {
+                content: '';
+                position: fixed;
+                width: 500px;
+                height: 500px;
+                background: radial-gradient(circle, rgba(243,156,18,0.06) 0%, transparent 70%);
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+            }
+
+        .logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.06em;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* LOGIN */
+        #login-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+            #login-panel h2 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                text-align: center;
+            }
+
+            #login-panel p {
+                font-size: 0.82rem;
+                color: var(--muted);
+                text-align: center;
+            }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+            .form-group label {
+                font-size: 0.75rem;
+                color: var(--muted);
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+            }
+
+            .form-group input {
+                background: var(--bg);
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 0.65rem 0.9rem;
+                border-radius: 8px;
+                font-family: 'Inter', sans-serif;
+                font-size: 1rem;
+                outline: none;
+                transition: border-color 0.15s;
+                width: 100%;
+            }
+
+                .form-group input:focus {
+                    border-color: var(--accent);
+                }
+
+        .btn {
+            padding: 0.7rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 100%;
+            transition: opacity 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .error-msg {
+            font-size: 0.82rem;
+            color: var(--red);
+            text-align: center;
+            min-height: 1.2em;
+        }
+
+        /* DASHBOARD */
+        #dashboard {
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dash-header {
+            text-align: center;
+        }
+
+        .dash-welcome {
+            font-size: 1rem;
+            color: var(--muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .dash-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .station-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            background: rgba(243,156,18,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(243,156,18,0.2);
+            border-radius: 6px;
+            padding: 0.2rem 0.6rem;
+            letter-spacing: 0.05em;
+        }
+
+        .timer-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .timer-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .timer-display {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--green);
+            letter-spacing: 0.05em;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+            .timer-display.low {
+                color: var(--red);
+                animation: pulse 1s infinite;
+            }
+
+            .timer-display.expired {
+                color: var(--muted);
+            }
+
+        @keyframes pulse {
+            0%,100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.4
+            }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.9rem;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+            .info-value.accent {
+                color: var(--accent);
+            }
+
+            .info-value.green {
+                color: var(--green);
+            }
+
+        /* EXTEND CARD */
+        .extend-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .extend-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .extend-row {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+            .extend-row input {
+                background: var(--bg);
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 0.55rem 0.8rem;
+                border-radius: 8px;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.9rem;
+                outline: none;
+                width: 90px;
+                transition: border-color 0.15s;
+            }
+
+                .extend-row input:focus {
+                    border-color: var(--accent);
+                }
+
+        .extend-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 0.55rem 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+            .extend-btn:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+        .extend-note {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .cooldown-bar-wrap {
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            height: 4px;
+            overflow: hidden;
+        }
+
+        .cooldown-bar {
+            height: 100%;
+            background: var(--accent);
+            transition: width 1s linear;
+        }
+
+        /* POPUP CONFIRMARE */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+            .popup-overlay.open {
+                display: flex;
+            }
+
+        .popup-box {
+            background: var(--surface);
+            border: 1px solid rgba(243,156,18,0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 340px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .popup-icon {
+            font-size: 2.5rem;
+        }
+
+        .popup-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .popup-text {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .popup-btn {
+            background: var(--green);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.15s;
+        }
+
+            .logout-btn:hover {
+                border-color: var(--red);
+                color: var(--red);
+            }
+    </style>
+</head>
+<body>
+
+    <div class="logo">🎮 BlackSun Cyber</div>
+
+    <!-- LOGIN -->
+    <div id="login-panel">
+        <h2>Cabinetul tău personal</h2>
+        <p>Introdu nickname-ul pe care l-ai ales la recepție</p>
+        <div class="form-group">
+            <label>Nickname</label>
+            <input type="text" id="nickname-input" placeholder="ex: GamerulAndrei" autocomplete="off"
+                   onkeydown="if(event.key==='Enter') login()">
+        </div>
+        <div class="error-msg" id="login-error"></div>
+        <button class="btn btn-primary" onclick="login()" id="login-btn">Intră în cabinet</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+        <div class="dash-header">
+            <div class="dash-welcome">Salut,</div>
+            <div class="dash-name" id="dash-name">—</div>
+            <div style="margin-top:0.4rem"><span class="station-badge" id="dash-station">—</span></div>
+        </div>
+
+        <div class="timer-card">
+            <div class="timer-label">Timp rămas</div>
+            <div class="timer-display" id="timer-display">00:00:00</div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-label">Tarif orar</div>
+                <div class="info-value accent" id="price-display">—</div>
+                <div style="font-size:0.7rem;color:var(--muted)">MDL / oră</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Status</div>
+                <div class="info-value green" id="status-display">Activ</div>
+            </div>
+        </div>
+
+        <div class="extend-card">
+            <div class="extend-title">Prelungește sesiunea</div>
+            <div class="extend-row">
+                <input type="number" id="extend-minutes" value="30" min="10" max="300">
+                <span style="font-size:0.82rem;color:var(--muted)">minute</span>
+                <button class="extend-btn" id="extend-btn" onclick="requestExtension()">Cere prelungire</button>
+            </div>
+            <div class="extend-note" id="extend-note">Du-te la recepție pentru a achita, iar adminul va adăuga minutele.</div>
+            <!-- Bara de cooldown -->
+            <div class="cooldown-bar-wrap" id="cooldown-wrap" style="display:none">
+                <div class="cooldown-bar" id="cooldown-bar" style="width:100%"></div>
+            </div>
+            <div style="font-size:0.75rem;color:var(--muted)" id="cooldown-text"></div>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">← Ieși din cabinet</button>
+    </div>
+
+    <!-- POPUP CONFIRMARE CERERE TRIMISĂ -->
+    <div class="popup-overlay" id="popup-overlay">
+        <div class="popup-box">
+            <div class="popup-icon">✅</div>
+            <div class="popup-title">Cerere trimisă!</div>
+            <div class="popup-text" id="popup-text">Cererea ta a fost trimisă la recepție. Du-te să achiți, iar adminul îți va adăuga minutele în câteva secunde.</div>
+            <button class="popup-btn" onclick="closePopup()">Am înțeles</button>
+        </div>
+    </div>
+
+    <script>
+        const API = '';
+        const COOLDOWN_SECONDS = 90; // 1.5 min între cereri
+        let currentNickname = '';
+        let currentStationId = null;
+        let remainingSeconds = 0;
+        let localTimer = null;
+        let connection = null;
+        let cooldownTimer = null;
+        let cooldownRemaining = 0;
+
+        // ---- LOGIN ----
+        async function login() {
+            const nickname = document.getElementById('nickname-input').value.trim();
+            const errorEl = document.getElementById('login-error');
+            const btn = document.getElementById('login-btn');
+            if (!nickname) { errorEl.textContent = 'Introdu nickname-ul.'; return; }
+            btn.disabled = true; errorEl.textContent = '';
+            try {
+                const r = await fetch(`${API}/api/client/login`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nickname, pin: null })
+                });
+                if (r.status === 404) { errorEl.textContent = 'Nicio sesiune activă cu acest nickname. Mergi la recepție.'; btn.disabled = false; return; }
+                if (!r.ok) { errorEl.textContent = 'Eroare. Încearcă din nou.'; btn.disabled = false; return; }
+                const station = await r.json();
+                currentNickname = nickname;
+                currentStationId = station.id;
+                remainingSeconds = station.remaining_seconds;
+                showDashboard(station);
+                connectSignalR(station.id);
+                loadPrice();
+            } catch (e) { errorEl.textContent = 'Nu mă pot conecta la server.'; btn.disabled = false; }
+        }
+
+        function showDashboard(station) {
+            document.getElementById('login-panel').style.display = 'none';
+            const dash = document.getElementById('dashboard');
+            dash.style.display = 'flex';
+            document.getElementById('dash-name').textContent = currentNickname;
+            document.getElementById('dash-station').textContent = station.station_name || `PC ${station.id}`;
+            updateTimerDisplay(remainingSeconds);
+            startLocalTimer();
+        }
+
+        function logout() {
+            connection?.stop();
+            clearInterval(localTimer);
+            clearInterval(cooldownTimer);
+            currentNickname = ''; currentStationId = null;
+            document.getElementById('login-panel').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('nickname-input').value = '';
+            document.getElementById('login-btn').disabled = false;
+            document.getElementById('login-error').textContent = '';
+        }
+
+        // ---- TIMER ----
+        function startLocalTimer() {
+            clearInterval(localTimer);
+            localTimer = setInterval(() => {
+                if (remainingSeconds > 0) { remainingSeconds--; updateTimerDisplay(remainingSeconds); }
+                else { clearInterval(localTimer); document.getElementById('status-display').textContent = 'Expirat'; document.getElementById('status-display').style.color = 'var(--red)'; }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(sec) {
+            remainingSeconds = sec;
+            const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+            document.getElementById('timer-display').textContent =
+                `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            document.getElementById('timer-display').className =
+                'timer-display' + (sec === 0 ? ' expired' : sec < 300 ? ' low' : '');
+        }
+
+        // ---- SIGNALR ----
+        async function connectSignalR(stationId) {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl(`${API}/hub/station`)
+                .withAutomaticReconnect()
+                .build();
+            connection.on('TimeUpdated', (seconds) => { remainingSeconds = seconds; updateTimerDisplay(seconds); });
+            connection.on('ForceLock', () => { clearInterval(localTimer); alert('Sesiunea ta a expirat sau a fost încheiată.'); logout(); });
+            try { await connection.start(); await connection.invoke('RegisterClientWatcher', stationId); } catch (e) { }
+        }
+
+        // ---- PRELUNGIRE ----
+        async function requestExtension() {
+            const minutes = +document.getElementById('extend-minutes').value;
+            if (!minutes || minutes < 1) return;
+
+            try {
+                const r = await fetch(`${API}/api/client/request-extension`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, requestedMinutes: minutes })
+                });
+                if (r.ok) {
+                    // Afișează popup de confirmare
+                    document.getElementById('popup-text').textContent =
+                        `Cererea pentru ${minutes} minute a fost trimisă la recepție. Du-te să achiți, iar adminul îți va adăuga minutele în câteva secunde.`;
+                    document.getElementById('popup-overlay').classList.add('open');
+                    // Pornește cooldown-ul anti-spam
+                    startCooldown();
+                }
+            } catch (e) { }
+        }
+
+        function closePopup() {
+            document.getElementById('popup-overlay').classList.remove('open');
+        }
+
+        function startCooldown() {
+            cooldownRemaining = COOLDOWN_SECONDS;
+            const btn = document.getElementById('extend-btn');
+            const wrap = document.getElementById('cooldown-wrap');
+            const text = document.getElementById('cooldown-text');
+            btn.disabled = true;
+            wrap.style.display = 'block';
+            clearInterval(cooldownTimer);
+            cooldownTimer = setInterval(() => {
+                cooldownRemaining--;
+                const pct = (cooldownRemaining / COOLDOWN_SECONDS) * 100;
+                document.getElementById('cooldown-bar').style.width = pct + '%';
+                text.textContent = `Poți trimite o nouă cerere în ${cooldownRemaining}s`;
+                if (cooldownRemaining <= 0) {
+                    clearInterval(cooldownTimer);
+                    btn.disabled = false;
+                    wrap.style.display = 'none';
+                    text.textContent = '';
+                }
+            }, 1000);
+        }
+
+        // ---- PRET ----
+        async function loadPrice() {
+            try { const r = await fetch(`${API}/api/client/price`); const data = await r.json(); document.getElementById('price-display').textContent = data.pricePerHour; } catch (e) { }
+        }
+    </script>
+</body>
+</html>

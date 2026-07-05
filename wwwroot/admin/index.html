@@ -1,0 +1,922 @@
+﻿<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — BlackSun Cyber</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #07070f;
+            --surface: #0f0f1a;
+            --border: rgba(255,255,255,0.07);
+            --accent: #F39C12;
+            --green: #2ECC71;
+            --red: #E74C3C;
+            --blue: #3498DB;
+            --text: #e0e0f0;
+            --muted: #555570;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0.9rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #conn-status {
+            font-size: 0.75rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            background: rgba(231,76,60,0.15);
+            color: var(--red);
+        }
+
+            #conn-status.connected {
+                background: rgba(46,204,113,0.15);
+                color: var(--green);
+            }
+
+        #price-badge {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+            #price-badge span {
+                color: var(--accent);
+                font-weight: 600;
+            }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .section-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.8rem;
+        }
+
+        /* STATIONS GRID */
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .station-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .station-card:hover {
+                transform: translateY(-2px);
+                border-color: rgba(243,156,18,0.3);
+            }
+
+            .station-card.selected {
+                border-color: var(--accent);
+                box-shadow: 0 0 0 1px var(--accent);
+            }
+
+            .station-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: var(--muted);
+                border-radius: 12px 12px 0 0;
+            }
+
+            .station-card.status-active::before {
+                background: var(--green);
+            }
+
+            .station-card.status-pending::before {
+                background: var(--blue);
+            }
+
+            .station-card.status-locked::before {
+                background: var(--muted);
+            }
+
+            .station-card.status-offline::before {
+                background: var(--red);
+            }
+
+        .station-name {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.05em;
+        }
+
+        .station-number {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .station-status {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+        }
+
+        .status-active .station-status {
+            background: rgba(46,204,113,0.15);
+            color: var(--green);
+        }
+
+        .status-pending .station-status {
+            background: rgba(52,152,219,0.15);
+            color: var(--blue);
+        }
+
+        .status-locked .station-status {
+            background: rgba(255,255,255,0.07);
+            color: var(--muted);
+        }
+
+        .status-offline .station-status {
+            background: rgba(231,76,60,0.15);
+            color: var(--red);
+        }
+
+        .station-user {
+            font-size: 0.85rem;
+            color: var(--text);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* LIVE TIMER PE CARD */
+        .station-time {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+
+            .station-time.low {
+                color: var(--red);
+                animation: pulse 1s infinite;
+            }
+
+        @keyframes pulse {
+            0%,100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* ACTION PANEL */
+        .action-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .action-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.15s;
+        }
+
+            .tab-btn.active {
+                background: var(--accent);
+                border-color: var(--accent);
+                color: #000;
+                font-weight: 600;
+            }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        /* FORMS */
+        .form-row {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+            .form-group label {
+                font-size: 0.75rem;
+                color: var(--muted);
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+            }
+
+            .form-group input, .form-group select {
+                background: var(--bg);
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 0.55rem 0.8rem;
+                border-radius: 8px;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.9rem;
+                outline: none;
+                transition: border-color 0.15s;
+                min-width: 100px;
+            }
+
+                .form-group input:focus, .form-group select:focus {
+                    border-color: var(--accent);
+                }
+
+                .form-group select option {
+                    background: #1a1a2e;
+                }
+
+        .hint {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.6rem;
+        }
+
+        .btn {
+            padding: 0.55rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: opacity 0.15s, transform 0.1s;
+            letter-spacing: 0.02em;
+        }
+
+            .btn:active {
+                transform: scale(0.97);
+            }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: var(--green);
+            color: #000;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* NOTIFICATIONS */
+        .notif-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .notif-item {
+            background: rgba(52,152,219,0.07);
+            border: 1px solid rgba(52,152,219,0.2);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+            .notif-item:hover {
+                border-color: rgba(243,156,18,0.4);
+                background: rgba(243,156,18,0.05);
+            }
+
+        .notif-text {
+            font-size: 0.85rem;
+            color: var(--text);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .notif-time {
+            font-size: 0.72rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .notif-hint {
+            font-size: 0.72rem;
+            color: var(--muted);
+            width: 100%;
+            margin-top: -0.2rem;
+        }
+
+        .notif-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .notif-empty {
+            font-size: 0.85rem;
+            color: var(--muted);
+            padding: 0.5rem 0;
+        }
+
+        /* QUICK APPROVE INLINE */
+        .quick-approve {
+            background: rgba(46,204,113,0.07);
+            border: 1px solid rgba(46,204,113,0.2);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-top: 0.4rem;
+            display: none;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+            .quick-approve.open {
+                display: flex;
+            }
+
+            .quick-approve .form-row {
+                align-items: center;
+            }
+
+            .quick-approve label {
+                font-size: 0.78rem;
+                color: var(--muted);
+            }
+
+        /* REVENUE */
+        .revenue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .rev-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .rev-label {
+            font-size: 0.72rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .rev-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .rev-unit {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        #selected-info {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 1rem;
+        }
+
+            #selected-info strong {
+                color: var(--accent);
+            }
+
+        #toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 999;
+            background: #1a1a2e;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.85rem;
+            color: var(--text);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            max-width: 300px;
+        }
+
+            #toast.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            #toast.success {
+                border-color: var(--green);
+                color: var(--green);
+            }
+
+            #toast.error {
+                border-color: var(--red);
+                color: var(--red);
+            }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">⚡ BlackSun Cyber — Admin</div>
+        <div class="header-right">
+            <div id="price-badge">Tarif: <span id="price-display">...</span> MDL/oră</div>
+            <div id="conn-status">● Conectare...</div>
+        </div>
+    </header>
+
+    <main>
+        <div>
+            <div class="section-title">Stații live</div>
+            <div class="stations-grid" id="stations-grid"></div>
+        </div>
+
+        <div class="action-panel">
+            <div id="selected-info">Selectează o stație din grilă pentru a o gestiona.</div>
+            <div class="action-tabs">
+                <button class="tab-btn active" onclick="switchTab('allocate')">Alocă timp</button>
+                <button class="tab-btn" onclick="switchTab('addtime')">Adaugă timp</button>
+                <button class="tab-btn" id="tab-btn-notif" onclick="switchTab('notifications')">
+                    Cereri <span id="notif-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.7rem;margin-left:4px">0</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('revenue')">Încasări</button>
+                <button class="tab-btn" onclick="switchTab('settings')">Setări</button>
+            </div>
+
+            <!-- ALOCA TIMP -->
+            <div class="tab-content active" id="tab-allocate">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stație</label>
+                        <select id="alloc-station">
+                            <option value="1">PC 01</option>
+                            <option value="2">PC 02</option>
+                            <option value="3">PC 03</option>
+                            <option value="4">PC 04 VIP</option>
+                            <option value="5">PC 05 VIP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Minute</label>
+                        <input type="number" id="alloc-minutes" value="60" min="1" max="600" style="width:90px">
+                    </div>
+                    <div class="form-group">
+                        <label>Nickname client (opțional)</label>
+                        <input type="text" id="alloc-nickname" placeholder="ex: GamerulAndrei" style="width:200px">
+                    </div>
+                    <button class="btn btn-primary" onclick="allocateStation()">▶ Pornește stația</button>
+                </div>
+                <p class="hint">Dacă introduci nickname-ul, stația se activează direct. Dacă lași gol, clientul îl introduce singur pe PC.</p>
+            </div>
+
+            <!-- ADAUGA TIMP -->
+            <div class="tab-content" id="tab-addtime">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Stație</label>
+                        <select id="add-station">
+                            <option value="1">PC 01</option>
+                            <option value="2">PC 02</option>
+                            <option value="3">PC 03</option>
+                            <option value="4">PC 04 VIP</option>
+                            <option value="5">PC 05 VIP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Minute de adăugat</label>
+                        <input type="number" id="add-minutes" value="30" min="1" max="600" style="width:90px">
+                    </div>
+                    <div class="form-group">
+                        <label>Sumă încasată (MDL)</label>
+                        <input type="number" id="add-amount" value="10" min="0" step="0.5" style="width:110px">
+                    </div>
+                    <button class="btn btn-success" onclick="addTime()">+ Adaugă timp</button>
+                    <button class="btn btn-danger" onclick="forceLock()">🔒 Blochează</button>
+                </div>
+            </div>
+
+            <!-- CERERI / NOTIFICARI -->
+            <div class="tab-content" id="tab-notifications">
+                <p class="hint" style="margin-bottom:0.8rem">Apasă pe o cerere pentru a o rezolva direct de aici.</p>
+                <div class="notif-list" id="notif-list">
+                    <div class="notif-empty">Nicio cerere nouă.</div>
+                </div>
+            </div>
+
+            <!-- INCASARI -->
+            <div class="tab-content" id="tab-revenue">
+                <div class="revenue-grid">
+                    <div class="rev-card"><div class="rev-label">Azi total</div><div class="rev-value" id="rev-today">—</div><div class="rev-unit">MDL</div></div>
+                    <div class="rev-card"><div class="rev-label">Minute vândute</div><div class="rev-value" id="rev-minutes">—</div><div class="rev-unit">min</div></div>
+                    <div class="rev-card"><div class="rev-label">Tranzacții</div><div class="rev-value" id="rev-count">—</div><div class="rev-unit">sesiuni</div></div>
+                </div>
+                <button class="btn btn-primary" style="margin-top:1rem" onclick="loadRevenue()">🔄 Actualizează</button>
+            </div>
+
+            <!-- SETARI -->
+            <div class="tab-content" id="tab-settings">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tarif MDL / oră</label>
+                        <input type="number" id="price-input" value="20" min="1" step="0.5" style="width:110px">
+                    </div>
+                    <button class="btn btn-primary" onclick="updatePrice()">Salvează tariful</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <script>
+        const API = '';
+        let selectedStation = null;
+        let connection = null;
+        let stations = [];
+        let notifications = [];
+
+        // ---- SIGNALR ----
+        async function connectSignalR() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl(`${API}/hub/station`)
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on('TimeUpdated', (stationId, seconds) => {
+                const s = stations.find(x => x.id === stationId);
+                if (s) s.remaining_seconds = seconds;
+                const el = document.getElementById(`time-${stationId}`);
+                if (el) {
+                    el.textContent = formatTime(seconds);
+                    el.className = `station-time${seconds < 300 ? ' low' : ''}`;
+                }
+                if (seconds === 0) loadStations();
+            });
+
+            connection.on('NewNotification', (id, stationId, message) => {
+                notifications.push({ id, stationId, message, time: new Date(), resolved: false, approveOpen: false });
+                renderNotifications();
+                showToast(`📢 Cerere nouă de la PC ${stationId}`, 'success');
+                // Arată badge pe tab
+                const badge = document.getElementById('notif-badge');
+                const unresolved = notifications.filter(n => !n.resolved).length;
+                badge.textContent = unresolved;
+                badge.style.display = unresolved > 0 ? 'inline' : 'none';
+            });
+
+            connection.onreconnected(() => setConnStatus(true));
+            connection.onreconnecting(() => setConnStatus(false));
+            connection.onclose(() => { setConnStatus(false); setTimeout(connectSignalR, 3000); });
+
+            try {
+                await connection.start();
+                await connection.invoke('RegisterAdmin');
+                setConnStatus(true);
+            } catch (e) { setConnStatus(false); setTimeout(connectSignalR, 3000); }
+        }
+
+        function setConnStatus(ok) {
+            const el = document.getElementById('conn-status');
+            el.textContent = ok ? '● Conectat' : '● Deconectat';
+            el.className = ok ? 'connected' : '';
+        }
+
+        // ---- STATII ----
+        async function loadStations() {
+            try {
+                const r = await fetch(`${API}/api/admin/stations`);
+                stations = await r.json();
+                renderStations();
+            } catch (e) { }
+        }
+
+        function renderStations() {
+            const grid = document.getElementById('stations-grid');
+            grid.innerHTML = stations.map(s => {
+                const sc = `status-${s.status.toLowerCase()}`;
+                const numColor = s.status === 'Active' ? 'var(--green)' : s.status === 'Pending' ? 'var(--blue)' : 'var(--muted)';
+                const user = s.current_user_name || (s.status === 'Pending' ? 'Așteaptă nickname...' : '—');
+                const showTimer = s.status === 'Active';
+                return `
+          <div class="station-card ${sc}${selectedStation === s.id ? ' selected' : ''}" onclick="selectStation(${s.id})">
+            <div class="station-name">${s.station_name}</div>
+            <div class="station-number" style="color:${numColor}">${s.id}</div>
+            <div class="station-status">${s.status}</div>
+            <div class="station-user">${user}</div>
+            ${showTimer ? `<div class="station-time${s.remaining_seconds < 300 ? ' low' : ''}" id="time-${s.id}">${formatTime(s.remaining_seconds)}</div>` : ''}
+          </div>`;
+            }).join('');
+        }
+
+        // Timer local pe carduri (scade 1s independent, alinierea reală vine din SignalR la fiecare 10s)
+        setInterval(() => {
+            stations.forEach(s => {
+                if (s.status === 'Active' && s.remaining_seconds > 0) {
+                    s.remaining_seconds--;
+                    const el = document.getElementById(`time-${s.id}`);
+                    if (el) {
+                        el.textContent = formatTime(s.remaining_seconds);
+                        el.className = `station-time${s.remaining_seconds < 300 ? ' low' : ''}`;
+                    }
+                }
+            });
+        }, 1000);
+
+        function selectStation(id) {
+            selectedStation = id;
+            const s = stations.find(x => x.id === id);
+            document.getElementById('selected-info').innerHTML = s
+                ? `Stație selectată: <strong>${s.station_name}</strong> — Status: <strong>${s.status}</strong>${s.current_user_name ? ` — Client: <strong>${s.current_user_name}</strong>` : ''}`
+                : '';
+            document.getElementById('alloc-station').value = id;
+            document.getElementById('add-station').value = id;
+            renderStations();
+        }
+
+        // ---- ACTIUNI ----
+        async function allocateStation() {
+            const stationId = +document.getElementById('alloc-station').value;
+            const minutes = +document.getElementById('alloc-minutes').value;
+            const nickname = document.getElementById('alloc-nickname').value.trim();
+            if (!minutes || minutes < 1) { showToast('Introdu un număr valid de minute.', 'error'); return; }
+            try {
+                await fetch(`${API}/api/admin/allocate`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stationId, minutes })
+                });
+                if (nickname) {
+                    await fetch(`${API}/api/client/set-nickname`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ stationId, nickname })
+                    });
+                    showToast(`✅ PC ${stationId} activ pentru ${nickname} — ${minutes} min!`, 'success');
+                } else {
+                    showToast(`✅ PC ${stationId} pornit — așteaptă nickname.`, 'success');
+                }
+                document.getElementById('alloc-nickname').value = '';
+                await loadStations();
+            } catch (e) { showToast('Eroare la alocare.', 'error'); }
+        }
+
+        async function addTime(stationIdOverride, minutesOverride, amountOverride) {
+            const stationId = stationIdOverride || +document.getElementById('add-station').value;
+            const minutes = minutesOverride || +document.getElementById('add-minutes').value;
+            const amountPaid = amountOverride !== undefined ? amountOverride : +document.getElementById('add-amount').value;
+            try {
+                await fetch(`${API}/api/admin/add-time`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stationId, minutes, amountPaid, note: null })
+                });
+                showToast(`✅ +${minutes} min adăugate la PC ${stationId}!`, 'success');
+                await loadStations();
+            } catch (e) { showToast('Eroare.', 'error'); }
+        }
+
+        async function forceLock() {
+            const stationId = +document.getElementById('add-station').value;
+            if (!confirm(`Blochezi forțat PC ${stationId}?`)) return;
+            try {
+                await fetch(`${API}/api/admin/force-lock/${stationId}`, { method: 'POST' });
+                showToast(`🔒 PC ${stationId} blocat.`, 'success');
+                await loadStations();
+            } catch (e) { showToast('Eroare.', 'error'); }
+        }
+
+        // ---- NOTIFICARI ----
+        function renderNotifications() {
+            const list = document.getElementById('notif-list');
+            const badge = document.getElementById('notif-badge');
+            const unresolved = notifications.filter(n => !n.resolved);
+            badge.textContent = unresolved.length;
+            badge.style.display = unresolved.length > 0 ? 'inline' : 'none';
+
+            if (unresolved.length === 0) {
+                list.innerHTML = '<div class="notif-empty">Nicio cerere nouă.</div>';
+                return;
+            }
+
+            list.innerHTML = unresolved.map(n => `
+        <div>
+          <div class="notif-item" onclick="toggleApprove(${n.id})">
+            <div style="flex:1">
+              <div class="notif-text">🖥️ <strong>PC ${n.stationId}</strong>: ${n.message}</div>
+              <div class="notif-hint">▼ Apasă pentru a aproba sau respinge</div>
+            </div>
+            <div class="notif-time">${n.time.toLocaleTimeString('ro-RO')}</div>
+          </div>
+          <div class="quick-approve${n.approveOpen ? ' open' : ''}" id="approve-${n.id}">
+            <div style="font-size:0.82rem;font-weight:600;color:var(--green)">Aprobă cererea pentru PC ${n.stationId}</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Minute de adăugat</label>
+                <input type="number" id="qa-min-${n.id}" value="30" min="1" max="600" style="width:90px">
+              </div>
+              <div class="form-group">
+                <label>Sumă încasată (MDL)</label>
+                <input type="number" id="qa-amt-${n.id}" value="10" min="0" step="0.5" style="width:110px">
+              </div>
+              <button class="btn btn-success" onclick="approveNotif(${n.id}, ${n.stationId})">✅ Aprobă + Adaugă timp</button>
+              <button class="btn btn-danger" onclick="rejectNotif(${n.id})">✗ Respinge</button>
+            </div>
+          </div>
+        </div>`).join('');
+        }
+
+        function toggleApprove(id) {
+            const n = notifications.find(x => x.id === id);
+            if (n) { n.approveOpen = !n.approveOpen; renderNotifications(); }
+        }
+
+        async function approveNotif(id, stationId) {
+            const minutes = +document.getElementById(`qa-min-${id}`).value;
+            const amount = +document.getElementById(`qa-amt-${id}`).value;
+            await addTime(stationId, minutes, amount);
+            const n = notifications.find(x => x.id === id);
+            if (n) n.resolved = true;
+            await fetch(`${API}/api/admin/notifications/${id}/resolve`, { method: 'POST' });
+            renderNotifications();
+            showToast(`✅ Cerere aprobată — +${minutes} min la PC ${stationId}!`, 'success');
+        }
+
+        async function rejectNotif(id) {
+            const n = notifications.find(x => x.id === id);
+            if (n) n.resolved = true;
+            await fetch(`${API}/api/admin/notifications/${id}/resolve`, { method: 'POST' });
+            renderNotifications();
+            showToast('Cerere respinsă.', '');
+        }
+
+        // ---- INCASARI ----
+        async function loadRevenue() {
+            try {
+                const r = await fetch(`${API}/api/admin/revenue/today`);
+                if (!r.ok) return;
+                const data = await r.json();
+                document.getElementById('rev-today').textContent = data.totalAmount ?? '0';
+                document.getElementById('rev-minutes').textContent = data.totalMinutes ?? '0';
+                document.getElementById('rev-count').textContent = data.totalTransactions ?? '0';
+            } catch (e) { }
+        }
+
+        // ---- SETARI ----
+        async function loadPrice() {
+            try {
+                const r = await fetch(`${API}/api/admin/price`);
+                const data = await r.json();
+                document.getElementById('price-display').textContent = data.pricePerHour;
+                document.getElementById('price-input').value = data.pricePerHour;
+            } catch (e) { }
+        }
+
+        async function updatePrice() {
+            const price = document.getElementById('price-input').value;
+            try {
+                await fetch(`${API}/api/admin/price`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ price: +price })
+                });
+                document.getElementById('price-display').textContent = price;
+                showToast('✅ Tarif actualizat!', 'success');
+            } catch (e) { showToast('Eroare.', 'error'); }
+        }
+
+        // ---- UI HELPERS ----
+        function switchTab(name) {
+            const names = ['allocate', 'addtime', 'notifications', 'revenue', 'settings'];
+            document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', names[i] === name));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`tab-${name}`).classList.add('active');
+            if (name === 'revenue') loadRevenue();
+        }
+
+        function formatTime(sec) {
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        let toastTimer;
+        function showToast(msg, type = '') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `show ${type}`;
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.className = '', 3000);
+        }
+
+        setInterval(loadStations, 30000);
+        connectSignalR();
+        loadStations();
+        loadPrice();
+    </script>
+</body>
+</html>
