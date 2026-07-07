@@ -23,7 +23,7 @@ public class AdminController : ControllerBase
     [HttpPost("allocate")]
     public async Task<IActionResult> Allocate(AllocateStationRequest req)
     {
-        await _stations.AllocateStationAsync(req.StationId, req.Minutes);
+        await _stations.AllocateStationAsync(req.StationId, req.Minutes, req.PaymentMethod);
         return Ok();
     }
 

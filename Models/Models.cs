@@ -85,7 +85,7 @@ public class ClubSetting
 
 // ---- DTO-uri folosite în API (nu mapează direct pe tabele) ----
 
-public record AllocateStationRequest(int StationId, int Minutes);
+public record AllocateStationRequest(int StationId, int Minutes, string? PaymentMethod);
 
 public record SetNicknameRequest(int StationId, string Nickname);
 
@@ -93,4 +93,4 @@ public record AddTimeRequest(int StationId, int Minutes, decimal AmountPaid, str
 
 public record ClientLoginRequest(string Nickname, int? Pin);
 
-public record RequestExtensionRequest(int StationId, string Nickname, int RequestedMinutes);
+public record RequestExtensionRequest(int StationId, string Nickname, int RequestedMinutes, string? PaymentMethod);

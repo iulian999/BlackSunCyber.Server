@@ -466,10 +466,19 @@
             <div class="extend-row">
                 <input type="number" id="extend-minutes" value="30" min="10" max="300">
                 <span style="font-size:0.82rem;color:var(--muted)">minute</span>
-                <button class="extend-btn" id="extend-btn" onclick="requestExtension()">Cere prelungire</button>
             </div>
+            <div style="margin-top:0.6rem;display:flex;flex-direction:column;gap:0.4rem">
+                <label style="font-size:0.72rem;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase">Metoda de plată</label>
+                <select id="extend-payment" onchange="checkExtendPayment()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.55rem 0.8rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;outline:none;width:100%">
+                    <option value="CASH">💵 CASH (la recepție)</option>
+                    <option value="CARD_PENDING">💳 CARD ONLINE</option>
+                </select>
+            </div>
+            <div id="extend-card-msg" style="display:none;margin-top:0.4rem;padding:0.5rem 0.8rem;background:rgba(52,152,219,0.1);border:1px solid rgba(52,152,219,0.3);border-radius:6px;font-size:0.78rem;color:#3498DB;line-height:1.5">
+                💳 Plata cu cardul este în curs de dezvoltare (Coming Soon).<br>Cererea va fi trimisă, iar adminul te va contacta pentru detalii de plată.
+            </div>
+            <button class="extend-btn" id="extend-btn" onclick="requestExtension()" style="margin-top:0.6rem">Cere prelungire</button>
             <div class="extend-note" id="extend-note">Du-te la recepție pentru a achita, iar adminul va adăuga minutele.</div>
-            <!-- Bara de cooldown -->
             <div class="cooldown-bar-wrap" id="cooldown-wrap" style="display:none">
                 <div class="cooldown-bar" id="cooldown-bar" style="width:100%"></div>
             </div>
@@ -576,21 +585,41 @@
         }
 
         // ---- PRELUNGIRE ----
+        function checkExtendPayment() {
+            const val = document.getElementById('extend-payment').value;
+            const msg = document.getElementById('extend-card-msg');
+            const note = document.getElementById('extend-note');
+            msg.style.display = val === 'CARD_PENDING' ? 'block' : 'none';
+            note.textContent = val === 'CARD_PENDING'
+                ? 'Cererea va fi trimisă adminului. Plata cu cardul este în curs de dezvoltare.'
+                : 'Du-te la recepție pentru a achita cash, iar adminul va adăuga minutele.';
+        }
+
         async function requestExtension() {
             const minutes = +document.getElementById('extend-minutes').value;
+            const paymentMethod = document.getElementById('extend-payment').value;
             if (!minutes || minutes < 1) return;
 
             try {
                 const r = await fetch(`${API}/api/client/request-extension`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, requestedMinutes: minutes })
+                    body: JSON.stringify({
+                        stationId: currentStationId,
+                        nickname: currentNickname,
+                        requestedMinutes: minutes,
+                        paymentMethod: paymentMethod
+                    })
                 });
                 if (r.ok) {
-                    // Afișează popup de confirmare
-                    document.getElementById('popup-text').textContent =
-                        `Cererea pentru ${minutes} minute a fost trimisă la recepție. Du-te să achiți, iar adminul îți va adăuga minutele în câteva secunde.`;
+                    // Mesaj diferit în funcție de metoda de plată
+                    let popupMsg = '';
+                    if (paymentMethod === 'CARD_PENDING') {
+                        popupMsg = `Cererea pentru ${minutes} minute (CARD ONLINE) a fost trimisă. Această funcție este în curs de dezvoltare — adminul te va contacta pentru detalii.`;
+                    } else {
+                        popupMsg = `Cererea pentru ${minutes} minute (CASH) a fost trimisă la recepție. Du-te să achiți, iar adminul îți va adăuga minutele în câteva secunde.`;
+                    }
+                    document.getElementById('popup-text').textContent = popupMsg;
                     document.getElementById('popup-overlay').classList.add('open');
-                    // Pornește cooldown-ul anti-spam
                     startCooldown();
                 }
             } catch (e) { }

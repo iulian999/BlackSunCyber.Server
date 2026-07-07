@@ -1,7 +1,7 @@
 ﻿using BlackSunCyber.Server.Hubs;
 using BlackSunCyber.Server.Models;
 using Microsoft.AspNetCore.SignalR;
-using Transaction = BlackSunCyber.Server.Models.Transaction;
+
 namespace BlackSunCyber.Server.Services;
 
 /// <summary>
@@ -54,7 +54,7 @@ public class StationService
     // PAS 1: Admin alocă o stație + timp (fără nickname încă)
     // Stația trece în 'Pending' — agentul afișează ecranul de bun venit
     // ------------------------------------------------------------
-    public async Task AllocateStationAsync(int stationId, int minutes)
+    public async Task AllocateStationAsync(int stationId, int minutes, string? paymentMethod)
     {
         var pin = new Random().Next(1000, 9999);
 
@@ -66,8 +66,20 @@ public class StationService
             current_user_name = (string?)null
         });
 
-        _logger.LogInformation("Stația {Id} alocată: {Min} min, PIN {Pin}", stationId, minutes, pin);
+        // Înregistrăm tranzacția o singură dată aici
+        var setting = (await _db.GetAsync<ClubSetting>("club_settings", "key=eq.price_per_hour")).FirstOrDefault();
+        var pricePerHour = setting != null && decimal.TryParse(setting.Value, out var p) ? p : 20m;
+        var amount = (paymentMethod == "CARD_PENDING") ? 0m : Math.Round(minutes / 60m * pricePerHour, 2);
 
+        await _db.PostAsync<Transaction>("transactions", new
+        {
+            station_id = stationId,
+            amount,
+            minutes_added = minutes,
+            note = $"Alocare initiala | Metoda: {paymentMethod ?? "CASH"}"
+        });
+
+        _logger.LogInformation("Statia {Id} alocata: {Min} min, PIN {Pin}", stationId, minutes, pin);
         await _hub.Clients.Group(GroupName(stationId)).SendAsync("ShowNicknamePrompt", minutes);
     }
 
@@ -118,12 +130,13 @@ public class StationService
     // ------------------------------------------------------------
     // Client cere prelungire -> notificare la admin
     // ------------------------------------------------------------
-    public async Task<long> RequestExtensionAsync(int stationId, string nickname, int requestedMinutes)
+    public async Task<long> RequestExtensionAsync(int stationId, string nickname, int requestedMinutes, string? paymentMethod)
     {
+        var paymentLabel = paymentMethod == "CARD_PENDING" ? "💳 CARD ONLINE (coming soon)" : "💵 CASH";
         var created = await _db.PostAsync<Notification>("notifications", new
         {
             station_id = stationId,
-            message = $"{nickname} cere prelungire cu {requestedMinutes} minute (plată cash la recepție).",
+            message = $"{nickname} cere prelungire cu {requestedMinutes} minute [{paymentLabel}].",
             is_resolved = false
         });
 

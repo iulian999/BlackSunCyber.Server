@@ -569,12 +569,22 @@
                         <input type="number" id="alloc-minutes" value="60" min="1" max="600" style="width:90px">
                     </div>
                     <div class="form-group">
+                        <label>Metoda de plată</label>
+                        <select id="alloc-payment" onchange="checkPaymentMethod(this, 'alloc-card-msg')">
+                            <option value="CASH">💵 CASH (la recepție)</option>
+                            <option value="CARD_PENDING">💳 CARD ONLINE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Nickname client (opțional)</label>
-                        <input type="text" id="alloc-nickname" placeholder="ex: GamerulAndrei" style="width:200px">
+                        <input type="text" id="alloc-nickname" placeholder="ex: GamerulAndrei" style="width:180px">
                     </div>
                     <button class="btn btn-primary" onclick="allocateStation()">▶ Pornește stația</button>
                 </div>
-                <p class="hint">Dacă introduci nickname-ul, stația se activează direct. Dacă lași gol, clientul îl introduce singur pe PC.</p>
+                <div id="alloc-card-msg" style="display:none;margin-top:0.6rem;padding:0.5rem 0.8rem;background:rgba(52,152,219,0.1);border:1px solid rgba(52,152,219,0.3);border-radius:6px;font-size:0.8rem;color:#3498DB">
+                    💳 Plata cu cardul este în curs de dezvoltare (Coming Soon). Tranzacția va fi marcată ca "În așteptare".
+                </div>
+                <p class="hint" style="margin-top:0.6rem">Dacă introduci nickname-ul, stația se activează direct. Dacă lași gol, clientul îl introduce singur pe PC.</p>
             </div>
 
             <!-- ADAUGA TIMP -->
@@ -598,8 +608,18 @@
                         <label>Sumă încasată (MDL)</label>
                         <input type="number" id="add-amount" value="10" min="0" step="0.5" style="width:110px">
                     </div>
+                    <div class="form-group">
+                        <label>Metoda de plată</label>
+                        <select id="add-payment" onchange="checkPaymentMethod(this, 'add-card-msg')">
+                            <option value="CASH">💵 CASH</option>
+                            <option value="CARD_PENDING">💳 CARD ONLINE</option>
+                        </select>
+                    </div>
                     <button class="btn btn-success" onclick="addTime()">+ Adaugă timp</button>
                     <button class="btn btn-danger" onclick="forceLock()">🔒 Blochează</button>
+                </div>
+                <div id="add-card-msg" style="display:none;margin-top:0.6rem;padding:0.5rem 0.8rem;background:rgba(52,152,219,0.1);border:1px solid rgba(52,152,219,0.3);border-radius:6px;font-size:0.8rem;color:#3498DB">
+                    💳 Plata cu cardul este în curs de dezvoltare (Coming Soon). Tranzacția va fi marcată ca "În așteptare".
                 </div>
             </div>
 
@@ -742,24 +762,31 @@
         }
 
         // ---- ACTIUNI ----
+        function checkPaymentMethod(select, msgId) {
+            const msg = document.getElementById(msgId);
+            msg.style.display = select.value === 'CARD_PENDING' ? 'block' : 'none';
+        }
+
         async function allocateStation() {
             const stationId = +document.getElementById('alloc-station').value;
             const minutes = +document.getElementById('alloc-minutes').value;
             const nickname = document.getElementById('alloc-nickname').value.trim();
+            const paymentMethod = document.getElementById('alloc-payment').value;
             if (!minutes || minutes < 1) { showToast('Introdu un număr valid de minute.', 'error'); return; }
             try {
                 await fetch(`${API}/api/admin/allocate`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ stationId, minutes })
+                    body: JSON.stringify({ stationId, minutes, paymentMethod })
                 });
                 if (nickname) {
                     await fetch(`${API}/api/client/set-nickname`, {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ stationId, nickname })
                     });
-                    showToast(`✅ PC ${stationId} activ pentru ${nickname} — ${minutes} min!`, 'success');
+                    const msg = paymentMethod === 'CARD_PENDING' ? ' (CARD - in asteptare)' : '';
+                    showToast(`✅ PC ${stationId} activ pentru ${nickname} — ${minutes} min${msg}!`, 'success');
                 } else {
-                    showToast(`✅ PC ${stationId} pornit — așteaptă nickname.`, 'success');
+                    showToast(`✅ PC ${stationId} pornit — asteapta nickname.`, 'success');
                 }
                 document.getElementById('alloc-nickname').value = '';
                 await loadStations();
@@ -770,12 +797,14 @@
             const stationId = stationIdOverride || +document.getElementById('add-station').value;
             const minutes = minutesOverride || +document.getElementById('add-minutes').value;
             const amountPaid = amountOverride !== undefined ? amountOverride : +document.getElementById('add-amount').value;
+            const paymentMethod = stationIdOverride ? 'CASH' : document.getElementById('add-payment').value;
             try {
                 await fetch(`${API}/api/admin/add-time`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ stationId, minutes, amountPaid, note: null })
+                    body: JSON.stringify({ stationId, minutes, amountPaid, note: `Metoda: ${paymentMethod}` })
                 });
-                showToast(`✅ +${minutes} min adăugate la PC ${stationId}!`, 'success');
+                const msg = paymentMethod === 'CARD_PENDING' ? ' (CARD - in asteptare)' : '';
+                showToast(`✅ +${minutes} min adaugate la PC ${stationId}${msg}!`, 'success');
                 await loadStations();
             } catch (e) { showToast('Eroare.', 'error'); }
         }

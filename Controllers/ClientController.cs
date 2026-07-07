@@ -44,7 +44,7 @@ public class ClientController : ControllerBase
     [HttpPost("request-extension")]
     public async Task<IActionResult> RequestExtension(RequestExtensionRequest req)
     {
-        var id = await _stations.RequestExtensionAsync(req.StationId, req.Nickname, req.RequestedMinutes);
+        var id = await _stations.RequestExtensionAsync(req.StationId, req.Nickname, req.RequestedMinutes, req.PaymentMethod);
         return Ok(new { notificationId = id });
     }
 
