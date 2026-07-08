@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamer Portal — BlackSun Cyber</title>
+    <title>Cabinet Personal — BlackSun Cyber</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@300;400;500;600&display=swap');
 
@@ -21,6 +22,7 @@
             --accent: #F39C12;
             --green: #2ECC71;
             --red: #E74C3C;
+            --blue: #3498DB;
             --text: #e0e0f0;
             --muted: #555570;
         }
@@ -45,7 +47,7 @@
                 background: radial-gradient(circle, rgba(243,156,18,0.06) 0%, transparent 70%);
                 top: 50%;
                 left: 50%;
-                transform: translate(-50%, -50%);
+                transform: translate(-50%,-50%);
                 pointer-events: none;
             }
 
@@ -97,7 +99,7 @@
                 text-transform: uppercase;
             }
 
-            .form-group input {
+            .form-group input, .form-group select {
                 background: var(--bg);
                 border: 1px solid var(--border);
                 color: var(--text);
@@ -110,7 +112,7 @@
                 width: 100%;
             }
 
-                .form-group input:focus {
+                .form-group input:focus, .form-group select:focus {
                     border-color: var(--accent);
                 }
 
@@ -131,12 +133,6 @@
             color: #000;
         }
 
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted);
-        }
-
         .btn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
@@ -153,26 +149,29 @@
         #dashboard {
             display: none;
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             flex-direction: column;
             gap: 1rem;
         }
 
+        /* HEADER */
         .dash-header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .dash-welcome {
-            font-size: 1rem;
+        .dash-info .dash-welcome {
+            font-size: 0.9rem;
             color: var(--muted);
-            margin-bottom: 0.3rem;
         }
 
-        .dash-name {
+        .dash-info .dash-name {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--accent);
+            line-height: 1;
         }
 
         .station-badge {
@@ -183,14 +182,34 @@
             border: 1px solid rgba(243,156,18,0.2);
             border-radius: 6px;
             padding: 0.2rem 0.6rem;
-            letter-spacing: 0.05em;
+            margin-top: 0.3rem;
         }
 
+        /* QR BUTTON */
+        .qr-btn {
+            background: rgba(52,152,219,0.1);
+            border: 1px solid rgba(52,152,219,0.3);
+            color: var(--blue);
+            border-radius: 10px;
+            padding: 0.5rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+            .qr-btn:hover {
+                background: rgba(52,152,219,0.2);
+            }
+
+        /* TIMER */
         .timer-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
         }
 
@@ -199,12 +218,12 @@
             letter-spacing: 0.15em;
             text-transform: uppercase;
             color: var(--muted);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
         .timer-display {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 700;
             color: var(--green);
             letter-spacing: 0.05em;
@@ -267,7 +286,45 @@
                 color: var(--green);
             }
 
-        /* EXTEND CARD */
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 0.4rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.4rem;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.15s;
+        }
+
+            .tab-btn.active {
+                background: var(--accent);
+                color: #000;
+                font-weight: 700;
+            }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        /* TAB: PRELUNGIRE */
         .extend-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -300,14 +357,9 @@
                 font-size: 0.9rem;
                 outline: none;
                 width: 90px;
-                transition: border-color 0.15s;
             }
 
-                .extend-row input:focus {
-                    border-color: var(--accent);
-                }
-
-        .extend-btn {
+        .action-btn {
             background: var(--accent);
             color: #000;
             border: none;
@@ -317,15 +369,14 @@
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.15s;
         }
 
-            .extend-btn:disabled {
+            .action-btn:disabled {
                 opacity: 0.4;
                 cursor: not-allowed;
             }
 
-        .extend-note {
+        .hint-text {
             font-size: 0.75rem;
             color: var(--muted);
         }
@@ -343,11 +394,131 @@
             transition: width 1s linear;
         }
 
-        /* POPUP CONFIRMARE */
+        .card-msg {
+            padding: 0.5rem 0.8rem;
+            background: rgba(52,152,219,0.1);
+            border: 1px solid rgba(52,152,219,0.3);
+            border-radius: 6px;
+            font-size: 0.78rem;
+            color: var(--blue);
+            display: none;
+        }
+
+        /* TAB: BAR */
+        .bar-products {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem;
+        }
+
+        .product-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.8rem;
+            cursor: pointer;
+            transition: border-color 0.15s, transform 0.1s;
+            text-align: center;
+        }
+
+            .product-card:hover {
+                border-color: var(--accent);
+                transform: translateY(-2px);
+            }
+
+            .product-card:active {
+                transform: scale(0.97);
+            }
+
+        .product-emoji {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .product-name {
+            font-size: 0.78rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+
+        .product-price {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .order-confirm {
+            background: rgba(46,204,113,0.1);
+            border: 1px solid rgba(46,204,113,0.3);
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            color: var(--green);
+            text-align: center;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        /* TAB: SOS */
+        .sos-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .sos-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: border-color 0.15s;
+        }
+
+            .sos-btn:hover {
+                border-color: rgba(231,76,60,0.4);
+                background: rgba(231,76,60,0.05);
+            }
+
+        .sos-icon {
+            font-size: 1.4rem;
+        }
+
+        .sos-label {
+            font-weight: 500;
+        }
+
+        .sos-desc {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .sos-confirm {
+            background: rgba(231,76,60,0.1);
+            border: 1px solid rgba(231,76,60,0.3);
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            color: var(--red);
+            text-align: center;
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        /* POPUP QR */
         .popup-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             z-index: 200;
             display: none;
             align-items: center;
@@ -361,7 +532,68 @@
 
         .popup-box {
             background: var(--surface);
-            border: 1px solid rgba(243,156,18,0.3);
+            border: 1px solid rgba(52,152,219,0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 320px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .popup-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--blue);
+        }
+
+        .popup-text {
+            font-size: 0.82rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        #qr-code {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .popup-close {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* POPUP CONFIRMARE */
+        #confirm-popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+            #confirm-popup.open {
+                display: flex;
+            }
+
+        .confirm-box {
+            background: var(--surface);
+            border: 1px solid rgba(46,204,113,0.3);
             border-radius: 16px;
             padding: 2rem;
             max-width: 340px;
@@ -372,24 +604,24 @@
             gap: 1rem;
         }
 
-        .popup-icon {
+        .confirm-icon {
             font-size: 2.5rem;
         }
 
-        .popup-title {
+        .confirm-title {
             font-family: 'Rajdhani', sans-serif;
             font-size: 1.4rem;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--green);
         }
 
-        .popup-text {
+        .confirm-text {
             font-size: 0.85rem;
             color: var(--muted);
             line-height: 1.5;
         }
 
-        .popup-btn {
+        .confirm-btn {
             background: var(--green);
             color: #000;
             border: none;
@@ -410,7 +642,6 @@
             cursor: pointer;
             font-size: 0.8rem;
             font-family: 'Inter', sans-serif;
-            transition: border-color 0.15s;
         }
 
             .logout-btn:hover {
@@ -426,7 +657,7 @@
     <!-- LOGIN -->
     <div id="login-panel">
         <h2>Cabinetul tău personal</h2>
-        <p>Introdu nickname-ul pe care l-ai ales la recepție</p>
+        <p>Introdu nickname-ul ales la recepție</p>
         <div class="form-group">
             <label>Nickname</label>
             <input type="text" id="nickname-input" placeholder="ex: GamerulAndrei" autocomplete="off"
@@ -438,17 +669,24 @@
 
     <!-- DASHBOARD -->
     <div id="dashboard">
+
+        <!-- Header -->
         <div class="dash-header">
-            <div class="dash-welcome">Salut,</div>
-            <div class="dash-name" id="dash-name">—</div>
-            <div style="margin-top:0.4rem"><span class="station-badge" id="dash-station">—</span></div>
+            <div class="dash-info">
+                <div class="dash-welcome">Salut,</div>
+                <div class="dash-name" id="dash-name">—</div>
+                <div><span class="station-badge" id="dash-station">—</span></div>
+            </div>
+            <button class="qr-btn" onclick="showQR()">📱 QR Login telefon</button>
         </div>
 
+        <!-- Timer -->
         <div class="timer-card">
             <div class="timer-label">Timp rămas</div>
             <div class="timer-display" id="timer-display">00:00:00</div>
         </div>
 
+        <!-- Info grid -->
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-label">Tarif orar</div>
@@ -461,46 +699,113 @@
             </div>
         </div>
 
-        <div class="extend-card">
-            <div class="extend-title">Prelungește sesiunea</div>
-            <div class="extend-row">
-                <input type="number" id="extend-minutes" value="30" min="10" max="300">
-                <span style="font-size:0.82rem;color:var(--muted)">minute</span>
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('extend')">⏱ Timp</button>
+            <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar</button>
+            <button class="tab-btn" onclick="switchTab('sos')">🆘 Asistență</button>
+        </div>
+
+        <!-- TAB: PRELUNGIRE -->
+        <div class="tab-content active" id="tab-extend">
+            <div class="extend-card">
+                <div class="extend-title">Prelungește sesiunea</div>
+                <div class="extend-row">
+                    <input type="number" id="extend-minutes" value="30" min="10" max="300">
+                    <span style="font-size:0.82rem;color:var(--muted)">minute</span>
+                </div>
+                <div class="form-group">
+                    <label>Metoda de plată</label>
+                    <select id="extend-payment" onchange="checkExtendPayment()">
+                        <option value="CASH">💵 CASH (la recepție)</option>
+                        <option value="CARD_PENDING">💳 CARD ONLINE</option>
+                    </select>
+                </div>
+                <div id="extend-card-msg" class="card-msg">💳 Plata cu cardul este în curs de dezvoltare (Coming Soon).</div>
+                <button class="action-btn" id="extend-btn" onclick="requestExtension()">Cere prelungire</button>
+                <div class="hint-text">Du-te la recepție să achiți cash, iar adminul adaugă minutele.</div>
+                <div class="cooldown-bar-wrap" id="cooldown-wrap" style="display:none">
+                    <div class="cooldown-bar" id="cooldown-bar" style="width:100%"></div>
+                </div>
+                <div style="font-size:0.75rem;color:var(--muted)" id="cooldown-text"></div>
             </div>
-            <div style="margin-top:0.6rem;display:flex;flex-direction:column;gap:0.4rem">
-                <label style="font-size:0.72rem;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase">Metoda de plată</label>
-                <select id="extend-payment" onchange="checkExtendPayment()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.55rem 0.8rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:0.9rem;outline:none;width:100%">
-                    <option value="CASH">💵 CASH (la recepție)</option>
-                    <option value="CARD_PENDING">💳 CARD ONLINE</option>
-                </select>
+        </div>
+
+        <!-- TAB: BAR -->
+        <div class="tab-content" id="tab-bar">
+            <div style="margin-bottom:0.6rem">
+                <div style="font-size:0.82rem;color:var(--muted)">Comandă direct din cabinet — adminul îți aduce la stație 🚀</div>
             </div>
-            <div id="extend-card-msg" style="display:none;margin-top:0.4rem;padding:0.5rem 0.8rem;background:rgba(52,152,219,0.1);border:1px solid rgba(52,152,219,0.3);border-radius:6px;font-size:0.78rem;color:#3498DB;line-height:1.5">
-                💳 Plata cu cardul este în curs de dezvoltare (Coming Soon).<br>Cererea va fi trimisă, iar adminul te va contacta pentru detalii de plată.
+            <div class="bar-products" id="bar-products-grid">
+                <div style="color:var(--muted);font-size:0.82rem;grid-column:span 2;text-align:center;padding:1rem">Se încarcă produsele...</div>
             </div>
-            <button class="extend-btn" id="extend-btn" onclick="requestExtension()" style="margin-top:0.6rem">Cere prelungire</button>
-            <div class="extend-note" id="extend-note">Du-te la recepție pentru a achita, iar adminul va adăuga minutele.</div>
-            <div class="cooldown-bar-wrap" id="cooldown-wrap" style="display:none">
-                <div class="cooldown-bar" id="cooldown-bar" style="width:100%"></div>
+            <div class="order-confirm" id="order-confirm">✅ Comanda a fost trimisă! Adminul vine la tine în curând.</div>
+        </div>
+
+        <!-- TAB: SOS -->
+        <div class="tab-content" id="tab-sos">
+            <div style="margin-bottom:0.6rem">
+                <div style="font-size:0.82rem;color:var(--muted)">Alege tipul de asistență de care ai nevoie:</div>
             </div>
-            <div style="font-size:0.75rem;color:var(--muted)" id="cooldown-text"></div>
+            <div class="sos-options">
+                <button class="sos-btn" onclick="sendSos('audio', 'Problema audio la statie')">
+                    <div class="sos-icon">🎧</div>
+                    <div>
+                        <div class="sos-label">Problemă audio</div>
+                        <div class="sos-desc">Căștile nu funcționează corect</div>
+                    </div>
+                </button>
+                <button class="sos-btn" onclick="sendSos('cleaning', 'Tastatura/mouse-ul este murdar, am nevoie de un servetel')">
+                    <div class="sos-icon">🧹</div>
+                    <div>
+                        <div class="sos-label">Curățenie la stație</div>
+                        <div class="sos-desc">Tastatura/mouse murdar, am nevoie de șervețel</div>
+                    </div>
+                </button>
+                <button class="sos-btn" onclick="sendSos('noise', 'Gamerul de langa mine este prea zgomotos/agresiv')">
+                    <div class="sos-icon">⚠️</div>
+                    <div>
+                        <div class="sos-label">Zgomot/Agresivitate</div>
+                        <div class="sos-desc">Alertă anonimă pentru admin (verificare sală)</div>
+                    </div>
+                </button>
+                <button class="sos-btn" onclick="sendSos('hardware', 'Problema hardware la statie')">
+                    <div class="sos-icon">🖥️</div>
+                    <div>
+                        <div class="sos-label">Problemă tehnică</div>
+                        <div class="sos-desc">PC-ul are o problemă tehnică</div>
+                    </div>
+                </button>
+            </div>
+            <div class="sos-confirm" id="sos-confirm">🆘 Cererea a fost trimisă! Adminul vine în curând.</div>
         </div>
 
         <button class="logout-btn" onclick="logout()">← Ieși din cabinet</button>
     </div>
 
-    <!-- POPUP CONFIRMARE CERERE TRIMISĂ -->
-    <div class="popup-overlay" id="popup-overlay">
+    <!-- POPUP QR -->
+    <div class="popup-overlay" id="qr-popup">
         <div class="popup-box">
-            <div class="popup-icon">✅</div>
-            <div class="popup-title">Cerere trimisă!</div>
-            <div class="popup-text" id="popup-text">Cererea ta a fost trimisă la recepție. Du-te să achiți, iar adminul îți va adăuga minutele în câteva secunde.</div>
-            <button class="popup-btn" onclick="closePopup()">Am înțeles</button>
+            <div class="popup-title">📱 Sincronizare Telefon</div>
+            <div id="qr-code"></div>
+            <div class="popup-text">Scanează codul QR cu telefonul pentru a accesa cabinetul tău personal direct, fără să introduci nickname-ul.</div>
+            <button class="popup-close" onclick="closeQR()">Închide</button>
+        </div>
+    </div>
+
+    <!-- POPUP CONFIRMARE -->
+    <div id="confirm-popup">
+        <div class="confirm-box">
+            <div class="confirm-icon" id="confirm-icon">✅</div>
+            <div class="confirm-title" id="confirm-title">Trimis!</div>
+            <div class="confirm-text" id="confirm-text"></div>
+            <button class="confirm-btn" onclick="closeConfirm()">Am înțeles</button>
         </div>
     </div>
 
     <script>
         const API = '';
-        const COOLDOWN_SECONDS = 90; // 1.5 min între cereri
+        const COOLDOWN_SECONDS = 90;
         let currentNickname = '';
         let currentStationId = null;
         let remainingSeconds = 0;
@@ -508,6 +813,7 @@
         let connection = null;
         let cooldownTimer = null;
         let cooldownRemaining = 0;
+        let qrGenerated = false;
 
         // ---- LOGIN ----
         async function login() {
@@ -521,7 +827,7 @@
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nickname, pin: null })
                 });
-                if (r.status === 404) { errorEl.textContent = 'Nicio sesiune activă cu acest nickname. Mergi la recepție.'; btn.disabled = false; return; }
+                if (r.status === 404) { errorEl.textContent = 'Nicio sesiune activă. Mergi la recepție.'; btn.disabled = false; return; }
                 if (!r.ok) { errorEl.textContent = 'Eroare. Încearcă din nou.'; btn.disabled = false; return; }
                 const station = await r.json();
                 currentNickname = nickname;
@@ -530,8 +836,19 @@
                 showDashboard(station);
                 connectSignalR(station.id);
                 loadPrice();
+                loadBarProducts();
             } catch (e) { errorEl.textContent = 'Nu mă pot conecta la server.'; btn.disabled = false; }
         }
+
+        // Login direct cu parametru URL (de la QR code)
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const nick = params.get('nick');
+            if (nick) {
+                document.getElementById('nickname-input').value = nick;
+                login();
+            }
+        });
 
         function showDashboard(station) {
             document.getElementById('login-panel').style.display = 'none';
@@ -547,12 +864,13 @@
             connection?.stop();
             clearInterval(localTimer);
             clearInterval(cooldownTimer);
-            currentNickname = ''; currentStationId = null;
+            currentNickname = ''; currentStationId = null; qrGenerated = false;
             document.getElementById('login-panel').style.display = 'flex';
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('nickname-input').value = '';
             document.getElementById('login-btn').disabled = false;
             document.getElementById('login-error').textContent = '';
+            document.getElementById('qr-code').innerHTML = '';
         }
 
         // ---- TIMER ----
@@ -567,10 +885,8 @@
         function updateTimerDisplay(sec) {
             remainingSeconds = sec;
             const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
-            document.getElementById('timer-display').textContent =
-                `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            document.getElementById('timer-display').className =
-                'timer-display' + (sec === 0 ? ' expired' : sec < 300 ? ' low' : '');
+            document.getElementById('timer-display').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            document.getElementById('timer-display').className = 'timer-display' + (sec === 0 ? ' expired' : sec < 300 ? ' low' : '');
         }
 
         // ---- SIGNALR ----
@@ -580,80 +896,136 @@
                 .withAutomaticReconnect()
                 .build();
             connection.on('TimeUpdated', (seconds) => { remainingSeconds = seconds; updateTimerDisplay(seconds); });
-            connection.on('ForceLock', () => { clearInterval(localTimer); alert('Sesiunea ta a expirat sau a fost încheiată.'); logout(); });
+            connection.on('ForceLock', () => { clearInterval(localTimer); alert('Sesiunea a expirat.'); logout(); });
             try { await connection.start(); await connection.invoke('RegisterClientWatcher', stationId); } catch (e) { }
+        }
+
+        // ---- TABS ----
+        function switchTab(name) {
+            document.querySelectorAll('.tab-btn').forEach((b, i) => {
+                b.classList.toggle('active', ['extend', 'bar', 'sos'][i] === name);
+            });
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`tab-${name}`).classList.add('active');
         }
 
         // ---- PRELUNGIRE ----
         function checkExtendPayment() {
             const val = document.getElementById('extend-payment').value;
-            const msg = document.getElementById('extend-card-msg');
-            const note = document.getElementById('extend-note');
-            msg.style.display = val === 'CARD_PENDING' ? 'block' : 'none';
-            note.textContent = val === 'CARD_PENDING'
-                ? 'Cererea va fi trimisă adminului. Plata cu cardul este în curs de dezvoltare.'
-                : 'Du-te la recepție pentru a achita cash, iar adminul va adăuga minutele.';
+            document.getElementById('extend-card-msg').style.display = val === 'CARD_PENDING' ? 'block' : 'none';
         }
 
         async function requestExtension() {
             const minutes = +document.getElementById('extend-minutes').value;
             const paymentMethod = document.getElementById('extend-payment').value;
             if (!minutes || minutes < 1) return;
-
             try {
                 const r = await fetch(`${API}/api/client/request-extension`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        stationId: currentStationId,
-                        nickname: currentNickname,
-                        requestedMinutes: minutes,
-                        paymentMethod: paymentMethod
-                    })
+                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, requestedMinutes: minutes, paymentMethod })
                 });
                 if (r.ok) {
-                    // Mesaj diferit în funcție de metoda de plată
-                    let popupMsg = '';
-                    if (paymentMethod === 'CARD_PENDING') {
-                        popupMsg = `Cererea pentru ${minutes} minute (CARD ONLINE) a fost trimisă. Această funcție este în curs de dezvoltare — adminul te va contacta pentru detalii.`;
-                    } else {
-                        popupMsg = `Cererea pentru ${minutes} minute (CASH) a fost trimisă la recepție. Du-te să achiți, iar adminul îți va adăuga minutele în câteva secunde.`;
-                    }
-                    document.getElementById('popup-text').textContent = popupMsg;
-                    document.getElementById('popup-overlay').classList.add('open');
+                    const msg = paymentMethod === 'CARD_PENDING'
+                        ? `Cererea pentru ${minutes} minute (CARD) a fost trimisă. Adminul te va contacta.`
+                        : `Cererea pentru ${minutes} minute (CASH) a fost trimisă. Du-te la recepție să achiți.`;
+                    showConfirm('⏱', 'Cerere trimisă!', msg);
                     startCooldown();
                 }
             } catch (e) { }
         }
 
-        function closePopup() {
-            document.getElementById('popup-overlay').classList.remove('open');
-        }
-
         function startCooldown() {
             cooldownRemaining = COOLDOWN_SECONDS;
             const btn = document.getElementById('extend-btn');
-            const wrap = document.getElementById('cooldown-wrap');
-            const text = document.getElementById('cooldown-text');
             btn.disabled = true;
-            wrap.style.display = 'block';
+            document.getElementById('cooldown-wrap').style.display = 'block';
             clearInterval(cooldownTimer);
             cooldownTimer = setInterval(() => {
                 cooldownRemaining--;
-                const pct = (cooldownRemaining / COOLDOWN_SECONDS) * 100;
-                document.getElementById('cooldown-bar').style.width = pct + '%';
-                text.textContent = `Poți trimite o nouă cerere în ${cooldownRemaining}s`;
+                document.getElementById('cooldown-bar').style.width = (cooldownRemaining / COOLDOWN_SECONDS * 100) + '%';
+                document.getElementById('cooldown-text').textContent = `Poți trimite o nouă cerere în ${cooldownRemaining}s`;
                 if (cooldownRemaining <= 0) {
                     clearInterval(cooldownTimer);
                     btn.disabled = false;
-                    wrap.style.display = 'none';
-                    text.textContent = '';
+                    document.getElementById('cooldown-wrap').style.display = 'none';
+                    document.getElementById('cooldown-text').textContent = '';
                 }
             }, 1000);
         }
 
+        // ---- BAR ----
+        async function loadBarProducts() {
+            try {
+                const r = await fetch(`${API}/api/bar/products`);
+                const products = await r.json();
+                const grid = document.getElementById('bar-products-grid');
+                if (!products.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;grid-column:span 2;text-align:center;padding:1rem">Niciun produs disponibil momentan.</div>'; return; }
+                grid.innerHTML = products.map(p => `
+          <div class="product-card" onclick="orderProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price})">
+            <div class="product-emoji">${p.emoji}</div>
+            <div class="product-name">${p.name}</div>
+            <div class="product-price">${p.price} MDL</div>
+          </div>`).join('');
+            } catch (e) { }
+        }
+
+        async function orderProduct(productId, productName, price) {
+            if (!confirm(`Confirmi comanda:\n${productName} — ${price} MDL?\n\nVa fi adăugat la nota ta.`)) return;
+            try {
+                const r = await fetch(`${API}/api/bar/order`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, productId, quantity: 1 })
+                });
+                if (r.ok) {
+                    showConfirm('🥤', 'Comandă plasată!', `${productName} a fost comandat. Adminul îți aduce la stație în câteva minute.`);
+                }
+            } catch (e) { }
+        }
+
+        // ---- SOS ----
+        async function sendSos(type, message) {
+            try {
+                const r = await fetch(`${API}/api/bar/sos`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, type, message })
+                });
+                if (r.ok) {
+                    const labels = { audio: 'Problemă audio', cleaning: 'Curățenie', noise: 'Zgomot/Agresivitate', hardware: 'Problemă tehnică' };
+                    showConfirm('🆘', 'Cerere trimisă!', `Adminul a fost notificat pentru "${labels[type] || type}". Vine la tine în curând.`);
+                }
+            } catch (e) { }
+        }
+
+        // ---- QR CODE ----
+        function showQR() {
+            const popup = document.getElementById('qr-popup');
+            popup.classList.add('open');
+            if (!qrGenerated) {
+                const url = `${window.location.origin}/client/?nick=${encodeURIComponent(currentNickname)}`;
+                document.getElementById('qr-code').innerHTML = '';
+                new QRCode(document.getElementById('qr-code'), {
+                    text: url, width: 200, height: 200,
+                    colorDark: '#000000', colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+                qrGenerated = true;
+            }
+        }
+
+        function closeQR() { document.getElementById('qr-popup').classList.remove('open'); }
+
+        // ---- POPUP CONFIRMARE ----
+        function showConfirm(icon, title, text) {
+            document.getElementById('confirm-icon').textContent = icon;
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-text').textContent = text;
+            document.getElementById('confirm-popup').classList.add('open');
+        }
+        function closeConfirm() { document.getElementById('confirm-popup').classList.remove('open'); }
+
         // ---- PRET ----
         async function loadPrice() {
-            try { const r = await fetch(`${API}/api/client/price`); const data = await r.json(); document.getElementById('price-display').textContent = data.pricePerHour; } catch (e) { }
+            try { const r = await fetch(`${API}/api/client/price`); const d = await r.json(); document.getElementById('price-display').textContent = d.pricePerHour; } catch (e) { }
         }
     </script>
 </body>

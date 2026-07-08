@@ -1,33 +1,59 @@
 ﻿using BlackSunCyber.Server.Services;
 using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
-namespace BlackSunCyber.Server.Hubs;
-
-/// <summary>
-/// Fiecare Client Lock Agent (de pe cele 5 PC-uri) se conectează aici cu
-/// access_token-ul lui unic și se alătură grupului propriei stații.
-/// Panoul admin se alătură grupului "admins" ca să primească notificări live.
-/// </summary>
-public class StationHub : Hub
+namespace BlackSunCyber.Server.Hubs
 {
-    /// <summary>Apelat de agentul WPF la pornire, cu token-ul lui de identificare.</summary>
-    public async Task RegisterStation(int stationId, string accessToken)
+    public class StationHub : Hub
     {
-        // TODO (recomandat): verifică accessToken față de cel din Supabase
-        // înainte de a accepta conexiunea, ca să previi conectarea unui
-        // agent fals la stația altcuiva.
-        await Groups.AddToGroupAsync(Context.ConnectionId, StationService.GroupName(stationId));
-    }
+        // ==========================================
+        // 1. Înregistrări Grupuri (Codul tău existent)
+        // ==========================================
+        public async Task RegisterStation(int stationId, string accessToken)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, StationService.GroupName(stationId));
+        }
 
-    /// <summary>Apelat de interfața admin (browser) la încărcare.</summary>
-    public async Task RegisterAdmin()
-    {
-        await Groups.AddToGroupAsync(Context.ConnectionId, "admins");
-    }
+        public async Task RegisterAdmin()
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, "admins");
+        }
 
-    /// <summary>Apelat de portalul client (telefon) ca să primească live update pentru stația lui.</summary>
-    public async Task RegisterClientWatcher(int stationId)
-    {
-        await Groups.AddToGroupAsync(Context.ConnectionId, StationService.GroupName(stationId));
+        public async Task RegisterClientWatcher(int stationId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, StationService.GroupName(stationId));
+        }
+
+        // ==========================================
+        // 2. Funcții Noi: Modul SOS / Asistență
+        // ==========================================
+        // Când un client apasă pe SOS în Cabinet, trimite alerta la Admins
+        public async Task SendSosRequest(int stationId, string user, string type, string message)
+        {
+            // Trimite instant la toți adminii conectați
+            await Clients.Group("admins").SendAsync("OnSosReceived", stationId, user, type, message);
+        }
+
+        // Când adminul rezolvă problema și apasă pe ecran
+        public async Task ResolveSosRequest(int requestId, int stationId)
+        {
+            await Clients.Group("admins").SendAsync("OnSosResolved", requestId, stationId);
+        }
+
+        // ==========================================
+        // 3. Funcții Noi: Modul Bar Virtual
+        // ==========================================
+        // Când un client comandă ceva de la bar, notifică adminul instant
+        public async Task PlaceBarOrder(int stationId, string user, string productName, int quantity, decimal total, string paymentMethod)
+        {
+            // Trimite comanda în panoul adminului cu sunet/alertă
+            await Clients.Group("admins").SendAsync("OnBarOrderReceived", stationId, user, productName, quantity, total, paymentMethod);
+        }
+
+        // Când adminul livrează băutura la masă și schimbă statusul
+        public async Task UpdateOrderStatus(long orderId, string newStatus)
+        {
+            await Clients.Group("admins").SendAsync("OnOrderStatusUpdated", orderId, newStatus);
+        }
     }
 }

@@ -547,6 +547,12 @@
                 <button class="tab-btn" id="tab-btn-notif" onclick="switchTab('notifications')">
                     Cereri <span id="notif-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.7rem;margin-left:4px">0</span>
                 </button>
+                <button class="tab-btn" id="tab-btn-bar" onclick="switchTab('bar')">
+                    🥤 Bar <span id="bar-badge" style="display:none;background:var(--accent);color:#000;border-radius:10px;padding:0 5px;font-size:0.7rem;margin-left:4px">0</span>
+                </button>
+                <button class="tab-btn" id="tab-btn-sos" onclick="switchTab('sos')">
+                    🆘 SOS <span id="sos-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.7rem;margin-left:4px">0</span>
+                </button>
                 <button class="tab-btn" onclick="switchTab('revenue')">Încasări</button>
                 <button class="tab-btn" onclick="switchTab('settings')">Setări</button>
             </div>
@@ -650,7 +656,26 @@
                     </div>
                     <button class="btn btn-primary" onclick="updatePrice()">Salvează tariful</button>
                 </div>
+                <hr style="border:none;border-top:1px solid var(--border);margin:1.2rem 0">
+                <div style="font-size:0.85rem;font-weight:600;margin-bottom:0.8rem">Produse Bar</div>
+                <div id="admin-bar-products" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1rem"></div>
+                <button class="btn btn-ghost" style="width:auto;padding:0.4rem 1rem;font-size:0.8rem" onclick="loadAdminBarProducts()">🔄 Reîncarcă produse</button>
             </div>
+
+            <!-- BAR COMENZI -->
+            <div class="tab-content" id="tab-bar">
+                <p class="hint" style="margin-bottom:0.8rem">Comenzi active de la clienți — livrează sau anulează.</p>
+                <div id="bar-orders-list"><div class="notif-empty">Nicio comandă activă.</div></div>
+                <button class="btn btn-ghost" style="width:auto;padding:0.4rem 1rem;font-size:0.8rem;margin-top:0.8rem" onclick="loadBarOrders()">🔄 Reîncarcă</button>
+            </div>
+
+            <!-- SOS / ASISTENTA -->
+            <div class="tab-content" id="tab-sos">
+                <p class="hint" style="margin-bottom:0.8rem">Cereri de asistență de la clienți.</p>
+                <div id="sos-list"><div class="notif-empty">Nicio cerere activă.</div></div>
+                <button class="btn btn-ghost" style="width:auto;padding:0.4rem 1rem;font-size:0.8rem;margin-top:0.8rem" onclick="loadSosRequests()">🔄 Reîncarcă</button>
+            </div>
+
         </div>
     </main>
 
@@ -662,6 +687,8 @@
         let connection = null;
         let stations = [];
         let notifications = [];
+        let barOrders = [];
+        let sosRequests = [];
 
         // ---- SIGNALR ----
         async function connectSignalR() {
@@ -684,12 +711,20 @@
             connection.on('NewNotification', (id, stationId, message) => {
                 notifications.push({ id, stationId, message, time: new Date(), resolved: false, approveOpen: false });
                 renderNotifications();
-                showToast(`📢 Cerere nouă de la PC ${stationId}`, 'success');
-                // Arată badge pe tab
-                const badge = document.getElementById('notif-badge');
-                const unresolved = notifications.filter(n => !n.resolved).length;
-                badge.textContent = unresolved;
-                badge.style.display = unresolved > 0 ? 'inline' : 'none';
+                showToast(`📢 Cerere prelungire PC ${stationId}`, 'success');
+                updateBadge('notif-badge', notifications.filter(n => !n.resolved).length);
+            });
+
+            // NOU: comenzi bar
+            connection.on('NewBarOrder', (id, stationId, nickname, description) => {
+                showToast(`🥤 Comandă nouă: PC ${stationId} — ${description}`, 'success');
+                loadBarOrders();
+            });
+
+            // NOU: cereri SOS
+            connection.on('NewSosRequest', (id, stationId, nickname, message) => {
+                showToast(`🆘 SOS: ${message}`, 'error');
+                loadSosRequests();
             });
 
             connection.onreconnected(() => setConnStatus(true));
@@ -701,6 +736,13 @@
                 await connection.invoke('RegisterAdmin');
                 setConnStatus(true);
             } catch (e) { setConnStatus(false); setTimeout(connectSignalR, 3000); }
+        }
+
+        function updateBadge(id, count) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = count;
+            el.style.display = count > 0 ? 'inline' : 'none';
         }
 
         function setConnStatus(ok) {
@@ -905,25 +947,112 @@
             } catch (e) { }
         }
 
-        async function updatePrice() {
-            const price = document.getElementById('price-input').value;
+        // ---- BAR COMENZI ----
+        async function loadBarOrders() {
             try {
-                await fetch(`${API}/api/admin/price`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ price: +price })
-                });
-                document.getElementById('price-display').textContent = price;
-                showToast('✅ Tarif actualizat!', 'success');
-            } catch (e) { showToast('Eroare.', 'error'); }
+                const r = await fetch(`${API}/api/bar/orders/pending`);
+                const orders = await r.json();
+                const list = document.getElementById('bar-orders-list');
+                if (!orders.length) {
+                    list.innerHTML = '<div class="notif-empty">Nicio comandă activă.</div>';
+                    updateBadge('bar-badge', 0);
+                    return;
+                }                list.innerHTML = orders.map(o => `
+          <div class="notif-item" style="border-color:rgba(243,156,18,0.3)">
+            <div style="flex:1">
+              <div class="notif-text">🥤 <strong>PC ${o.station_id}</strong> (${o.current_user_name || '—'}): ${o.quantity}x ${o.product_name} — <strong>${o.product_price * o.quantity} MDL</strong></div>
+              <div class="notif-time">${new Date(o.created_at).toLocaleTimeString('ro-RO')}</div>
+            </div>
+            <div style="display:flex;gap:0.4rem">
+              <button class="btn btn-success" style="padding:0.3rem 0.8rem;font-size:0.78rem" onclick="deliverOrder(${o.id})">✓ Livrat</button>
+              <button class="btn btn-danger" style="padding:0.3rem 0.8rem;font-size:0.78rem" onclick="cancelOrder(${o.id})">✗ Anulează</button>
+            </div>
+          </div>`).join('');
+                updateBadge('bar-badge', orders.length);
+            } catch (e) { }
+        }
+
+        async function deliverOrder(id) {
+            try {
+                await fetch(`${API}/api/bar/orders/${id}/deliver`, { method: 'POST' });
+                showToast('✅ Comandă marcată ca livrată!', 'success');
+                await loadBarOrders();
+            } catch (e) { }
+        }
+
+        async function cancelOrder(id) {
+            try {
+                await fetch(`${API}/api/bar/orders/${id}/cancel`, { method: 'POST' });
+                showToast('Comandă anulată.', '');
+                await loadBarOrders();
+            } catch (e) { }
+        }
+
+        async function loadAdminBarProducts() {
+            try {
+                const r = await fetch(`${API}/api/bar/products/all`);
+                const products = await r.json();
+                const container = document.getElementById('admin-bar-products');
+                container.innerHTML = products.map(p => `
+          <div style="display:flex;align-items:center;gap:0.8rem;padding:0.5rem;background:var(--bg);border:1px solid var(--border);border-radius:8px">
+            <span style="font-size:1.2rem">${p.emoji}</span>
+            <span style="flex:1;font-size:0.85rem">${p.name}</span>
+            <span style="color:var(--accent);font-size:0.85rem;font-weight:600">${p.price} MDL</span>
+            <button onclick="toggleProduct(${p.id})" style="padding:0.2rem 0.6rem;border:1px solid var(--border);background:${p.is_available ? 'rgba(46,204,113,0.15)' : 'rgba(231,76,60,0.15)'};color:${p.is_available ? 'var(--green)' : 'var(--red)'};border-radius:5px;cursor:pointer;font-size:0.75rem">
+              ${p.is_available ? '✓ Activ' : '✗ Inactiv'}
+            </button>
+          </div>`).join('');
+            } catch (e) { }
+        }
+
+        async function toggleProduct(id) {
+            try {
+                await fetch(`${API}/api/bar/products/${id}/toggle`, { method: 'PATCH' });
+                await loadAdminBarProducts();
+            } catch (e) { }
+        }
+
+        // ---- SOS ----
+        async function loadSosRequests() {
+            try {
+                const r = await fetch(`${API}/api/bar/sos/pending`);
+                const requests = await r.json();
+                const list = document.getElementById('sos-list');
+                if (!requests.length) {
+                    list.innerHTML = '<div class="notif-empty">Nicio cerere activă.</div>';
+                    updateBadge('sos-badge', 0);
+                    return;
+                }                const icons = { audio: '🎧', cleaning: '🧹', noise: '⚠️', hardware: '🖥️' };
+                list.innerHTML = requests.map(s => `
+          <div class="notif-item" style="border-color:rgba(231,76,60,0.3)">
+            <div style="flex:1">
+              <div class="notif-text">${icons[s.type] || '🆘'} <strong>PC ${s.station_id}</strong> (${s.current_user_name || 'anonim'}): ${s.message}</div>
+              <div class="notif-time">${new Date(s.created_at).toLocaleTimeString('ro-RO')}</div>
+            </div>
+            <button class="btn btn-success" style="padding:0.3rem 0.8rem;font-size:0.78rem" onclick="resolveSos(${s.id})">✓ Rezolvat</button>
+          </div>`).join('');
+                updateBadge('sos-badge', requests.length);
+            } catch (e) { }
+        }
+
+        async function resolveSos(id) {
+            try {
+                await fetch(`${API}/api/bar/sos/${id}/resolve`, { method: 'POST' });
+                showToast('✅ Cerere SOS rezolvată!', 'success');
+                await loadSosRequests();
+            } catch (e) { }
         }
 
         // ---- UI HELPERS ----
         function switchTab(name) {
-            const names = ['allocate', 'addtime', 'notifications', 'revenue', 'settings'];
+            const names = ['allocate', 'addtime', 'notifications', 'bar', 'sos', 'revenue', 'settings'];
             document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', names[i] === name));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(`tab-${name}`).classList.add('active');
             if (name === 'revenue') loadRevenue();
+            if (name === 'bar') loadBarOrders();
+            if (name === 'sos') loadSosRequests();
+            if (name === 'settings') loadAdminBarProducts();
         }
 
         function formatTime(sec) {
