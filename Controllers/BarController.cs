@@ -44,22 +44,36 @@ public class BarController : ControllerBase
             category = product.Category,
             price = product.Price,
             emoji = product.Emoji,
+            image_url = product.ImageUrl,
+            stock = product.Stock,
             is_available = product.IsAvailable
         });
         return Ok(result.FirstOrDefault());
     }
 
-    [HttpPatch("products/{id:int}/toggle")]
-    public async Task<IActionResult> ToggleProduct(int id)
+    [HttpPatch("products/{id:int}")]
+    public async Task<IActionResult> UpdateProduct(int id, [FromBody] BarProduct product)
     {
-        var products = await _db.GetAsync<BarProduct>("bar_products", $"id=eq.{id}");
-        var product = products.FirstOrDefault();
-        if (product == null) return NotFound();
-        await _db.PatchAsync<BarProduct>("bar_products", $"id=eq.{id}", new { is_available = !product.IsAvailable });
+        await _db.PatchAsync<BarProduct>("bar_products", $"id=eq.{id}", new
+        {
+            name = product.Name,
+            category = product.Category,
+            price = product.Price,
+            emoji = product.Emoji,
+            image_url = product.ImageUrl,
+            stock = product.Stock,
+            is_available = product.IsAvailable
+        });
         return Ok();
     }
 
-    // ---- COMENZI ----
+    [HttpDelete("products/{id:int}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        // Stergere reala din baza de date
+        await _db.DeleteAsync("bar_products", $"id=eq.{id}");
+        return Ok();
+    }
 
     [HttpPost("order")]
     public async Task<IActionResult> PlaceOrder(BarOrderRequest req)

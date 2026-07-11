@@ -52,6 +52,29 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetPrice() =>
         Ok(new { pricePerHour = await _stations.GetPricePerHourAsync() });
 
+    [HttpGet("server-info")]
+    public IActionResult GetServerInfo()
+    {
+        // Returnează toate IP-urile locale ale serverului
+        // Clientul (browser-ul) alege primul IP valid pentru QR code
+        var ips = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
+            .Where(n => n.OperationalStatus == System.Net.NetworkInformation.OperationalStatus.Up
+                     && n.NetworkInterfaceType != System.Net.NetworkInformation.NetworkInterfaceType.Loopback)
+            .SelectMany(n => n.GetIPProperties().UnicastAddresses)
+            .Where(a => a.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            .Select(a => a.Address.ToString())
+            .ToList();
+
+        var port = HttpContext.Request.Host.Port ?? 5000;
+
+        return Ok(new
+        {
+            ips,
+            port,
+            urls = ips.Select(ip => $"http://{ip}:{port}").ToList()
+        });
+    }
+
     [HttpPost("price")]
     public async Task<IActionResult> UpdatePrice([FromBody] UpdatePriceRequest req)
     {

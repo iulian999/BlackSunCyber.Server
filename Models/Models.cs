@@ -100,6 +100,12 @@ public class BarProduct
     [JsonPropertyName("emoji")]
     public string Emoji { get; set; } = "🥤";
 
+    [JsonPropertyName("image_url")]
+    public string? ImageUrl { get; set; }
+
+    [JsonPropertyName("stock")]
+    public int Stock { get; set; } = -1; // -1 = nelimitat
+
     [JsonPropertyName("is_available")]
     public bool IsAvailable { get; set; } = true;
 }

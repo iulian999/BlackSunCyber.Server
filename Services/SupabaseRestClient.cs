@@ -26,6 +26,7 @@ public class SupabaseRestClient
 
         _http = httpClientFactory.CreateClient();
         _http.BaseAddress = new Uri($"{url}/rest/v1/");
+        _http.Timeout = TimeSpan.FromSeconds(10);
         _http.DefaultRequestHeaders.Add("apikey", secretKey);
         _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", secretKey);
         _http.DefaultRequestHeaders.Add("Prefer", "return=representation");
@@ -47,6 +48,13 @@ public class SupabaseRestClient
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<List<T>>(json, JsonOptions) ?? new List<T>();
+    }
+
+    /// <summary>DELETE = sterge randul. `filterQuery` ex: "id=eq.3"</summary>
+    public async Task DeleteAsync(string table, string filterQuery)
+    {
+        var response = await _http.DeleteAsync($"{table}?{filterQuery}");
+        response.EnsureSuccessStatusCode();
     }
 
     /// <summary>PATCH = actualizare parțială. `filterQuery` ex: "id=eq.3"</summary>
