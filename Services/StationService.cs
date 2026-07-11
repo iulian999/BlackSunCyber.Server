@@ -100,6 +100,10 @@ public class StationService
         _logger.LogInformation("Stația {Id} activată pentru {Nick}", stationId, nickname);
 
         await _hub.Clients.Group(GroupName(stationId)).SendAsync("Unlock", nickname, station.RemainingSeconds);
+
+        // NOU: anunțăm și panoul admin, ca grila să se actualizeze instant, fără refresh
+        await _hub.Clients.Group("admins").SendAsync("StationUpdated");
+
         return true;
     }
 

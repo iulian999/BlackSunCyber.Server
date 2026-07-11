@@ -1035,6 +1035,10 @@
                 loadSosRequests();
             });
 
+            connection.on('StationUpdated', () => {
+                loadStations();
+            });
+
             connection.onreconnected(() => setConnStatus(true));
             connection.onreconnecting(() => setConnStatus(false));
             connection.onclose(() => { setConnStatus(false); setTimeout(connectSignalR, 3000); });
