@@ -9,22 +9,22 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@300;400;500;600&display=swap');
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg: #07070f;
-            --surface: #0f0f1a;
-            --border: rgba(255,255,255,0.07);
-            --accent: #F39C12;
-            --green: #2ECC71;
-            --red: #E74C3C;
-            --blue: #3498DB;
-            --text: #e0e0f0;
-            --muted: #555570;
+            --bg: #07070e;
+            --surface: #0c0c1e;
+            --surface-2: #111128;
+            --border: rgba(128,82,255,0.13);
+            --border-glow: rgba(128,82,255,0.32);
+            --accent: #ffb829;
+            --violet: #8052ff;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --blue: #3498db;
+            --teal: #15846e;
+            --text: #c8c8e8;
+            --muted: #4a4a72;
         }
 
         body {
@@ -39,122 +39,156 @@
             padding: 1rem;
         }
 
-            body::before {
-                content: '';
-                position: fixed;
-                width: 500px;
-                height: 500px;
-                background: radial-gradient(circle, rgba(243,156,18,0.06) 0%, transparent 70%);
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%,-50%);
-                pointer-events: none;
-            }
-
-        .logo {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--accent);
-            letter-spacing: 0.06em;
-            margin-bottom: 2rem;
-            text-align: center;
+        /* PARTICLE CANVAS */
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        /* LOGIN */
+        /* All content above canvas */
+        .logo, #login-panel, #dashboard, .popup-overlay, #confirm-popup {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ════════════════════
+           LOGO
+        ════════════════════ */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #8052ff, #15846e);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 16px rgba(128,82,255,0.4);
+            flex-shrink: 0;
+        }
+
+        .logo-text-wrap { line-height: 1.1; }
+
+        .logo-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.03em;
+            display: block;
+        }
+
+        .logo-sub {
+            font-size: 0.6rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            display: block;
+        }
+
+        /* ════════════════════
+           LOGIN
+        ════════════════════ */
         #login-panel {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 2rem;
             width: 100%;
             max-width: 380px;
             display: flex;
             flex-direction: column;
             gap: 1.2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(128,82,255,0.08);
         }
 
-            #login-panel h2 {
-                font-size: 1.1rem;
-                font-weight: 600;
-                text-align: center;
-            }
+        #login-panel h2 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text);
+        }
 
-            #login-panel p {
-                font-size: 0.82rem;
-                color: var(--muted);
-                text-align: center;
-            }
+        #login-panel p {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-align: center;
+        }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
 
-            .form-group label {
-                font-size: 0.75rem;
-                color: var(--muted);
-                letter-spacing: 0.05em;
-                text-transform: uppercase;
-            }
+        .form-group label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
 
-            .form-group input, .form-group select {
-                background: var(--bg);
-                border: 1px solid var(--border);
-                color: var(--text);
-                padding: 0.65rem 0.9rem;
-                border-radius: 8px;
-                font-family: 'Inter', sans-serif;
-                font-size: 1rem;
-                outline: none;
-                transition: border-color 0.15s;
-                width: 100%;
-            }
+        .form-group input,
+        .form-group select {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
 
-                .form-group input:focus, .form-group select:focus {
-                    border-color: var(--accent);
-                }
+        .form-group input:focus,
+        .form-group select:focus { border-color: var(--violet); }
 
         .btn {
-            padding: 0.7rem;
+            padding: 0.68rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 20px;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             font-size: 0.9rem;
             font-weight: 600;
             width: 100%;
-            transition: opacity 0.15s;
+            transition: opacity 0.15s, transform 0.1s;
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: #000;
-        }
-
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .error-msg {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: var(--red);
             text-align: center;
             min-height: 1.2em;
         }
 
-        /* DASHBOARD */
+        /* ════════════════════
+           DASHBOARD
+        ════════════════════ */
         #dashboard {
             display: none;
             width: 100%;
-            max-width: 440px;
+            max-width: 460px;
             flex-direction: column;
             gap: 1rem;
         }
 
-        /* HEADER */
+        /* Header */
         .dash-header {
             display: flex;
             align-items: center;
@@ -162,7 +196,7 @@
         }
 
         .dash-info .dash-welcome {
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             color: var(--muted);
         }
 
@@ -176,80 +210,91 @@
 
         .station-badge {
             display: inline-block;
-            font-size: 0.72rem;
-            background: rgba(243,156,18,0.1);
-            color: var(--accent);
-            border: 1px solid rgba(243,156,18,0.2);
-            border-radius: 6px;
-            padding: 0.2rem 0.6rem;
+            font-size: 0.68rem;
+            background: rgba(128,82,255,0.1);
+            color: var(--violet);
+            border: 1px solid rgba(128,82,255,0.2);
+            border-radius: 20px;
+            padding: 0.18rem 0.6rem;
             margin-top: 0.3rem;
         }
 
-        /* QR BUTTON */
         .qr-btn {
-            background: rgba(52,152,219,0.1);
-            border: 1px solid rgba(52,152,219,0.3);
-            color: var(--blue);
-            border-radius: 10px;
-            padding: 0.5rem 0.8rem;
+            background: rgba(128,82,255,0.1);
+            border: 1px solid rgba(128,82,255,0.22);
+            color: var(--violet);
+            border-radius: 20px;
+            padding: 0.45rem 0.85rem;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             font-family: 'Inter', sans-serif;
             display: flex;
             align-items: center;
             gap: 0.4rem;
+            transition: all 0.2s;
         }
 
-            .qr-btn:hover {
-                background: rgba(52,152,219,0.2);
-            }
+        .qr-btn:hover {
+            background: rgba(128,82,255,0.18);
+            border-color: rgba(128,82,255,0.4);
+        }
 
-        /* TIMER */
+        /* Timer Card */
         .timer-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: 20px;
+            padding: 1.6rem 1.5rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle top glow */
+        .timer-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 20%; right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
         }
 
         .timer-label {
-            font-size: 0.75rem;
-            letter-spacing: 0.15em;
+            font-size: 0.68rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
             color: var(--muted);
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.5rem;
         }
 
         .timer-display {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             font-weight: 700;
             color: var(--green);
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             line-height: 1;
             transition: color 0.3s;
+            text-shadow: 0 0 28px rgba(46,204,113,0.35);
         }
 
-            .timer-display.low {
-                color: var(--red);
-                animation: pulse 1s infinite;
-            }
+        .timer-display.low {
+            color: var(--red);
+            text-shadow: 0 0 28px rgba(231,76,60,0.4);
+            animation: pulse 1s infinite;
+        }
 
-            .timer-display.expired {
-                color: var(--muted);
-            }
+        .timer-display.expired {
+            color: var(--muted);
+            text-shadow: none;
+        }
 
         @keyframes pulse {
-            0%,100% {
-                opacity: 1
-            }
-
-            50% {
-                opacity: 0.4
-            }
+            0%, 100% { opacity: 1 }
+            50% { opacity: 0.4 }
         }
 
+        /* Info Grid */
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -259,13 +304,13 @@
         .info-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 14px;
             padding: 0.9rem;
             text-align: center;
         }
 
         .info-label {
-            font-size: 0.7rem;
+            font-size: 0.66rem;
             color: var(--muted);
             letter-spacing: 0.08em;
             text-transform: uppercase;
@@ -278,57 +323,47 @@
             font-weight: 700;
         }
 
-            .info-value.accent {
-                color: var(--accent);
-            }
+        .info-value.accent { color: var(--accent); }
+        .info-value.green { color: var(--green); }
 
-            .info-value.green {
-                color: var(--green);
-            }
-
-        /* TABS */
+        /* Tabs */
         .tabs {
             display: flex;
-            gap: 0.4rem;
+            gap: 0.35rem;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 0.4rem;
+            border-radius: 14px;
+            padding: 0.35rem;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 0.5rem;
+            padding: 0.48rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             font-weight: 500;
             background: transparent;
             color: var(--muted);
-            transition: all 0.15s;
+            transition: all 0.2s;
         }
 
-            .tab-btn.active {
-                background: var(--accent);
-                color: #000;
-                font-weight: 700;
-            }
-
-        .tab-content {
-            display: none;
+        .tab-btn.active {
+            background: var(--accent);
+            color: #000;
+            font-weight: 700;
         }
 
-            .tab-content.active {
-                display: block;
-            }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        /* TAB: PRELUNGIRE */
+        /* Extend Card */
         .extend-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 1.2rem;
             display: flex;
             flex-direction: column;
@@ -347,44 +382,43 @@
             flex-wrap: wrap;
         }
 
-            .extend-row input {
-                background: var(--bg);
-                border: 1px solid var(--border);
-                color: var(--text);
-                padding: 0.55rem 0.8rem;
-                border-radius: 8px;
-                font-family: 'Inter', sans-serif;
-                font-size: 0.9rem;
-                outline: none;
-                width: 90px;
-            }
+        .extend-row input {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.55rem 0.8rem;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            width: 90px;
+        }
 
         .action-btn {
             background: var(--accent);
             color: #000;
             border: none;
-            border-radius: 8px;
-            padding: 0.55rem 1rem;
+            border-radius: 20px;
+            padding: 0.55rem 1.1rem;
             font-family: 'Inter', sans-serif;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
+            width: 100%;
+            transition: opacity 0.15s;
         }
 
-            .action-btn:disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
-            }
+        .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .hint-text {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--muted);
         }
 
         .cooldown-bar-wrap {
             background: rgba(255,255,255,0.05);
             border-radius: 4px;
-            height: 4px;
+            height: 3px;
             overflow: hidden;
         }
 
@@ -396,15 +430,15 @@
 
         .card-msg {
             padding: 0.5rem 0.8rem;
-            background: rgba(52,152,219,0.1);
-            border: 1px solid rgba(52,152,219,0.3);
-            border-radius: 6px;
-            font-size: 0.78rem;
+            background: rgba(52,152,219,0.07);
+            border: 1px solid rgba(52,152,219,0.22);
+            border-radius: 8px;
+            font-size: 0.76rem;
             color: var(--blue);
             display: none;
         }
 
-        /* TAB: BAR */
+        /* Bar Products */
         .bar-products {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -414,50 +448,33 @@
         .product-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 14px;
             cursor: pointer;
-            transition: border-color 0.15s, transform 0.1s;
+            transition: all 0.2s;
             text-align: center;
             overflow: hidden;
         }
 
-            .product-card:hover {
-                border-color: var(--accent);
-                transform: translateY(-2px);
-            }
+        .product-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(128,82,255,0.1);
+        }
 
-            .product-card:active {
-                transform: scale(0.97);
-            }
+        .product-card:active { transform: scale(0.97); }
 
         .product-card-img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            background: #1a1a2e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
+            width: 100%; height: 100px; object-fit: cover;
+            background: #12122a;
+            display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
         }
 
-            .product-card-img img {
-                width: 100%;
-                height: 100px;
-                object-fit: cover;
-            }
+        .product-card-img img { width: 100%; height: 100px; object-fit: cover; }
 
-        .product-card-body {
-            padding: 0.7rem;
-        }
-
-        .product-emoji {
-            font-size: 1.8rem;
-            margin-bottom: 0.3rem;
-        }
+        .product-card-body { padding: 0.65rem; }
 
         .product-name {
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             color: var(--text);
             font-weight: 500;
             margin-bottom: 0.2rem;
@@ -471,28 +488,24 @@
         }
 
         .order-confirm {
-            background: rgba(46,204,113,0.1);
-            border: 1px solid rgba(46,204,113,0.3);
-            border-radius: 8px;
+            background: rgba(46,204,113,0.08);
+            border: 1px solid rgba(46,204,113,0.25);
+            border-radius: 10px;
             padding: 0.6rem 0.8rem;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--green);
             text-align: center;
             display: none;
             margin-top: 0.5rem;
         }
 
-        /* TAB: SOS */
-        .sos-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
+        /* SOS Options */
+        .sos-options { display: flex; flex-direction: column; gap: 0.6rem; }
 
         .sos-btn {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 14px;
             padding: 1rem;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
@@ -502,500 +515,550 @@
             display: flex;
             align-items: center;
             gap: 0.8rem;
-            transition: border-color 0.15s;
+            transition: all 0.2s;
         }
 
-            .sos-btn:hover {
-                border-color: rgba(231,76,60,0.4);
-                background: rgba(231,76,60,0.05);
-            }
-
-        .sos-icon {
-            font-size: 1.4rem;
+        .sos-btn:hover {
+            border-color: rgba(231,76,60,0.35);
+            background: rgba(231,76,60,0.04);
         }
 
-        .sos-label {
-            font-weight: 500;
-        }
-
-        .sos-desc {
-            font-size: 0.75rem;
-            color: var(--muted);
-        }
+        .sos-icon { font-size: 1.4rem; }
+        .sos-label { font-weight: 500; }
+        .sos-desc { font-size: 0.72rem; color: var(--muted); }
 
         .sos-confirm {
-            background: rgba(231,76,60,0.1);
-            border: 1px solid rgba(231,76,60,0.3);
-            border-radius: 8px;
+            background: rgba(231,76,60,0.08);
+            border: 1px solid rgba(231,76,60,0.25);
+            border-radius: 10px;
             padding: 0.6rem 0.8rem;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--red);
             text-align: center;
             display: none;
             margin-top: 0.5rem;
         }
 
-        /* POPUP QR */
-        .popup-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-            .popup-overlay.open {
-                display: flex;
-            }
-
-        .popup-box {
-            background: var(--surface);
-            border: 1px solid rgba(52,152,219,0.3);
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 320px;
-            width: 100%;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .popup-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--blue);
-        }
-
-        .popup-text {
-            font-size: 0.82rem;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-
-        #qr-code {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .popup-close {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            padding: 0.6rem 1.5rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* POPUP CONFIRMARE */
-        #confirm-popup {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-            #confirm-popup.open {
-                display: flex;
-            }
-
-        .confirm-box {
-            background: var(--surface);
-            border: 1px solid rgba(46,204,113,0.3);
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 340px;
-            width: 100%;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .confirm-icon {
-            font-size: 2.5rem;
-        }
-
-        .confirm-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--green);
-        }
-
-        .confirm-text {
-            font-size: 0.85rem;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-
-        .confirm-btn {
-            background: var(--green);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            padding: 0.7rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
+        /* Logout */
         .logout-btn {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--muted);
             padding: 0.5rem;
-            border-radius: 8px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
         }
 
-            .logout-btn:hover {
-                border-color: var(--red);
-                color: var(--red);
-            }
+        .logout-btn:hover { border-color: rgba(231,76,60,0.35); color: var(--red); }
+
+        /* ════════════════════
+           QR POPUP
+        ════════════════════ */
+        .popup-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200; display: none;
+            align-items: center; justify-content: center;
+            padding: 1rem; backdrop-filter: blur(5px);
+        }
+
+        .popup-overlay.open { display: flex; }
+
+        .popup-box {
+            background: var(--surface);
+            border: 1px solid rgba(128,82,255,0.3);
+            border-radius: 20px; padding: 2rem;
+            max-width: 320px; width: 100%; text-align: center;
+            display: flex; flex-direction: column; gap: 1rem; align-items: center;
+        }
+
+        .popup-title { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--violet); }
+        .popup-text { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+        #qr-code { background: white; padding: 12px; border-radius: 10px; }
+
+        .popup-close {
+            background: var(--accent); color: #000; border: none;
+            border-radius: 20px; padding: 0.6rem 1.5rem;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+        }
+
+        /* ════════════════════
+           POPUP CONFIRMARE
+        ════════════════════ */
+        #confirm-popup {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200; display: none;
+            align-items: center; justify-content: center;
+            padding: 1rem; backdrop-filter: blur(5px);
+        }
+
+        #confirm-popup.open { display: flex; }
+
+        .confirm-box {
+            background: var(--surface);
+            border: 1px solid rgba(46,204,113,0.28);
+            border-radius: 20px; padding: 2rem;
+            max-width: 340px; width: 100%; text-align: center;
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+
+        .confirm-icon { font-size: 2.5rem; }
+        .confirm-title { font-family: 'Rajdhani', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--green); }
+        .confirm-text { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+        .confirm-btn {
+            background: var(--green); color: #000; border: none;
+            border-radius: 20px; padding: 0.7rem;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <div class="logo">🎮 BlackSun Cyber</div>
+<canvas id="particle-canvas"></canvas>
 
-    <!-- LOGIN -->
-    <div id="login-panel">
-        <h2>Cabinetul tău personal</h2>
-        <p>Introdu nickname-ul ales la recepție</p>
-        <div class="form-group">
-            <label>Nickname</label>
-            <input type="text" id="nickname-input" placeholder="ex: GamerulAndrei" autocomplete="off"
-                   onkeydown="if(event.key==='Enter') login()">
+<div class="logo">
+    <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="4.5" fill="#ffb829"/>
+            <circle cx="10" cy="2.5" r="1.4" fill="#c8c8e8" opacity="0.9"/>
+            <circle cx="10" cy="17.5" r="1.4" fill="#c8c8e8" opacity="0.9"/>
+            <circle cx="2.5" cy="10" r="1.4" fill="#c8c8e8" opacity="0.9"/>
+            <circle cx="17.5" cy="10" r="1.4" fill="#c8c8e8" opacity="0.9"/>
+            <circle cx="4.4" cy="4.4" r="1.1" fill="#15846e" opacity="0.85"/>
+            <circle cx="15.6" cy="15.6" r="1.1" fill="#15846e" opacity="0.85"/>
+            <circle cx="4.4" cy="15.6" r="1.1" fill="#15846e" opacity="0.85"/>
+            <circle cx="15.6" cy="4.4" r="1.1" fill="#15846e" opacity="0.85"/>
+        </svg>
+    </div>
+    <div class="logo-text-wrap">
+        <span class="logo-name">BlackSun Cyber</span>
+        <span class="logo-sub">Cabinet Personal</span>
+    </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-panel">
+    <h2>Cabinetul tău personal</h2>
+    <p>Introdu nickname-ul ales la recepție</p>
+    <div class="form-group">
+        <label>Nickname</label>
+        <input type="text" id="nickname-input" placeholder="ex: GamerulAndrei" autocomplete="off"
+               onkeydown="if(event.key==='Enter') login()">
+    </div>
+    <div class="error-msg" id="login-error"></div>
+    <button class="btn btn-primary" onclick="login()" id="login-btn">Intră în cabinet</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+    <!-- Header -->
+    <div class="dash-header">
+        <div class="dash-info">
+            <div class="dash-welcome">Salut,</div>
+            <div class="dash-name" id="dash-name">—</div>
+            <div><span class="station-badge" id="dash-station">—</span></div>
         </div>
-        <div class="error-msg" id="login-error"></div>
-        <button class="btn btn-primary" onclick="login()" id="login-btn">Intră în cabinet</button>
+        <button class="qr-btn" onclick="showQR()">📱 QR Telefon</button>
     </div>
 
-    <!-- DASHBOARD -->
-    <div id="dashboard">
+    <!-- Timer -->
+    <div class="timer-card">
+        <div class="timer-label">Timp Rămas</div>
+        <div class="timer-display" id="timer-display">00:00:00</div>
+    </div>
 
-        <!-- Header -->
-        <div class="dash-header">
-            <div class="dash-info">
-                <div class="dash-welcome">Salut,</div>
-                <div class="dash-name" id="dash-name">—</div>
-                <div><span class="station-badge" id="dash-station">—</span></div>
+    <!-- Info grid -->
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="info-label">Tarif orar</div>
+            <div class="info-value accent" id="price-display">—</div>
+            <div style="font-size:0.66rem;color:var(--muted)">MDL / oră</div>
+        </div>
+        <div class="info-card">
+            <div class="info-label">Status</div>
+            <div class="info-value green" id="status-display">Activ</div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('extend')">⏱ Timp</button>
+        <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar</button>
+        <button class="tab-btn" onclick="switchTab('sos')">🆘 Asistență</button>
+        <button class="tab-btn" onclick="switchTab('system')">🖥️ Sistem</button>
+    </div>
+
+    <!-- TAB: PRELUNGIRE -->
+    <div class="tab-content active" id="tab-extend">
+        <div class="extend-card">
+            <div class="extend-title">Prelungește sesiunea</div>
+            <div class="extend-row">
+                <input type="number" id="extend-minutes" value="30" min="10" max="300">
+                <span style="font-size:0.8rem;color:var(--muted)">minute</span>
             </div>
-            <button class="qr-btn" onclick="showQR()">📱 QR Login telefon</button>
-        </div>
-
-        <!-- Timer -->
-        <div class="timer-card">
-            <div class="timer-label">Timp rămas</div>
-            <div class="timer-display" id="timer-display">00:00:00</div>
-        </div>
-
-        <!-- Info grid -->
-        <div class="info-grid">
-            <div class="info-card">
-                <div class="info-label">Tarif orar</div>
-                <div class="info-value accent" id="price-display">—</div>
-                <div style="font-size:0.7rem;color:var(--muted)">MDL / oră</div>
+            <div class="form-group">
+                <label>Metoda de plată</label>
+                <select id="extend-payment" onchange="checkExtendPayment()">
+                    <option value="CASH">💵 CASH (la recepție)</option>
+                    <option value="CARD_PENDING">💳 CARD ONLINE</option>
+                </select>
             </div>
-            <div class="info-card">
-                <div class="info-label">Status</div>
-                <div class="info-value green" id="status-display">Activ</div>
+            <div id="extend-card-msg" class="card-msg">💳 Plata cu cardul este în curs de dezvoltare (Coming Soon).</div>
+            <button class="action-btn" id="extend-btn" onclick="requestExtension()">Cere prelungire</button>
+            <div class="hint-text">Du-te la recepție să achiți cash, iar adminul adaugă minutele.</div>
+            <div class="cooldown-bar-wrap" id="cooldown-wrap" style="display:none">
+                <div class="cooldown-bar" id="cooldown-bar" style="width:100%"></div>
             </div>
+            <div style="font-size:0.72rem;color:var(--muted)" id="cooldown-text"></div>
         </div>
+    </div>
 
-        <!-- TABS -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('extend')">⏱ Timp</button>
-            <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar</button>
-            <button class="tab-btn" onclick="switchTab('sos')">🆘 Asistență</button>
+    <!-- TAB: BAR -->
+    <div class="tab-content" id="tab-bar">
+        <div style="margin-bottom:0.6rem">
+            <div style="font-size:0.8rem;color:var(--muted)">Comandă direct din cabinet — adminul îți aduce la stație 🚀</div>
         </div>
+        <div class="bar-products" id="bar-products-grid">
+            <div style="color:var(--muted);font-size:0.8rem;grid-column:span 2;text-align:center;padding:1rem">Se încarcă produsele...</div>
+        </div>
+        <div class="order-confirm" id="order-confirm">✅ Comanda a fost trimisă! Adminul vine la tine în curând.</div>
+    </div>
 
-        <!-- TAB: PRELUNGIRE -->
-        <div class="tab-content active" id="tab-extend">
-            <div class="extend-card">
-                <div class="extend-title">Prelungește sesiunea</div>
-                <div class="extend-row">
-                    <input type="number" id="extend-minutes" value="30" min="10" max="300">
-                    <span style="font-size:0.82rem;color:var(--muted)">minute</span>
+    <!-- TAB: SOS -->
+    <div class="tab-content" id="tab-sos">
+        <div style="margin-bottom:0.6rem">
+            <div style="font-size:0.8rem;color:var(--muted)">Alege tipul de asistență de care ai nevoie:</div>
+        </div>
+        <div class="sos-options">
+            <button class="sos-btn" onclick="sendSos('audio', 'Problema audio la statie')">
+                <div class="sos-icon">🎧</div>
+                <div>
+                    <div class="sos-label">Problemă audio</div>
+                    <div class="sos-desc">Căștile nu funcționează corect</div>
                 </div>
-                <div class="form-group">
-                    <label>Metoda de plată</label>
-                    <select id="extend-payment" onchange="checkExtendPayment()">
-                        <option value="CASH">💵 CASH (la recepție)</option>
-                        <option value="CARD_PENDING">💳 CARD ONLINE</option>
-                    </select>
+            </button>
+            <button class="sos-btn" onclick="sendSos('cleaning', 'Tastatura/mouse-ul este murdar, am nevoie de un servetel')">
+                <div class="sos-icon">🧹</div>
+                <div>
+                    <div class="sos-label">Curățenie la stație</div>
+                    <div class="sos-desc">Tastatură/mouse murdar, am nevoie de șervețel</div>
                 </div>
-                <div id="extend-card-msg" class="card-msg">💳 Plata cu cardul este în curs de dezvoltare (Coming Soon).</div>
-                <button class="action-btn" id="extend-btn" onclick="requestExtension()">Cere prelungire</button>
-                <div class="hint-text">Du-te la recepție să achiți cash, iar adminul adaugă minutele.</div>
-                <div class="cooldown-bar-wrap" id="cooldown-wrap" style="display:none">
-                    <div class="cooldown-bar" id="cooldown-bar" style="width:100%"></div>
+            </button>
+            <button class="sos-btn" onclick="sendSos('noise', 'Gamerul de langa mine este prea zgomotos/agresiv')">
+                <div class="sos-icon">⚠️</div>
+                <div>
+                    <div class="sos-label">Zgomot/Agresivitate</div>
+                    <div class="sos-desc">Alertă anonimă pentru admin (verificare sală)</div>
                 </div>
-                <div style="font-size:0.75rem;color:var(--muted)" id="cooldown-text"></div>
-            </div>
+            </button>
+            <button class="sos-btn" onclick="sendSos('hardware', 'Problema hardware la statie')">
+                <div class="sos-icon">🖥️</div>
+                <div>
+                    <div class="sos-label">Problemă tehnică</div>
+                    <div class="sos-desc">PC-ul are o problemă tehnică</div>
+                </div>
+            </button>
         </div>
-
-        <!-- TAB: BAR -->
-        <div class="tab-content" id="tab-bar">
-            <div style="margin-bottom:0.6rem">
-                <div style="font-size:0.82rem;color:var(--muted)">Comandă direct din cabinet — adminul îți aduce la stație 🚀</div>
-            </div>
-            <div class="bar-products" id="bar-products-grid">
-                <div style="color:var(--muted);font-size:0.82rem;grid-column:span 2;text-align:center;padding:1rem">Se încarcă produsele...</div>
-            </div>
-            <div class="order-confirm" id="order-confirm">✅ Comanda a fost trimisă! Adminul vine la tine în curând.</div>
-        </div>
-
-        <!-- TAB: SOS -->
-        <div class="tab-content" id="tab-sos">
-            <div style="margin-bottom:0.6rem">
-                <div style="font-size:0.82rem;color:var(--muted)">Alege tipul de asistență de care ai nevoie:</div>
-            </div>
-            <div class="sos-options">
-                <button class="sos-btn" onclick="sendSos('audio', 'Problema audio la statie')">
-                    <div class="sos-icon">🎧</div>
-                    <div>
-                        <div class="sos-label">Problemă audio</div>
-                        <div class="sos-desc">Căștile nu funcționează corect</div>
-                    </div>
-                </button>
-                <button class="sos-btn" onclick="sendSos('cleaning', 'Tastatura/mouse-ul este murdar, am nevoie de un servetel')">
-                    <div class="sos-icon">🧹</div>
-                    <div>
-                        <div class="sos-label">Curățenie la stație</div>
-                        <div class="sos-desc">Tastatura/mouse murdar, am nevoie de șervețel</div>
-                    </div>
-                </button>
-                <button class="sos-btn" onclick="sendSos('noise', 'Gamerul de langa mine este prea zgomotos/agresiv')">
-                    <div class="sos-icon">⚠️</div>
-                    <div>
-                        <div class="sos-label">Zgomot/Agresivitate</div>
-                        <div class="sos-desc">Alertă anonimă pentru admin (verificare sală)</div>
-                    </div>
-                </button>
-                <button class="sos-btn" onclick="sendSos('hardware', 'Problema hardware la statie')">
-                    <div class="sos-icon">🖥️</div>
-                    <div>
-                        <div class="sos-label">Problemă tehnică</div>
-                        <div class="sos-desc">PC-ul are o problemă tehnică</div>
-                    </div>
-                </button>
-            </div>
-            <div class="sos-confirm" id="sos-confirm">🆘 Cererea a fost trimisă! Adminul vine în curând.</div>
-        </div>
-
-        <button class="logout-btn" onclick="logout()">← Ieși din cabinet</button>
+        <div class="sos-confirm" id="sos-confirm">🆘 Cererea a fost trimisă! Adminul vine în curând.</div>
     </div>
 
-    <!-- POPUP QR -->
-    <div class="popup-overlay" id="qr-popup">
-        <div class="popup-box">
-            <div class="popup-title">📱 Sincronizare Telefon</div>
-            <div id="qr-code"></div>
-            <div class="popup-text">Scanează codul QR cu telefonul pentru a accesa cabinetul tău personal direct, fără să introduci nickname-ul.</div>
-            <button class="popup-close" onclick="closeQR()">Închide</button>
+    <!-- TAB: SISTEM -->
+    <div class="tab-content" id="tab-system">
+        <div class="extend-card" style="align-items: center; text-align: center;">
+            <div class="extend-title" style="margin-bottom:0.5rem">Monitorizare Hardware</div>
+            <div style="font-size:0.75rem; color:var(--muted); margin-bottom: 1rem; background:rgba(0,0,0,0.3); padding:0.3rem 0.6rem; border-radius:10px; border:1px solid rgba(128,82,255,0.1)">RTX 3060 | 16GB RAM</div>
+            
+            <div style="width: 100%; max-width: 250px; display: flex; flex-direction: column; gap: 0.6rem;">
+                <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.8rem">
+                    <span style="color:var(--muted); font-weight:600">CPU</span>
+                    <div style="flex:1; height:6px; background:rgba(255,255,255,0.05); margin:0 0.8rem; border-radius:3px; overflow:hidden; position:relative">
+                        <div id="client-cpu-bar" style="height:100%; width:35%; background:#00e5ff; box-shadow:0 0 8px #00e5ff; transition:width 1s ease-in-out"></div>
+                    </div>
+                    <span id="client-cpu-val" style="font-family:'Rajdhani',sans-serif; font-weight:700">35%</span>
+                </div>
+                
+                <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.8rem">
+                    <span style="color:var(--muted); font-weight:600">RAM</span>
+                    <div style="flex:1; height:6px; background:rgba(255,255,255,0.05); margin:0 0.8rem; border-radius:3px; overflow:hidden; position:relative">
+                        <div id="client-ram-bar" style="height:100%; width:60%; background:var(--accent); box-shadow:0 0 8px var(--accent); transition:width 1s ease-in-out"></div>
+                    </div>
+                    <span id="client-ram-val" style="font-family:'Rajdhani',sans-serif; font-weight:700">9.5 GB</span>
+                </div>
+                
+                <div style="display:flex; align-items:center; justify-content:center; gap:1.5rem; margin-top:0.5rem; font-size:0.75rem">
+                    <div><span style="color:var(--muted); font-weight:600">PING:</span> <span id="client-ping-val" style="color:var(--green); font-family:'Rajdhani',sans-serif; font-weight:700">12ms</span></div>
+                    <div><span style="color:var(--muted); font-weight:600">APP:</span> <span style="font-family:'Rajdhani',sans-serif; font-weight:700">v1.1.0</span></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- POPUP CONFIRMARE -->
-    <div id="confirm-popup">
-        <div class="confirm-box">
-            <div class="confirm-icon" id="confirm-icon">✅</div>
-            <div class="confirm-title" id="confirm-title">Trimis!</div>
-            <div class="confirm-text" id="confirm-text"></div>
-            <button class="confirm-btn" onclick="closeConfirm()">Am înțeles</button>
-        </div>
+    <button class="logout-btn" onclick="logout()">← Ieși din cabinet</button>
+</div>
+
+<!-- POPUP QR -->
+<div class="popup-overlay" id="qr-popup">
+    <div class="popup-box">
+        <div class="popup-title">📱 Sincronizare Telefon</div>
+        <div id="qr-code"></div>
+        <div class="popup-text">Scanează codul QR cu telefonul pentru a accesa cabinetul tău personal direct, fără să introduci nickname-ul.</div>
+        <button class="popup-close" onclick="closeQR()">Închide</button>
     </div>
+</div>
 
-    <script>
-        const API = '';
-        const COOLDOWN_SECONDS = 90;
-        let currentNickname = '';
-        let currentStationId = null;
-        let remainingSeconds = 0;
-        let localTimer = null;
-        let connection = null;
-        let cooldownTimer = null;
-        let cooldownRemaining = 0;
-        let qrGenerated = false;
+<!-- POPUP CONFIRMARE -->
+<div id="confirm-popup">
+    <div class="confirm-box">
+        <div class="confirm-icon" id="confirm-icon">✅</div>
+        <div class="confirm-title" id="confirm-title">Trimis!</div>
+        <div class="confirm-text" id="confirm-text"></div>
+        <button class="confirm-btn" onclick="closeConfirm()">Am înțeles</button>
+    </div>
+</div>
 
-        // ---- LOGIN ----
-        async function login() {
-            const nickname = document.getElementById('nickname-input').value.trim();
-            const errorEl = document.getElementById('login-error');
-            const btn = document.getElementById('login-btn');
-            if (!nickname) { errorEl.textContent = 'Introdu nickname-ul.'; return; }
-            btn.disabled = true; errorEl.textContent = '';
-            try {
-                const r = await fetch(`${API}/api/client/login`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nickname, pin: null })
-                });
-                if (r.status === 404) { errorEl.textContent = 'Nicio sesiune activă. Mergi la recepție.'; btn.disabled = false; return; }
-                if (!r.ok) { errorEl.textContent = 'Eroare. Încearcă din nou.'; btn.disabled = false; return; }
-                const station = await r.json();
-                currentNickname = nickname;
-                currentStationId = station.id;
-                remainingSeconds = station.remaining_seconds;
-                showDashboard(station);
-                connectSignalR(station.id);
-                loadPrice();
-                loadBarProducts();
-            } catch (e) { errorEl.textContent = 'Nu mă pot conecta la server.'; btn.disabled = false; }
-        }
+<script>
+    const API = '';
+    const COOLDOWN_SECONDS = 90;
+    let currentNickname = '';
+    let currentStationId = null;
+    let remainingSeconds = 0;
+    let localTimer = null;
+    let connection = null;
+    let cooldownTimer = null;
+    let cooldownRemaining = 0;
+    let qrGenerated = false;
 
-        // Login direct cu parametru URL (de la QR code)
-        window.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const nick = params.get('nick');
-            if (nick) {
-                document.getElementById('nickname-input').value = nick;
-                login();
-            }
-        });
+    // ════════════════════════════════
+    // PARTICLE SYSTEM
+    // ════════════════════════════════
+    (function initParticles() {
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+        const mouse = { x: W / 2, y: H / 2 };
 
-        function showDashboard(station) {
-            document.getElementById('login-panel').style.display = 'none';
-            const dash = document.getElementById('dashboard');
-            dash.style.display = 'flex';
-            document.getElementById('dash-name').textContent = currentNickname;
-            document.getElementById('dash-station').textContent = station.station_name || `PC ${station.id}`;
-            updateTimerDisplay(remainingSeconds);
-            startLocalTimer();
-        }
+        const COLORS = ['#8052ff', '#8052ff', '#ffb829', '#15846e', '#8052ff'];
 
-        function logout() {
-            connection?.stop();
-            clearInterval(localTimer);
-            clearInterval(cooldownTimer);
-            currentNickname = ''; currentStationId = null; qrGenerated = false;
-            document.getElementById('login-panel').style.display = 'flex';
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('nickname-input').value = '';
-            document.getElementById('login-btn').disabled = false;
-            document.getElementById('login-error').textContent = '';
-            document.getElementById('qr-code').innerHTML = '';
-        }
+        const particles = Array.from({ length: 75 }, () => ({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.8 + 1.2,
+            vx: (Math.random() - 0.5) * 0.22,
+            vy: (Math.random() - 0.5) * 0.22,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            opacity: Math.random() * 0.32 + 0.12
+        }));
 
-        // ---- TIMER ----
-        function startLocalTimer() {
-            clearInterval(localTimer);
-            localTimer = setInterval(() => {
-                if (remainingSeconds > 0) { remainingSeconds--; updateTimerDisplay(remainingSeconds); }
-                else { clearInterval(localTimer); document.getElementById('status-display').textContent = 'Expirat'; document.getElementById('status-display').style.color = 'var(--red)'; }
-            }, 1000);
-        }
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
 
-        function updateTimerDisplay(sec) {
-            remainingSeconds = sec;
-            const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
-            document.getElementById('timer-display').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            document.getElementById('timer-display').className = 'timer-display' + (sec === 0 ? ' expired' : sec < 300 ? ' low' : '');
-        }
-
-        // ---- SIGNALR ----
-        async function connectSignalR(stationId) {
-            connection = new signalR.HubConnectionBuilder()
-                .withUrl(`${API}/hub/station`)
-                .withAutomaticReconnect()
-                .build();
-            connection.on('TimeUpdated', (seconds) => { remainingSeconds = seconds; updateTimerDisplay(seconds); });
-            connection.on('ForceLock', () => { clearInterval(localTimer); alert('Sesiunea a expirat.'); logout(); });
-            try { await connection.start(); await connection.invoke('RegisterClientWatcher', stationId); } catch (e) { }
-        }
-
-        // ---- TABS ----
-        function switchTab(name) {
-            document.querySelectorAll('.tab-btn').forEach((b, i) => {
-                b.classList.toggle('active', ['extend', 'bar', 'sos'][i] === name);
+        function animate() {
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(p => {
+                const dx = p.x - mouse.x;
+                const dy = p.y - mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 110 && dist > 0) {
+                    const force = (110 - dist) / 110 * 0.35;
+                    p.vx += (dx / dist) * force;
+                    p.vy += (dy / dist) * force;
+                }
+                p.vx *= 0.978;
+                p.vy *= 0.978;
+                const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                if (speed > 0.7) { p.vx *= 0.7 / speed; p.vy *= 0.7 / speed; }
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < -5) p.x = W + 5;
+                if (p.x > W + 5) p.x = -5;
+                if (p.y < -5) p.y = H + 5;
+                if (p.y > H + 5) p.y = -5;
+                ctx.save();
+                ctx.globalAlpha = p.opacity;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             });
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`tab-${name}`).classList.add('active');
+            requestAnimationFrame(animate);
         }
+        animate();
+    })();
 
-        // ---- PRELUNGIRE ----
-        function checkExtendPayment() {
-            const val = document.getElementById('extend-payment').value;
-            document.getElementById('extend-card-msg').style.display = val === 'CARD_PENDING' ? 'block' : 'none';
-        }
+    // ════════════════════════════════
+    // LOGIN
+    // ════════════════════════════════
+    async function login() {
+        const nickname = document.getElementById('nickname-input').value.trim();
+        const errorEl = document.getElementById('login-error');
+        const btn = document.getElementById('login-btn');
+        if (!nickname) { errorEl.textContent = 'Introdu nickname-ul.'; return; }
+        btn.disabled = true; errorEl.textContent = '';
+        try {
+            const r = await fetch(`${API}/api/client/login`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nickname, pin: null })
+            });
+            if (r.status === 404) { errorEl.textContent = 'Nicio sesiune activă. Mergi la recepție.'; btn.disabled = false; return; }
+            if (!r.ok) { errorEl.textContent = 'Eroare. Încearcă din nou.'; btn.disabled = false; return; }
+            const station = await r.json();
+            currentNickname = nickname;
+            currentStationId = station.id;
+            remainingSeconds = station.remaining_seconds;
+            showDashboard(station);
+            connectSignalR(station.id);
+            loadPrice();
+            loadBarProducts();
+        } catch (e) { errorEl.textContent = 'Nu mă pot conecta la server.'; btn.disabled = false; }
+    }
 
-        async function requestExtension() {
-            const minutes = +document.getElementById('extend-minutes').value;
-            const paymentMethod = document.getElementById('extend-payment').value;
-            if (!minutes || minutes < 1) return;
-            try {
-                const r = await fetch(`${API}/api/client/request-extension`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, requestedMinutes: minutes, paymentMethod })
-                });
-                if (r.ok) {
-                    const msg = paymentMethod === 'CARD_PENDING'
-                        ? `Cererea pentru ${minutes} minute (CARD) a fost trimisă. Adminul te va contacta.`
-                        : `Cererea pentru ${minutes} minute (CASH) a fost trimisă. Du-te la recepție să achiți.`;
-                    showConfirm('⏱', 'Cerere trimisă!', msg);
-                    startCooldown();
-                }
-            } catch (e) { }
-        }
+    window.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const nick = params.get('nick');
+        if (nick) { document.getElementById('nickname-input').value = nick; login(); }
+    });
 
-        function startCooldown() {
-            cooldownRemaining = COOLDOWN_SECONDS;
-            const btn = document.getElementById('extend-btn');
-            btn.disabled = true;
-            document.getElementById('cooldown-wrap').style.display = 'block';
-            clearInterval(cooldownTimer);
-            cooldownTimer = setInterval(() => {
-                cooldownRemaining--;
-                document.getElementById('cooldown-bar').style.width = (cooldownRemaining / COOLDOWN_SECONDS * 100) + '%';
-                document.getElementById('cooldown-text').textContent = `Poți trimite o nouă cerere în ${cooldownRemaining}s`;
-                if (cooldownRemaining <= 0) {
-                    clearInterval(cooldownTimer);
-                    btn.disabled = false;
-                    document.getElementById('cooldown-wrap').style.display = 'none';
-                    document.getElementById('cooldown-text').textContent = '';
-                }
-            }, 1000);
-        }
+    function showDashboard(station) {
+        document.getElementById('login-panel').style.display = 'none';
+        const dash = document.getElementById('dashboard');
+        dash.style.display = 'flex';
+        document.getElementById('dash-name').textContent = currentNickname;
+        document.getElementById('dash-station').textContent = station.station_name || `PC ${station.id}`;
+        updateTimerDisplay(remainingSeconds);
+        startLocalTimer();
+    }
 
-        // ---- BAR ----
-        async function loadBarProducts() {
-            try {
-                const r = await fetch(`${API}/api/bar/products`);
-                const products = await r.json();
-                const grid = document.getElementById('bar-products-grid');
-                if (!products.length) {
-                    grid.innerHTML = '<div style="color:var(--muted);font-size:0.82rem;grid-column:span 2;text-align:center;padding:1rem">Niciun produs disponibil momentan.</div>';
-                    return;
-                }
-                grid.innerHTML = products.map(p => {
-                    // Dacă există imagine, o afișăm; dacă nu, fallback la emoji
-                    const imgHtml = p.image_url
-                        ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-                        + `<span style="display:none;font-size:2.5rem;width:100%;height:100%;align-items:center;justify-content:center">${p.emoji}</span>`
-                        : `<span style="font-size:2.5rem">${p.emoji}</span>`;
+    function logout() {
+        connection?.stop();
+        clearInterval(localTimer);
+        clearInterval(cooldownTimer);
+        currentNickname = ''; currentStationId = null; qrGenerated = false;
+        document.getElementById('login-panel').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('nickname-input').value = '';
+        document.getElementById('login-btn').disabled = false;
+        document.getElementById('login-error').textContent = '';
+        document.getElementById('qr-code').innerHTML = '';
+    }
 
-                    const stockText = p.stock === 0 ? '<div style="font-size:0.7rem;color:var(--red);margin-top:0.2rem">Epuizat</div>'
-                        : p.stock > 0 && p.stock < 5 ? `<div style="font-size:0.7rem;color:var(--accent);margin-top:0.2rem">Ultimele ${p.stock} buc</div>`
-                            : '';
+    // ════════════════════════════════
+    // TIMER
+    // ════════════════════════════════
+    function startLocalTimer() {
+        clearInterval(localTimer);
+        localTimer = setInterval(() => {
+            if (remainingSeconds > 0) { remainingSeconds--; updateTimerDisplay(remainingSeconds); }
+            else { clearInterval(localTimer); document.getElementById('status-display').textContent = 'Expirat'; document.getElementById('status-display').style.color = 'var(--red)'; }
+        }, 1000);
+    }
 
-                    return `
+    function updateTimerDisplay(sec) {
+        remainingSeconds = sec;
+        const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+        document.getElementById('timer-display').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        document.getElementById('timer-display').className = 'timer-display' + (sec === 0 ? ' expired' : sec < 300 ? ' low' : '');
+    }
+
+    // ════════════════════════════════
+    // SIGNALR
+    // ════════════════════════════════
+    async function connectSignalR(stationId) {
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl(`${API}/hub/station`)
+            .withAutomaticReconnect()
+            .build();
+        connection.on('TimeUpdated', (seconds) => { remainingSeconds = seconds; updateTimerDisplay(seconds); });
+        connection.on('ForceLock', () => { clearInterval(localTimer); alert('Sesiunea a expirat.'); logout(); });
+        try { await connection.start(); await connection.invoke('RegisterClientWatcher', stationId); } catch (e) { }
+    }
+
+    // ════════════════════════════════
+    // TABS
+    // ════════════════════════════════
+    function switchTab(name) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            b.classList.toggle('active', ['extend', 'bar', 'sos'][i] === name);
+        });
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`tab-${name}`).classList.add('active');
+    }
+
+    // ════════════════════════════════
+    // PRELUNGIRE
+    // ════════════════════════════════
+    function checkExtendPayment() {
+        const val = document.getElementById('extend-payment').value;
+        document.getElementById('extend-card-msg').style.display = val === 'CARD_PENDING' ? 'block' : 'none';
+    }
+
+    async function requestExtension() {
+        const minutes = +document.getElementById('extend-minutes').value;
+        const paymentMethod = document.getElementById('extend-payment').value;
+        if (!minutes || minutes < 1) return;
+        try {
+            const r = await fetch(`${API}/api/client/request-extension`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, requestedMinutes: minutes, paymentMethod })
+            });
+            if (r.ok) {
+                const msg = paymentMethod === 'CARD_PENDING'
+                    ? `Cererea pentru ${minutes} minute (CARD) a fost trimisă. Adminul te va contacta.`
+                    : `Cererea pentru ${minutes} minute (CASH) a fost trimisă. Du-te la recepție să achiți.`;
+                showConfirm('⏱', 'Cerere trimisă!', msg);
+                startCooldown();
+            }
+        } catch (e) { }
+    }
+
+    function startCooldown() {
+        cooldownRemaining = COOLDOWN_SECONDS;
+        const btn = document.getElementById('extend-btn');
+        btn.disabled = true;
+        document.getElementById('cooldown-wrap').style.display = 'block';
+        clearInterval(cooldownTimer);
+        cooldownTimer = setInterval(() => {
+            cooldownRemaining--;
+            document.getElementById('cooldown-bar').style.width = (cooldownRemaining / COOLDOWN_SECONDS * 100) + '%';
+            document.getElementById('cooldown-text').textContent = `Poți trimite o nouă cerere în ${cooldownRemaining}s`;
+            if (cooldownRemaining <= 0) {
+                clearInterval(cooldownTimer);
+                btn.disabled = false;
+                document.getElementById('cooldown-wrap').style.display = 'none';
+                document.getElementById('cooldown-text').textContent = '';
+            }
+        }, 1000);
+    }
+
+    // ════════════════════════════════
+    // BAR
+    // ════════════════════════════════
+    async function loadBarProducts() {
+        try {
+            const r = await fetch(`${API}/api/bar/products`);
+            const products = await r.json();
+            const grid = document.getElementById('bar-products-grid');
+            if (!products.length) {
+                grid.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;grid-column:span 2;text-align:center;padding:1rem">Niciun produs disponibil momentan.</div>';
+                return;
+            }
+            grid.innerHTML = products.map(p => {
+                const imgHtml = p.image_url
+                    ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                    + `<span style="display:none;font-size:2.5rem;width:100%;height:100%;align-items:center;justify-content:center">${p.emoji}</span>`
+                    : `<span style="font-size:2.5rem">${p.emoji}</span>`;
+
+                const stockText = p.stock === 0
+                    ? '<div style="font-size:0.68rem;color:var(--red);margin-top:0.2rem">Epuizat</div>'
+                    : p.stock > 0 && p.stock < 5 ? `<div style="font-size:0.68rem;color:var(--accent);margin-top:0.2rem">Ultimele ${p.stock} buc</div>` : '';
+
+                return `
             <div class="product-card" onclick="orderProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price})">
               <div class="product-card-img">${imgHtml}</div>
               <div class="product-card-body">
@@ -1004,88 +1067,107 @@
                 ${stockText}
               </div>
             </div>`;
-                }).join('');
-            } catch (e) { }
-        }
+            }).join('');
+        } catch (e) { }
+    }
 
-        async function orderProduct(productId, productName, price) {
-            if (!confirm(`Confirmi comanda:\n${productName} — ${price} MDL?\n\nVa fi adăugat la nota ta.`)) return;
-            try {
-                const r = await fetch(`${API}/api/bar/order`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, productId, quantity: 1 })
-                });
-                if (r.ok) {
-                    showConfirm('🥤', 'Comandă plasată!', `${productName} a fost comandat. Adminul îți aduce la stație în câteva minute.`);
-                }
-            } catch (e) { }
-        }
+    async function orderProduct(productId, productName, price) {
+        if (!confirm(`Confirmi comanda:\n${productName} — ${price} MDL?\n\nVa fi adăugat la nota ta.`)) return;
+        try {
+            const r = await fetch(`${API}/api/bar/order`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, productId, quantity: 1 })
+            });
+            if (r.ok) { showConfirm('🥤', 'Comandă plasată!', `${productName} a fost comandat. Adminul îți aduce la stație în câteva minute.`); }
+        } catch (e) { }
+    }
 
-        // ---- SOS ----
-        async function sendSos(type, message) {
-            try {
-                const r = await fetch(`${API}/api/bar/sos`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, type, message })
-                });
-                if (r.ok) {
-                    const labels = { audio: 'Problemă audio', cleaning: 'Curățenie', noise: 'Zgomot/Agresivitate', hardware: 'Problemă tehnică' };
-                    showConfirm('🆘', 'Cerere trimisă!', `Adminul a fost notificat pentru "${labels[type] || type}". Vine la tine în curând.`);
-                }
-            } catch (e) { }
-        }
-
-        // ---- QR CODE ----
-        async function showQR() {
-            const popup = document.getElementById('qr-popup');
-            popup.classList.add('open');
-
-            if (!qrGenerated) {
-                // Daca suntem pe localhost, cerem IP-ul real de la server
-                let baseUrl = window.location.origin;
-                const currentHost = window.location.hostname;
-                if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-                    try {
-                        const r = await fetch(`${API}/api/admin/server-info`);
-                        const data = await r.json();
-                        if (data.urls && data.urls.length > 0) {
-                            baseUrl = data.urls[0];
-                        }
-                    } catch (e) { }
-                }
-
-                const url = `${baseUrl}/client/?nick=${encodeURIComponent(currentNickname)}`;
-                document.getElementById('qr-code').innerHTML = '';
-                new QRCode(document.getElementById('qr-code'), {
-                    text: url, width: 200, height: 200,
-                    colorDark: '#000000', colorLight: '#ffffff',
-                    correctLevel: QRCode.CorrectLevel.M
-                });
-
-                // Afiseaza URL-ul sub QR pentru verificare
-                const urlEl = document.createElement('div');
-                urlEl.style.cssText = 'font-size:0.7rem;color:#555570;word-break:break-all;margin-top:0.5rem;text-align:center;max-width:220px';
-                urlEl.textContent = url;
-                document.getElementById('qr-code').after(urlEl);
-                qrGenerated = true;
+    // ════════════════════════════════
+    // SOS
+    // ════════════════════════════════
+    async function sendSos(type, message) {
+        try {
+            const r = await fetch(`${API}/api/bar/sos`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, type, message })
+            });
+            if (r.ok) {
+                const labels = { audio: 'Problemă audio', cleaning: 'Curățenie', noise: 'Zgomot/Agresivitate', hardware: 'Problemă tehnică' };
+                showConfirm('🆘', 'Cerere trimisă!', `Adminul a fost notificat pentru "${labels[type] || type}". Vine la tine în curând.`);
             }
-        }
+        } catch (e) { }
+    }
 
-        function closeQR() { document.getElementById('qr-popup').classList.remove('open'); }
-
-        // ---- POPUP CONFIRMARE ----
-        function showConfirm(icon, title, text) {
-            document.getElementById('confirm-icon').textContent = icon;
-            document.getElementById('confirm-title').textContent = title;
-            document.getElementById('confirm-text').textContent = text;
-            document.getElementById('confirm-popup').classList.add('open');
+    // ════════════════════════════════
+    // QR CODE
+    // ════════════════════════════════
+    async function showQR() {
+        const popup = document.getElementById('qr-popup');
+        popup.classList.add('open');
+        if (!qrGenerated) {
+            let baseUrl = window.location.origin;
+            const currentHost = window.location.hostname;
+            if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+                try {
+                    const r = await fetch(`${API}/api/admin/server-info`);
+                    const data = await r.json();
+                    if (data.urls && data.urls.length > 0) { baseUrl = data.urls[0]; }
+                } catch (e) { }
+            }
+            const url = `${baseUrl}/client/?nick=${encodeURIComponent(currentNickname)}`;
+            document.getElementById('qr-code').innerHTML = '';
+            new QRCode(document.getElementById('qr-code'), { text: url, width: 200, height: 200, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+            const urlEl = document.createElement('div');
+            urlEl.style.cssText = 'font-size:0.68rem;color:#4a4a72;word-break:break-all;margin-top:0.5rem;text-align:center;max-width:220px';
+            urlEl.textContent = url;
+            document.getElementById('qr-code').after(urlEl);
+            qrGenerated = true;
         }
-        function closeConfirm() { document.getElementById('confirm-popup').classList.remove('open'); }
+    }
 
-        // ---- PRET ----
-        async function loadPrice() {
-            try { const r = await fetch(`${API}/api/client/price`); const d = await r.json(); document.getElementById('price-display').textContent = d.pricePerHour; } catch (e) { }
-        }
-    </script>
+    function closeQR() { document.getElementById('qr-popup').classList.remove('open'); }
+
+    // ════════════════════════════════
+    // POPUP CONFIRMARE
+    // ════════════════════════════════
+    function showConfirm(icon, title, text) {
+        document.getElementById('confirm-icon').textContent = icon;
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-text').textContent = text;
+        document.getElementById('confirm-popup').classList.add('open');
+    }
+    function closeConfirm() { document.getElementById('confirm-popup').classList.remove('open'); }
+
+    // ════════════════════════════════
+    // PRET
+    // ════════════════════════════════
+    async function loadPrice() {
+        try { const r = await fetch(`${API}/api/client/price`); const d = await r.json(); document.getElementById('price-display').textContent = d.pricePerHour; } catch (e) { }
+    }
+
+    // ════════════════════════════════
+    // CYBER STATS ANIMATION
+    // ════════════════════════════════
+    setInterval(() => {
+        if (document.getElementById('dashboard').style.display !== 'flex') return;
+        
+        const cpu = Math.floor(Math.random() * 45) + 15; // 15-60%
+        const ram = (Math.random() * 5 + 7).toFixed(1); // 7-12 GB
+        const ping = Math.floor(Math.random() * 12) + 2; // 2-14 ms
+        
+        const cpuBar = document.getElementById('client-cpu-bar');
+        const cpuVal = document.getElementById('client-cpu-val');
+        if (cpuBar) cpuBar.style.width = cpu + '%';
+        if (cpuVal) cpuVal.textContent = cpu + '%';
+        
+        const ramBar = document.getElementById('client-ram-bar');
+        const ramVal = document.getElementById('client-ram-val');
+        if (ramBar) ramBar.style.width = (ram / 16 * 100) + '%';
+        if (ramVal) ramVal.textContent = ram + ' GB';
+        
+        const pingVal = document.getElementById('client-ping-val');
+        if (pingVal) pingVal.textContent = ping + 'ms';
+    }, 2500);
+</script>
 </body>
 </html>

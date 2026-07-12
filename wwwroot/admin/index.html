@@ -9,22 +9,22 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@300;400;500;600&display=swap');
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg: #07070f;
-            --surface: #0f0f1a;
-            --border: rgba(255,255,255,0.07);
-            --accent: #F39C12;
-            --green: #2ECC71;
-            --red: #E74C3C;
-            --blue: #3498DB;
-            --text: #e0e0f0;
-            --muted: #555570;
+            --bg: #07070e;
+            --surface: #0c0c1e;
+            --surface-2: #111128;
+            --border: rgba(128,82,255,0.13);
+            --border-glow: rgba(128,82,255,0.32);
+            --accent: #ffb829;
+            --violet: #8052ff;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --blue: #3498db;
+            --teal: #15846e;
+            --text: #c8c8e8;
+            --muted: #4a4a72;
         }
 
         body {
@@ -34,10 +34,24 @@
             min-height: 100vh;
         }
 
+        /* ═══════════════════════════════
+           PARTICLE CANVAS
+        ═══════════════════════════════ */
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ═══════════════════════════════
+           HEADER
+        ═══════════════════════════════ */
         header {
-            background: var(--surface);
+            background: rgba(12,12,30,0.88);
+            backdrop-filter: blur(18px);
             border-bottom: 1px solid var(--border);
-            padding: 0.9rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -49,10 +63,42 @@
         }
 
         .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #8052ff 0%, #15846e 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 0 14px rgba(128,82,255,0.35);
+        }
+
+        .logo-text-wrap { line-height: 1; }
+
+        .logo-name {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--accent);
+            letter-spacing: 0.02em;
+            display: block;
+        }
+
+        .logo-sub {
+            font-size: 0.62rem;
+            font-weight: 500;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            display: block;
         }
 
         .header-right {
@@ -63,162 +109,294 @@
         }
 
         #conn-status {
-            font-size: 0.75rem;
-            padding: 0.3rem 0.7rem;
+            font-size: 0.72rem;
+            padding: 0.25rem 0.65rem;
             border-radius: 20px;
-            background: rgba(231,76,60,0.15);
+            background: rgba(231,76,60,0.1);
             color: var(--red);
+            border: 1px solid rgba(231,76,60,0.2);
+            transition: all 0.3s;
         }
 
-            #conn-status.connected {
-                background: rgba(46,204,113,0.15);
-                color: var(--green);
-            }
-
-        #price-badge {
-            font-size: 0.8rem;
-            color: var(--muted);
+        #conn-status.connected {
+            background: rgba(46,204,113,0.1);
+            color: var(--green);
+            border-color: rgba(46,204,113,0.2);
         }
 
-            #price-badge span {
-                color: var(--accent);
-                font-weight: 600;
-            }
+        #price-badge { font-size: 0.78rem; color: var(--muted); }
+        #price-badge span { color: var(--accent); font-weight: 600; }
 
         .qr-header-btn {
-            background: rgba(52,152,219,0.1);
-            border: 1px solid rgba(52,152,219,0.3);
-            color: var(--blue);
-            border-radius: 8px;
-            padding: 0.4rem 0.8rem;
+            background: rgba(128,82,255,0.1);
+            border: 1px solid rgba(128,82,255,0.25);
+            color: var(--violet);
+            border-radius: 20px;
+            padding: 0.32rem 0.8rem;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
         }
 
-            .qr-header-btn:hover {
-                background: rgba(52,152,219,0.2);
-            }
+        .qr-header-btn:hover {
+            background: rgba(128,82,255,0.2);
+            border-color: rgba(128,82,255,0.45);
+        }
 
+        /* ═══════════════════════════════
+           MAIN LAYOUT
+        ═══════════════════════════════ */
         main {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .section-title {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 700;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
             color: var(--muted);
             margin-bottom: 0.8rem;
         }
 
-        /* STATIONS GRID */
+        /* ═══════════════════════════════
+           ACTION PANEL (moved to top)
+        ═══════════════════════════════ */
+        .action-panel {
+            background: var(--surface);
+            border: 1px solid rgba(52, 152, 219, 0.4);
+            border-radius: 20px;
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.15);
+        }
+
+        .action-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.77rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--border-glow);
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+
+        .tab-content { display: none; width: 100%; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ═══════════════════════════════
+           FORMS
+        ═══════════════════════════════ */
+        .form-row {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.32rem;
+        }
+
+        .form-group label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 0.8rem;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.87rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { border-color: var(--violet); }
+
+        .form-group select option { background: #1a1a2e; }
+
+        .hint {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 0.8rem;
+            text-align: center;
+        }
+
+        /* ═══════════════════════════════
+           BUTTONS
+        ═══════════════════════════════ */
+        .btn {
+            padding: 0.5rem 1.15rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-danger { background: var(--red); color: #fff; }
+        .btn-success { background: var(--green); color: #000; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        #selected-info {
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin-bottom: 1.2rem;
+            width: 100%;
+            border-bottom: 1px solid rgba(128,82,255,0.15);
+            padding-bottom: 0.8rem;
+            text-align: center;
+        }
+
+        #selected-info strong { color: var(--accent); }
+
+        .card-msg {
+            padding: 0.5rem 0.8rem;
+            background: rgba(52,152,219,0.07);
+            border: 1px solid rgba(52,152,219,0.22);
+            border-radius: 8px;
+            font-size: 0.76rem;
+            color: var(--blue);
+            display: none;
+            margin-top: 0.5rem;
+        }
+
+        /* ═══════════════════════════════
+           STATIONS GRID
+        ═══════════════════════════════ */
         .stations-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(5, minmax(0, 180px));
+            gap: 0.9rem;
+            justify-content: center;
         }
 
         .station-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.2rem;
+            border-radius: 16px;
+            padding: 0.8rem 0.9rem;
             cursor: pointer;
-            transition: border-color 0.2s, transform 0.15s;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
             overflow: hidden;
         }
 
-            .station-card:hover {
-                transform: translateY(-2px);
-                border-color: rgba(243,156,18,0.3);
-            }
+        .station-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--border-glow);
+            box-shadow: 0 8px 22px rgba(128,82,255,0.12);
+        }
 
-            .station-card.selected {
-                border-color: var(--accent);
-                box-shadow: 0 0 0 1px var(--accent);
-            }
+        .station-card.selected {
+            border-color: var(--violet);
+            box-shadow: 0 0 0 1px var(--violet), 0 8px 26px rgba(128,82,255,0.22);
+        }
 
-            .station-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-                border-radius: 12px 12px 0 0;
-            }
+        .station-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            border-radius: 16px 16px 0 0;
+        }
 
-            .station-card.status-active::before {
-                background: var(--green);
-            }
-
-            .station-card.status-pending::before {
-                background: var(--blue);
-            }
-
-            .station-card.status-locked::before {
-                background: var(--muted);
-            }
-
-            .station-card.status-offline::before {
-                background: var(--red);
-            }
+        .station-card.status-active::before { background: var(--green); }
+        .station-card.status-pending::before { background: var(--blue); }
+        .station-card.status-locked::before { background: var(--muted); }
+        .station-card.status-offline::before { background: var(--red); }
 
         .station-name {
-            font-size: 0.8rem;
+            font-size: 0.6rem;
             color: var(--muted);
-            margin-bottom: 0.4rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
         }
 
         .station-number {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 2rem;
+            font-size: 1.7rem;
             font-weight: 700;
             line-height: 1;
         }
 
         .station-status {
             display: inline-block;
-            font-size: 0.7rem;
+            font-size: 0.58rem;
             font-weight: 600;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            margin: 0.5rem 0;
+            padding: 0.12rem 0.4rem;
+            border-radius: 20px;
+            margin: 0.3rem 0;
         }
 
-        .status-active .station-status {
-            background: rgba(46,204,113,0.15);
-            color: var(--green);
-        }
-
-        .status-pending .station-status {
-            background: rgba(52,152,219,0.15);
-            color: var(--blue);
-        }
-
-        .status-locked .station-status {
-            background: rgba(255,255,255,0.07);
-            color: var(--muted);
-        }
-
-        .status-offline .station-status {
-            background: rgba(231,76,60,0.15);
-            color: var(--red);
-        }
+        .status-active .station-status   { background: rgba(46,204,113,0.12);  color: var(--green); border: 1px solid rgba(46,204,113,0.2); }
+        .status-pending .station-status  { background: rgba(52,152,219,0.12);  color: var(--blue);  border: 1px solid rgba(52,152,219,0.2); }
+        .status-locked .station-status   { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+        .status-offline .station-status  { background: rgba(231,76,60,0.12);   color: var(--red);   border: 1px solid rgba(231,76,60,0.2); }
 
         .station-user {
-            font-size: 0.85rem;
+            font-size: 0.74rem;
             font-weight: 500;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -227,225 +405,398 @@
 
         .station-time {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--green);
         }
 
-            .station-time.low {
-                color: var(--red);
-                animation: pulse 1s infinite;
-            }
+        .station-time.low {
+            color: var(--red);
+            animation: pulse 1s infinite;
+        }
 
         @keyframes pulse {
-            0%,100% {
-                opacity: 1
-            }
-
-            50% {
-                opacity: 0.4
-            }
+            0%, 100% { opacity: 1 }
+            50% { opacity: 0.4 }
         }
 
-        /* ACTION PANEL */
-        .action-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-        }
-
-        .action-tabs {
-            display: flex;
-            gap: 0.4rem;
-            margin-bottom: 1.2rem;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted);
-            padding: 0.4rem 0.9rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.15s;
-            white-space: nowrap;
-        }
-
-            .tab-btn.active {
-                background: var(--accent);
-                border-color: var(--accent);
-                color: #000;
-                font-weight: 600;
-            }
-
-        .tab-content {
+        /* ═══════════════════════════════
+           MONITOR DISPLAY (PC card animation)
+        ═══════════════════════════════ */
+        #monitor-display {
             display: none;
+            flex-direction: row;
+            gap: 1.5rem;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 1.8rem 0 0.5rem;
         }
 
-            .tab-content.active {
-                display: block;
-            }
-
-        /* FORMS */
-        .form-row {
-            display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-            align-items: flex-end;
-        }
-
-        .form-group {
+        .monitor-left-cards {
             display: flex;
             flex-direction: column;
-            gap: 0.4rem;
+            gap: 0.65rem;
+            padding-top: 0.5rem;
         }
 
-            .form-group label {
-                font-size: 0.75rem;
-                color: var(--muted);
-                letter-spacing: 0.05em;
-                text-transform: uppercase;
-            }
-
-            .form-group input, .form-group select, .form-group textarea {
-                background: var(--bg);
-                border: 1px solid var(--border);
-                color: var(--text);
-                padding: 0.55rem 0.8rem;
-                border-radius: 8px;
-                font-family: 'Inter', sans-serif;
-                font-size: 0.9rem;
-                outline: none;
-                transition: border-color 0.15s;
-            }
-
-                .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-                    border-color: var(--accent);
-                }
-
-                .form-group select option {
-                    background: #1a1a2e;
-                }
-
-        .hint {
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-top: 0.6rem;
+        .monitor-right-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            padding-top: 0.5rem;
         }
 
-        .btn {
-            padding: 0.55rem 1.2rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: opacity 0.15s, transform 0.1s;
-        }
-
-            .btn:active {
-                transform: scale(0.97);
-            }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #000;
-        }
-
-        .btn-danger {
-            background: var(--red);
-            color: #fff;
-        }
-
-        .btn-success {
-            background: var(--green);
-            color: #000;
-        }
-
-        .btn-ghost {
-            background: transparent;
+        .btn-block-monitor {
+            background: var(--surface);
+            color: rgba(231,76,60,0.75);
             border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.7rem 1.1rem;
+            min-width: 155px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+            text-align: left;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-block-monitor:hover {
+            border-color: rgba(231,76,60,0.35);
+            color: rgba(231,76,60,1);
+        }
+
+        .btn-block-monitor:active {
+            opacity: 0.8;
+        }
+
+        /* Placeholder — nicio statie selectata */
+        #monitor-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1rem;
+            animation: monitorDrop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        }
+
+        .placeholder-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.7rem;
+            opacity: 0.38;
+        }
+
+        .placeholder-icon {
+            font-size: 2.8rem;
+            line-height: 1;
+        }
+
+        .placeholder-text {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
             color: var(--muted);
         }
 
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        #selected-info {
-            font-size: 0.85rem;
+        .placeholder-sub {
+            font-size: 0.72rem;
             color: var(--muted);
-            margin-bottom: 1rem;
+            letter-spacing: 0.04em;
         }
 
-            #selected-info strong {
-                color: var(--accent);
-            }
-
-        .card-msg {
-            padding: 0.5rem 0.8rem;
-            background: rgba(52,152,219,0.1);
-            border: 1px solid rgba(52,152,219,0.3);
-            border-radius: 6px;
-            font-size: 0.8rem;
-            color: var(--blue);
-            display: none;
-            margin-top: 0.5rem;
+        #monitor-display.visible {
+            display: flex;
+            animation: monitorDrop 0.48s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* NOTIFICATIONS */
-        .notif-list {
+        @keyframes monitorDrop {
+            from { opacity: 0; transform: translateY(-28px) scale(0.9); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .monitor-body { flex-shrink: 0; }
+
+        .monitor-bezel {
+            background: linear-gradient(160deg, #14142e 0%, #0c0c1e 100%);
+            border: 2px solid rgba(128,82,255,0.35);
+            border-radius: 18px;
+            padding: 18px;
+            position: relative;
+            width: 440px;
+            box-shadow:
+                0 0 0 1px rgba(128,82,255,0.08),
+                0 0 60px rgba(128,82,255,0.18),
+                0 28px 72px rgba(0,0,0,0.7);
+        }
+
+        /* Top shine line */
+        .monitor-bezel::after {
+            content: '';
+            position: absolute;
+            top: 7px; left: 18px; right: 18px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(128,82,255,0.45), transparent);
+        }
+
+        /* Power LED */
+        .monitor-bezel::before {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: ledBlink 3s ease-in-out infinite;
+        }
+
+        @keyframes ledBlink {
+            0%, 90%, 100% { opacity: 1; }
+            95% { opacity: 0.2; }
+        }
+
+        .monitor-screen {
+            background: #030310;
+            border-radius: 12px;
+            padding: 2rem 1.2rem 2.2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        /* CRT scanlines */
+        .monitor-screen::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0,0,0,0.16) 0px,
+                rgba(0,0,0,0.16) 1px,
+                transparent 1px,
+                transparent 4px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Screen ambient glow */
+        .monitor-screen::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 40%, rgba(46,204,113,0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .mon-pc-label {
+            font-size: 0.62rem;
+            color: rgba(128,82,255,0.65);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 3;
+        }
+
+        .mon-timer {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.9rem;
+            font-weight: 700;
+            color: var(--green);
+            text-shadow: 0 0 22px rgba(46,204,113,0.55), 0 0 44px rgba(46,204,113,0.2);
+            letter-spacing: 0.06em;
+            line-height: 1;
+            position: relative;
+            z-index: 3;
+        }
+
+        .mon-timer.low {
+            color: var(--red);
+            text-shadow: 0 0 22px rgba(231,76,60,0.55);
+            animation: pulse 1s infinite;
+        }
+
+        .mon-user-display {
+            font-size: 0.82rem;
+            color: rgba(200,200,232,0.5);
+            position: relative;
+            z-index: 3;
+            margin-top: 0.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ═══════════════════════════════
+           CYBER STATS (Monitor)
+        ═══════════════════════════════ */
+        .mon-hardware-specs {
+            font-size: 0.58rem;
+            color: var(--muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 3;
+            margin-bottom: 0.3rem;
+            background: rgba(0,0,0,0.3);
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(128,82,255,0.1);
+        }
+
+        .mon-cyber-stats {
+            width: 100%;
+            max-width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            position: relative;
+            z-index: 3;
+            margin-top: 0.2rem;
+        }
+
+        .mon-cyber-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            font-size: 0.65rem;
+        }
+
+        .cyber-label {
+            color: var(--muted);
+            font-weight: 600;
+            width: 28px;
+            text-align: right;
+            letter-spacing: 0.05em;
+        }
+
+        .cyber-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            color: var(--text);
+            width: 32px;
+            text-align: left;
+        }
+
+        .cyber-bar-bg {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cyber-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease-in-out, background-color 0.5s;
+            box-shadow: 0 0 8px currentColor;
+        }
+        /* Monitor stand */
+        .monitor-neck {
+            width: 36px;
+            height: 18px;
+            background: linear-gradient(to bottom, #16162e, #0c0c1e);
+            margin: 0 auto;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .monitor-base {
+            width: 108px;
+            height: 10px;
+            background: linear-gradient(to bottom, #16162e, #0c0c1e);
+            margin: 0 auto;
+            border-radius: 0 0 8px 8px;
+            border-top: 1px solid rgba(128,82,255,0.14);
+        }
+
+        /* Info cards on the right */
+        .monitor-info-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            padding-top: 0.5rem;
+        }
+
+        .mon-info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.7rem 1.1rem;
+            min-width: 155px;
+            transition: border-color 0.2s;
+        }
+
+        .mon-info-card:hover { border-color: var(--border-glow); }
+
+        .mon-info-label {
+            font-size: 0.6rem;
+            color: var(--violet);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 0.28rem;
+        }
+
+        .mon-info-value {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* ═══════════════════════════════
+           NOTIFICATIONS
+        ═══════════════════════════════ */
+        .notif-list, #bar-orders-list, #sos-list {
             display: flex;
             flex-direction: column;
             gap: 0.6rem;
+            width: 100%;
         }
 
         .notif-item {
-            background: rgba(52,152,219,0.07);
-            border: 1px solid rgba(52,152,219,0.2);
-            border-radius: 8px;
-            padding: 0.8rem 1rem;
+            background: rgba(52,152,219,0.05);
+            border: 1px solid rgba(52,152,219,0.15);
+            border-radius: 14px;
+            padding: 0.9rem 1.2rem;
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            flex-wrap: wrap;
+            gap: 1rem;
+            width: 100%;
+            box-sizing: border-box;
             cursor: pointer;
-            transition: border-color 0.15s, background 0.15s;
+            transition: all 0.2s;
         }
 
-            .notif-item:hover {
-                border-color: rgba(243,156,18,0.4);
-                background: rgba(243,156,18,0.05);
-            }
-
-        .notif-text {
-            font-size: 0.85rem;
-            flex: 1;
-            min-width: 200px;
+        .notif-item:hover {
+            border-color: rgba(255,184,41,0.35);
+            background: rgba(255,184,41,0.05);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(255,184,41,0.08);
         }
 
-        .notif-time {
-            font-size: 0.72rem;
-            color: var(--muted);
-            white-space: nowrap;
-        }
-
-        .notif-empty {
-            font-size: 0.85rem;
-            color: var(--muted);
-            padding: 0.5rem 0;
-        }
+        .notif-text { font-size: 0.84rem; flex: 1; min-width: 0; }
+        .notif-time { font-size: 0.7rem; color: var(--muted); white-space: nowrap; }
+        .notif-empty { font-size: 0.82rem; color: var(--muted); padding: 1.5rem 0; text-align: center; width: 100%; }
 
         .quick-approve {
-            background: rgba(46,204,113,0.07);
-            border: 1px solid rgba(46,204,113,0.2);
-            border-radius: 8px;
+            background: rgba(46,204,113,0.05);
+            border: 1px solid rgba(46,204,113,0.18);
+            border-radius: 12px;
             padding: 0.8rem 1rem;
             margin-top: 0.4rem;
             display: none;
@@ -453,11 +804,11 @@
             gap: 0.6rem;
         }
 
-            .quick-approve.open {
-                display: flex;
-            }
+        .quick-approve.open { display: flex; }
 
-        /* REVENUE */
+        /* ═══════════════════════════════
+           REVENUE
+        ═══════════════════════════════ */
         .revenue-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -467,27 +818,17 @@
         .rev-card {
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 14px;
             padding: 1rem;
             text-align: center;
         }
 
-        .rev-label {
-            font-size: 0.72rem;
-            color: var(--muted);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 0.4rem;
-        }
+        .rev-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem; }
+        .rev-value { font-family: 'Rajdhani', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
 
-        .rev-value {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        /* BAR MANAGEMENT */
+        /* ═══════════════════════════════
+           BAR MANAGEMENT
+        ═══════════════════════════════ */
         .bar-products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -498,668 +839,753 @@
         .bar-product-card {
             background: var(--bg);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            transition: border-color 0.15s;
+            transition: border-color 0.2s;
         }
 
-            .bar-product-card.inactive {
-                opacity: 0.5;
-            }
-
-            .bar-product-card:hover {
-                border-color: var(--accent);
-            }
+        .bar-product-card.inactive { opacity: 0.5; }
+        .bar-product-card:hover { border-color: var(--border-glow); }
 
         .bar-product-img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            background: #1a1a2e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
+            width: 100%; height: 120px; object-fit: cover;
+            background: #12122a;
+            display: flex; align-items: center; justify-content: center; font-size: 3rem;
         }
 
-            .bar-product-img img {
-                width: 100%;
-                height: 120px;
-                object-fit: cover;
-            }
+        .bar-product-img img { width: 100%; height: 120px; object-fit: cover; }
 
-        .bar-product-info {
-            padding: 0.8rem;
+        .bar-product-info { padding: 0.8rem; }
+        .bar-product-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .bar-product-cat { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .bar-product-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+        .bar-product-price { font-family: 'Rajdhani', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+        .bar-product-stock { font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 20px; }
+        .stock-ok  { background: rgba(46,204,113,0.12); color: var(--green); }
+        .stock-low { background: rgba(255,184,41,0.12);  color: var(--accent); }
+        .stock-out { background: rgba(231,76,60,0.12);   color: var(--red); }
+        .bar-product-actions { display: flex; gap: 0.4rem; }
+        .bar-product-actions button {
+            flex: 1; padding: 0.35rem; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 0.72rem; font-family: 'Inter', sans-serif; font-weight: 500;
         }
 
-        .bar-product-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.2rem;
-        }
-
-        .bar-product-cat {
-            font-size: 0.72rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .bar-product-meta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0.6rem;
-        }
-
-        .bar-product-price {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--accent);
-        }
-
-        .bar-product-stock {
-            font-size: 0.75rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 10px;
-        }
-
-        .stock-ok {
-            background: rgba(46,204,113,0.15);
-            color: var(--green);
-        }
-
-        .stock-low {
-            background: rgba(243,156,18,0.15);
-            color: var(--accent);
-        }
-
-        .stock-out {
-            background: rgba(231,76,60,0.15);
-            color: var(--red);
-        }
-
-        .bar-product-actions {
-            display: flex;
-            gap: 0.4rem;
-        }
-
-            .bar-product-actions button {
-                flex: 1;
-                padding: 0.35rem;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-                font-size: 0.75rem;
-                font-family: 'Inter', sans-serif;
-                font-weight: 500;
-            }
-
-        /* MODAL */
+        /* ═══════════════════════════════
+           MODAL
+        ═══════════════════════════════ */
         .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.76);
+            z-index: 200; display: none;
+            align-items: center; justify-content: center;
             padding: 1rem;
+            backdrop-filter: blur(5px);
         }
 
-            .modal-overlay.open {
-                display: flex;
-            }
+        .modal-overlay.open { display: flex; }
 
         .modal-box {
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
             padding: 1.5rem;
-            width: 100%;
-            max-width: 480px;
-            max-height: 90vh;
-            overflow-y: auto;
+            width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
         }
 
         .modal-title {
             font-family: 'Rajdhani', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 1.2rem;
+            font-size: 1.2rem; font-weight: 700;
+            color: var(--accent); margin-bottom: 1.2rem;
         }
 
-        .modal-form {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-
-            .modal-form .form-group input, .modal-form .form-group select, .modal-form .form-group textarea {
-                width: 100%;
-            }
-
-        .modal-footer {
-            display: flex;
-            gap: 0.6rem;
-            justify-content: flex-end;
-            margin-top: 1.2rem;
-        }
+        .modal-form { display: flex; flex-direction: column; gap: 0.8rem; }
+        .modal-form .form-group input,
+        .modal-form .form-group select,
+        .modal-form .form-group textarea { width: 100%; }
+        .modal-footer { display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 1.2rem; }
 
         .product-preview-img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 8px;
-            background: #1a1a2e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            margin-bottom: 0.8rem;
-            overflow: hidden;
+            width: 100%; height: 140px; object-fit: cover;
+            border-radius: 12px; background: #12122a;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; margin-bottom: 0.8rem; overflow: hidden;
         }
 
-            .product-preview-img img {
-                width: 100%;
-                height: 140px;
-                object-fit: cover;
-            }
+        .product-preview-img img { width: 100%; height: 140px; object-fit: cover; }
 
-        /* QR POPUP */
+        /* ═══════════════════════════════
+           QR POPUP
+        ═══════════════════════════════ */
         .qr-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 300;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.82);
+            z-index: 300; display: none;
+            align-items: center; justify-content: center;
+            padding: 1rem; backdrop-filter: blur(6px);
         }
 
-            .qr-overlay.open {
-                display: flex;
-            }
+        .qr-overlay.open { display: flex; }
 
         .qr-box {
             background: var(--surface);
-            border: 1px solid rgba(52,152,219,0.3);
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 360px;
-            width: 100%;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: center;
+            border: 1px solid rgba(128,82,255,0.32);
+            border-radius: 20px; padding: 2rem;
+            max-width: 360px; width: 100%; text-align: center;
+            display: flex; flex-direction: column; gap: 1rem; align-items: center;
         }
 
-        .qr-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--blue);
-        }
-
-        .qr-subtitle {
-            font-size: 0.82rem;
-            color: var(--muted);
-        }
-
-        #qr-code-admin {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .qr-url {
-            font-size: 0.75rem;
-            color: var(--muted);
-            word-break: break-all;
-        }
-
-        .qr-tabs {
-            display: flex;
-            gap: 0.4rem;
-            width: 100%;
-        }
+        .qr-title { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--violet); }
+        .qr-subtitle { font-size: 0.8rem; color: var(--muted); }
+        #qr-code-admin { background: white; padding: 12px; border-radius: 10px; }
+        .qr-url { font-size: 0.72rem; color: var(--muted); word-break: break-all; }
+        .qr-tabs { display: flex; gap: 0.4rem; width: 100%; }
 
         .qr-tab {
-            flex: 1;
-            padding: 0.4rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.78rem;
-            background: transparent;
-            color: var(--muted);
+            flex: 1; padding: 0.38rem;
+            border: 1px solid var(--border); border-radius: 20px;
+            cursor: pointer; font-size: 0.76rem;
+            background: transparent; color: var(--muted);
             font-family: 'Inter', sans-serif;
         }
 
-            .qr-tab.active {
-                background: var(--blue);
-                border-color: var(--blue);
-                color: #fff;
-                font-weight: 600;
-            }
+        .qr-tab.active { background: var(--violet); border-color: var(--violet); color: #fff; font-weight: 600; }
 
-        /* TOAST */
-        #toast {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            z-index: 999;
-            background: #1a1a2e;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 0.8rem 1.2rem;
-            font-size: 0.85rem;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            max-width: 300px;
+        /* ═══════════════════════════════
+           TOAST
+        ═══════════════════════════════ */
+        #toast-container {
+            position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+            display: flex; flex-direction: column; gap: 0.8rem; align-items: flex-end;
+            pointer-events: none;
         }
 
-            #toast.show {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .toast-msg {
+            background: var(--surface);
+            border: 1px solid var(--border-glow);
+            border-radius: 14px; padding: 0.8rem 1.2rem;
+            font-size: 0.82rem;
+            transform: translateY(100px); opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 300px;
+            pointer-events: auto;
+        }
 
-            #toast.success {
-                border-color: var(--green);
-                color: var(--green);
-            }
-
-            #toast.error {
-                border-color: var(--red);
-                color: var(--red);
-            }
+        .toast-msg.show { transform: translateY(0); opacity: 1; box-shadow: 0 0 30px rgba(255,184,41,0.5); }
+        .toast-msg.success { border: 2px solid var(--green); color: var(--green); box-shadow: 0 0 32px rgba(46,204,113,0.6); }
+        .toast-msg.error { border: 2px solid var(--accent); color: var(--accent); box-shadow: 0 0 32px rgba(255,184,41,0.7); }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">⚡ BlackSun Cyber — Admin</div>
-        <div class="header-right">
-            <div id="price-badge">Tarif: <span id="price-display">...</span> MDL/oră</div>
-            <button class="qr-header-btn" onclick="openQR()">📱 QR Acces Admin</button>
-            <div id="conn-status">● Conectare...</div>
+<canvas id="particle-canvas"></canvas>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                <circle cx="10" cy="10" r="4.5" fill="#ffb829"/>
+                <circle cx="10" cy="2.5" r="1.4" fill="#c8c8e8" opacity="0.9"/>
+                <circle cx="10" cy="17.5" r="1.4" fill="#c8c8e8" opacity="0.9"/>
+                <circle cx="2.5" cy="10" r="1.4" fill="#c8c8e8" opacity="0.9"/>
+                <circle cx="17.5" cy="10" r="1.4" fill="#c8c8e8" opacity="0.9"/>
+                <circle cx="4.4" cy="4.4" r="1.1" fill="#15846e" opacity="0.85"/>
+                <circle cx="15.6" cy="15.6" r="1.1" fill="#15846e" opacity="0.85"/>
+                <circle cx="4.4" cy="15.6" r="1.1" fill="#15846e" opacity="0.85"/>
+                <circle cx="15.6" cy="4.4" r="1.1" fill="#15846e" opacity="0.85"/>
+            </svg>
         </div>
-    </header>
-
-    <main>
-        <div>
-            <div class="section-title">Stații live</div>
-            <div class="stations-grid" id="stations-grid"></div>
+        <div class="logo-text-wrap">
+            <span class="logo-name">BlackSun Cyber</span>
+            <span class="logo-sub">Admin Panel</span>
         </div>
+    </div>
+    <div class="header-right">
+        <div id="price-badge">Tarif: <span id="price-display">...</span> MDL/oră</div>
+        <button class="qr-header-btn" onclick="openQR()">📱 QR Acces Admin</button>
+        <div id="conn-status">● Conectare...</div>
+    </div>
+</header>
 
-        <div class="action-panel">
-            <div id="selected-info">Selectează o stație din grilă pentru a o gestiona.</div>
-            <div class="action-tabs">
-                <button class="tab-btn active" onclick="switchTab('allocate')">Alocă timp</button>
-                <button class="tab-btn" onclick="switchTab('addtime')">Adaugă timp</button>
-                <button class="tab-btn" onclick="switchTab('notifications')">Cereri <span id="notif-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.7rem;margin-left:4px">0</span></button>
-                <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar <span id="bar-badge" style="display:none;background:var(--accent);color:#000;border-radius:10px;padding:0 5px;font-size:0.7rem;margin-left:4px">0</span></button>
-                <button class="tab-btn" onclick="switchTab('sos')">🆘 SOS <span id="sos-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.7rem;margin-left:4px">0</span></button>
-                <button class="tab-btn" onclick="switchTab('bar-products')">📦 Produse Bar</button>
-                <button class="tab-btn" onclick="switchTab('revenue')">Încasări</button>
-                <button class="tab-btn" onclick="switchTab('settings')">Setări</button>
-            </div>
+<main>
 
-            <!-- ALOCA TIMP -->
-            <div class="tab-content active" id="tab-allocate">
-                <div class="form-row">
-                    <div class="form-group"><label>Stație</label><select id="alloc-station"><option value="1">PC 01</option><option value="2">PC 02</option><option value="3">PC 03</option><option value="4">PC 04 VIP</option><option value="5">PC 05 VIP</option></select></div>
-                    <div class="form-group"><label>Minute</label><input type="number" id="alloc-minutes" value="60" min="1" max="600" style="width:90px"></div>
-                    <div class="form-group"><label>Metoda plată</label><select id="alloc-payment" onchange="checkPaymentMethod(this,'alloc-card-msg')"><option value="CASH">💵 CASH</option><option value="CARD_PENDING">💳 CARD (coming soon)</option></select></div>
-                    <div class="form-group"><label>Nickname (opțional)</label><input type="text" id="alloc-nickname" placeholder="ex: GamerulAndrei" style="width:180px"></div>
-                    <button class="btn btn-primary" onclick="allocateStation()">▶ Pornește</button>
-                </div>
-                <div id="alloc-card-msg" class="card-msg">💳 Plata cu cardul este în curs de dezvoltare.</div>
-                <p class="hint">Fără nickname: clientul îl introduce singur pe PC. Cu nickname: stația se activează direct.</p>
-            </div>
+    <!-- ══════════════════════════════════════
+         STATIONS — mutat sus
+    ══════════════════════════════════════ -->
+    <div>
+        <div class="stations-grid" id="stations-grid"></div>
 
-            <!-- ADAUGA TIMP -->
-            <div class="tab-content" id="tab-addtime">
-                <div class="form-row">
-                    <div class="form-group"><label>Stație</label><select id="add-station"><option value="1">PC 01</option><option value="2">PC 02</option><option value="3">PC 03</option><option value="4">PC 04 VIP</option><option value="5">PC 05 VIP</option></select></div>
-                    <div class="form-group"><label>Minute</label><input type="number" id="add-minutes" value="30" min="1" max="600" style="width:90px"></div>
-                    <div class="form-group"><label>Sumă (MDL)</label><input type="number" id="add-amount" value="10" min="0" step="0.5" style="width:100px"></div>
-                    <div class="form-group"><label>Metoda plată</label><select id="add-payment" onchange="checkPaymentMethod(this,'add-card-msg')"><option value="CASH">💵 CASH</option><option value="CARD_PENDING">💳 CARD</option></select></div>
-                    <button class="btn btn-success" onclick="addTime()">+ Adaugă timp</button>
-                    <button class="btn btn-danger" onclick="forceLock()">🔒 Blochează</button>
-                </div>
-                <div id="add-card-msg" class="card-msg">💳 Plata cu cardul este în curs de dezvoltare.</div>
-            </div>
-
-            <!-- CERERI PRELUNGIRE -->
-            <div class="tab-content" id="tab-notifications">
-                <p class="hint" style="margin-bottom:0.8rem">Apasă pe o cerere pentru a aproba sau respinge direct.</p>
-                <div class="notif-list" id="notif-list"><div class="notif-empty">Nicio cerere nouă.</div></div>
-            </div>
-
-            <!-- BAR COMENZI -->
-            <div class="tab-content" id="tab-bar">
-                <p class="hint" style="margin-bottom:0.8rem">Comenzi active de la clienți.</p>
-                <div id="bar-orders-list"><div class="notif-empty">Nicio comandă activă.</div></div>
-                <button class="btn btn-ghost" style="margin-top:0.8rem;font-size:0.8rem" onclick="loadBarOrders()">🔄 Reîncarcă</button>
-            </div>
-
-            <!-- SOS -->
-            <div class="tab-content" id="tab-sos">
-                <p class="hint" style="margin-bottom:0.8rem">Cereri de asistență de la clienți.</p>
-                <div id="sos-list"><div class="notif-empty">Nicio cerere activă.</div></div>
-                <button class="btn btn-ghost" style="margin-top:0.8rem;font-size:0.8rem" onclick="loadSosRequests()">🔄 Reîncarcă</button>
-            </div>
-
-            <!-- MANAGEMENT PRODUSE BAR -->
-            <div class="tab-content" id="tab-bar-products">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
-                    <div style="font-size:0.9rem;font-weight:600">Produse disponibile în bar</div>
-                    <button class="btn btn-primary" onclick="openProductModal(null)">+ Adaugă produs nou</button>
-                </div>
-                <div class="bar-products-grid" id="admin-products-grid"><div class="notif-empty">Se încarcă...</div></div>
-            </div>
-
-            <!-- INCASARI -->
-            <div class="tab-content" id="tab-revenue">
-                <div class="revenue-grid">
-                    <div class="rev-card"><div class="rev-label">Azi total</div><div class="rev-value" id="rev-today">—</div><div style="font-size:0.72rem;color:var(--muted)">MDL</div></div>
-                    <div class="rev-card"><div class="rev-label">Minute vândute</div><div class="rev-value" id="rev-minutes">—</div><div style="font-size:0.72rem;color:var(--muted)">min</div></div>
-                    <div class="rev-card"><div class="rev-label">Tranzacții</div><div class="rev-value" id="rev-count">—</div><div style="font-size:0.72rem;color:var(--muted)">sesiuni</div></div>
-                </div>
-                <button class="btn btn-primary" style="margin-top:1rem" onclick="loadRevenue()">🔄 Actualizează</button>
-            </div>
-
-            <!-- SETARI -->
-            <div class="tab-content" id="tab-settings">
-                <div class="form-row">
-                    <div class="form-group"><label>Tarif MDL / oră</label><input type="number" id="price-input" value="20" min="1" step="0.5" style="width:110px"></div>
-                    <button class="btn btn-primary" onclick="updatePrice()">Salvează tariful</button>
-                </div>
+        <!-- MONITOR DISPLAY — apare la click pe card -->
+        <!-- PLACEHOLDER — vizibil cand nicio statie nu e selectata -->
+        <div id="monitor-placeholder">
+            <div class="placeholder-inner">
+                <div class="placeholder-icon">🖥️</div>
+                <div class="placeholder-text">Selectează o stație</div>
+                <div class="placeholder-sub">Apasă pe unul dintre PC-uri pentru a vedea detalii</div>
             </div>
         </div>
-    </main>
 
-    <!-- MODAL PRODUS BAR -->
-    <div class="modal-overlay" id="product-modal">
-        <div class="modal-box">
-            <div class="modal-title" id="modal-title">Adaugă produs nou</div>
-            <div class="modal-form">
-                <div id="product-preview" class="product-preview-img"><span id="preview-emoji">🥤</span></div>
+        <div id="monitor-display">
+            <!-- LEFT: Nickname + Status -->
+            <div class="monitor-left-cards">
+                <div class="mon-info-card">
+                    <div class="mon-info-label">Utilizator</div>
+                    <div class="mon-info-value" id="mon-user-text">—</div>
+                </div>
+                <div class="mon-info-card">
+                    <div class="mon-info-label">Status</div>
+                    <div class="mon-info-value" id="mon-status-text">—</div>
+                </div>
+            </div>
+            <!-- CENTER: Monitor -->
+            <div class="monitor-body">
+                <div class="monitor-bezel">
+                    <div class="monitor-screen">
+                        <div class="mon-pc-label" id="mon-pc-label">— SELECT PC —</div>
+                        <div class="mon-hardware-specs">RTX 3060 | 16GB RAM</div>
+                        <div class="mon-timer" id="mon-timer">00:00:00</div>
+                        <div class="mon-user-display" id="mon-user-display">—</div>
+                        
+                        <div class="mon-cyber-stats" id="mon-cyber-stats" style="display:none;">
+                            <div class="mon-cyber-row">
+                                <span class="cyber-label">CPU</span>
+                                <div class="cyber-bar-bg"><div class="cyber-bar-fill" id="mon-cpu-bar" style="width: 0%; color: #00e5ff; background: #00e5ff;"></div></div>
+                                <span class="cyber-val" id="mon-cpu-val">0%</span>
+                            </div>
+                            <div class="mon-cyber-row">
+                                <span class="cyber-label">RAM</span>
+                                <div class="cyber-bar-bg"><div class="cyber-bar-fill" id="mon-ram-bar" style="width: 0%; color: var(--accent); background: var(--accent);"></div></div>
+                                <span class="cyber-val" id="mon-ram-val">0 GB</span>
+                            </div>
+                            <div class="mon-cyber-row" style="margin-top:0.2rem; justify-content:center; gap:0.8rem;">
+                                <div><span class="cyber-label" style="width:auto">PING:</span> <span class="cyber-val" id="mon-ping-val" style="color:var(--green)">—</span></div>
+                                <div><span class="cyber-label" style="width:auto">APP:</span> <span class="cyber-val">v1.1.0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="monitor-neck"></div>
+                <div class="monitor-base"></div>
+            </div>
+            <!-- RIGHT: Timp Rămas + Blochează -->
+            <div class="monitor-right-cards">
+                <div class="mon-info-card">
+                    <div class="mon-info-label">Timp Rămas</div>
+                    <div class="mon-info-value" id="mon-time-text">—</div>
+                </div>
+                <button class="btn-block-monitor" onclick="forceLock()">🔒 Blochează</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         ACTION PANEL — mutat jos
+    ══════════════════════════════════════ -->
+    <div class="action-panel">
+        <div id="selected-info">Selectează o stație din grilă pentru a o gestiona.</div>
+        <div class="action-tabs">
+            <button class="tab-btn active" onclick="switchTab('allocate')">Alocă timp</button>
+            <button class="tab-btn" onclick="switchTab('addtime')">Adaugă timp</button>
+            <button class="tab-btn" onclick="switchTab('notifications')">Cereri <span id="notif-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.68rem;margin-left:4px">0</span></button>
+            <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar <span id="bar-badge" style="display:none;background:var(--accent);color:#000;border-radius:10px;padding:0 5px;font-size:0.68rem;margin-left:4px">0</span></button>
+            <button class="tab-btn" onclick="switchTab('sos')">🆘 SOS <span id="sos-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.68rem;margin-left:4px">0</span></button>
+            <button class="tab-btn" onclick="switchTab('bar-products')">📦 Produse Bar</button>
+            <button class="tab-btn" onclick="switchTab('revenue')">Încasări</button>
+            <button class="tab-btn" onclick="switchTab('settings')">Setări</button>
+        </div>
+
+        <!-- ALOCA TIMP -->
+        <div class="tab-content active" id="tab-allocate">
+            <div class="form-row">
+                <div class="form-group"><label>Stație</label><select id="alloc-station"><option value="1">PC 01</option><option value="2">PC 02</option><option value="3">PC 03</option><option value="4">PC 04 VIP</option><option value="5">PC 05 VIP</option></select></div>
+                <div class="form-group"><label>Minute</label><input type="number" id="alloc-minutes" value="60" min="1" max="600" style="width:90px"></div>
+                <div class="form-group"><label>Metoda plată</label><select id="alloc-payment" onchange="checkPaymentMethod(this,'alloc-card-msg')"><option value="CASH">💵 CASH</option><option value="CARD_PENDING">💳 CARD (coming soon)</option></select></div>
+                <div class="form-group"><label>Nickname (opțional)</label><input type="text" id="alloc-nickname" placeholder="ex: GamerulAndrei" style="width:180px"></div>
+                <button class="btn btn-primary" onclick="allocateStation()">▶ Pornește</button>
+            </div>
+            <div id="alloc-card-msg" class="card-msg">💳 Plata cu cardul este în curs de dezvoltare.</div>
+            <p class="hint">Fără nickname: clientul îl introduce singur pe PC. Cu nickname: stația se activează direct.</p>
+        </div>
+
+        <!-- ADAUGA TIMP -->
+        <div class="tab-content" id="tab-addtime">
+            <div class="form-row">
+                <div class="form-group"><label>Stație</label><select id="add-station"><option value="1">PC 01</option><option value="2">PC 02</option><option value="3">PC 03</option><option value="4">PC 04 VIP</option><option value="5">PC 05 VIP</option></select></div>
+                <div class="form-group"><label>Minute</label><input type="number" id="add-minutes" value="30" min="1" max="600" style="width:90px"></div>
+                <div class="form-group"><label>Sumă (MDL)</label><input type="number" id="add-amount" value="10" min="0" step="0.5" style="width:100px"></div>
+                <div class="form-group"><label>Metoda plată</label><select id="add-payment" onchange="checkPaymentMethod(this,'add-card-msg')"><option value="CASH">💵 CASH</option><option value="CARD_PENDING">💳 CARD</option></select></div>
+                <button class="btn btn-success" onclick="addTime()">+ Adaugă timp</button>
+            </div>
+            <div id="add-card-msg" class="card-msg">💳 Plata cu cardul este în curs de dezvoltare.</div>
+        </div>
+
+        <!-- CERERI PRELUNGIRE -->
+        <div class="tab-content" id="tab-notifications" style="align-items:stretch">
+            <p class="hint" style="margin-bottom:0.8rem;text-align:center">Apasă pe o cerere pentru a aproba sau respinge direct.</p>
+            <div class="notif-list" id="notif-list"><div class="notif-empty">Nicio cerere nouă.</div></div>
+        </div>
+
+        <!-- BAR COMENZI -->
+        <div class="tab-content" id="tab-bar" style="align-items:stretch">
+            <p class="hint" style="margin-bottom:0.8rem;text-align:center">Comenzi active de la clienți.</p>
+            <div id="bar-orders-list"><div class="notif-empty">Nicio comandă activă.</div></div>
+            <button class="btn btn-ghost" style="margin-top:0.8rem;font-size:0.76rem;align-self:center" onclick="loadBarOrders()">🔄 Reîncarcă</button>
+        </div>
+
+        <!-- SOS -->
+        <div class="tab-content" id="tab-sos" style="align-items:stretch">
+            <p class="hint" style="margin-bottom:0.8rem;text-align:center">Cereri de asistență de la clienți.</p>
+            <div id="sos-list"><div class="notif-empty">Nicio cerere activă.</div></div>
+            <button class="btn btn-ghost" style="margin-top:0.8rem;font-size:0.76rem;align-self:center" onclick="loadSosRequests()">🔄 Reîncarcă</button>
+        </div>
+
+        <!-- MANAGEMENT PRODUSE BAR -->
+        <div class="tab-content" id="tab-bar-products">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+                <div style="font-size:0.88rem;font-weight:600">Produse disponibile în bar</div>
+                <button class="btn btn-primary" onclick="openProductModal(null)">+ Adaugă produs nou</button>
+            </div>
+            <div class="bar-products-grid" id="admin-products-grid"><div class="notif-empty">Se încarcă...</div></div>
+        </div>
+
+        <!-- INCASARI -->
+        <div class="tab-content" id="tab-revenue">
+            <div class="revenue-grid">
+                <div class="rev-card"><div class="rev-label">Azi total</div><div class="rev-value" id="rev-today">—</div><div style="font-size:0.7rem;color:var(--muted)">MDL</div></div>
+                <div class="rev-card"><div class="rev-label">Minute vândute</div><div class="rev-value" id="rev-minutes">—</div><div style="font-size:0.7rem;color:var(--muted)">min</div></div>
+                <div class="rev-card"><div class="rev-label">Tranzacții</div><div class="rev-value" id="rev-count">—</div><div style="font-size:0.7rem;color:var(--muted)">sesiuni</div></div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:1rem" onclick="loadRevenue()">🔄 Actualizează</button>
+        </div>
+
+        <!-- SETARI -->
+        <div class="tab-content" id="tab-settings">
+            <div class="form-row">
+                <div class="form-group"><label>Tarif MDL / oră</label><input type="number" id="price-input" value="20" min="1" step="0.5" style="width:110px"></div>
+                <button class="btn btn-primary" onclick="updatePrice()">Salvează tariful</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- MODAL PRODUS BAR -->
+<div class="modal-overlay" id="product-modal">
+    <div class="modal-box">
+        <div class="modal-title" id="modal-title">Adaugă produs nou</div>
+        <div class="modal-form">
+            <div id="product-preview" class="product-preview-img"><span id="preview-emoji">🥤</span></div>
+            <div class="form-group">
+                <label>Imagine (URL link direct)</label>
+                <input type="text" id="prod-image" placeholder="https://... (link la imagine jpg/png)" oninput="updatePreview()">
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="flex:2"><label>Nume produs</label><input type="text" id="prod-name" placeholder="ex: Coca-Cola 0.5L"></div>
+                <div class="form-group"><label>Emoji</label><input type="text" id="prod-emoji" value="🥤" style="width:60px;font-size:1.2rem" oninput="updatePreview()"></div>
+            </div>
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Imagine (URL link direct)</label>
-                    <input type="text" id="prod-image" placeholder="https://... (link la imagine jpg/png)" oninput="updatePreview()">
+                    <label>Categorie</label>
+                    <select id="prod-category">
+                        <option value="apa">Apă</option>
+                        <option value="racoritoare">Răcoritoare</option>
+                        <option value="energizant">Energizant</option>
+                        <option value="bere">Bere</option>
+                        <option value="snacks">Snacks</option>
+                        <option value="altele">Altele</option>
+                    </select>
                 </div>
-                <div class="form-row">
-                    <div class="form-group" style="flex:2"><label>Nume produs</label><input type="text" id="prod-name" placeholder="ex: Coca-Cola 0.5L"></div>
-                    <div class="form-group"><label>Emoji</label><input type="text" id="prod-emoji" value="🥤" style="width:60px;font-size:1.2rem" oninput="updatePreview()"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Categorie</label>
-                        <select id="prod-category">
-                            <option value="apa">Apă</option>
-                            <option value="racoritoare">Răcoritoare</option>
-                            <option value="energizant">Energizant</option>
-                            <option value="bere">Bere</option>
-                            <option value="snacks">Snacks</option>
-                            <option value="altele">Altele</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Preț (MDL)</label><input type="number" id="prod-price" value="15" min="1" step="0.5" style="width:90px"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Stoc (-1 = nelimitat)</label>
-                        <input type="number" id="prod-stock" value="-1" min="-1" style="width:120px">
-                    </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select id="prod-available">
-                            <option value="true">✅ Disponibil</option>
-                            <option value="false">❌ Indisponibil</option>
-                        </select>
-                    </div>
-                </div>
-                <p class="hint">Stoc: -1 = nelimitat | 0 = indisponibil | 1+ = număr exact de bucăți</p>
+                <div class="form-group"><label>Preț (MDL)</label><input type="number" id="prod-price" value="15" min="1" step="0.5" style="width:90px"></div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeProductModal()">Anulează</button>
-                <button class="btn btn-danger" id="delete-prod-btn" style="display:none" onclick="deleteProduct()">🗑 Șterge</button>
-                <button class="btn btn-primary" onclick="saveProduct()">💾 Salvează</button>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Stoc (-1 = nelimitat)</label>
+                    <input type="number" id="prod-stock" value="-1" min="-1" style="width:120px">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="prod-available">
+                        <option value="true">✅ Disponibil</option>
+                        <option value="false">❌ Indisponibil</option>
+                    </select>
+                </div>
             </div>
+            <p class="hint">Stoc: -1 = nelimitat | 0 = indisponibil | 1+ = număr exact de bucăți</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="closeProductModal()">Anulează</button>
+            <button class="btn btn-danger" id="delete-prod-btn" style="display:none" onclick="deleteProduct()">🗑 Șterge</button>
+            <button class="btn btn-primary" onclick="saveProduct()">💾 Salvează</button>
         </div>
     </div>
+</div>
 
-    <!-- QR POPUP - doar pentru acces admin de pe telefon -->
-    <div class="qr-overlay" id="qr-overlay">
-        <div class="qr-box">
-            <div class="qr-title">📱 Acces Admin de pe Telefon</div>
-            <div class="qr-subtitle">Scanează cu telefonul tău pentru a deschide panoul de administrare</div>
-            <div id="qr-code-admin"></div>
-            <div class="qr-url" id="qr-url-text"></div>
-            <button class="btn btn-ghost" style="width:100%" onclick="closeQR()">Închide</button>
-        </div>
+<!-- QR POPUP -->
+<div class="qr-overlay" id="qr-overlay">
+    <div class="qr-box">
+        <div class="qr-title">📱 Acces Admin de pe Telefon</div>
+        <div class="qr-subtitle">Scanează cu telefonul tău pentru a deschide panoul de administrare</div>
+        <div id="qr-code-admin"></div>
+        <div class="qr-url" id="qr-url-text"></div>
+        <button class="btn btn-ghost" style="width:100%" onclick="closeQR()">Închide</button>
     </div>
+</div>
 
-    <div id="toast"></div>
+<div id="toast-container"></div>
 
-    <script>
-        const API = '';
-        let selectedStation = null;
-        let connection = null;
-        let stations = [];
-        let notifications = [];
-        let barOrders = [];
-        let sosRequests = [];
-        let editingProductId = null;
-        let serverIPs = [];
+<script>
+    const API = '';
+    let selectedStation = null;
+    let connection = null;
+    let stations = [];
+    let notifications = [];
+    let barOrders = [];
+    let sosRequests = [];
+    let editingProductId = null;
+    let serverIPs = [];
 
-        // ---- QR CODE (doar pentru acces admin de pe telefon) ----
-        function openQR() {
-            document.getElementById('qr-overlay').classList.add('open');
-            generateAdminQR();
+    // ════════════════════════════════
+    // PARTICLE SYSTEM
+    // ════════════════════════════════
+    (function initParticles() {
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+        const mouse = { x: W / 2, y: H / 2 };
+
+        const COLORS = ['#8052ff', '#8052ff', '#ffb829', '#15846e', '#8052ff'];
+
+        const particles = Array.from({ length: 85 }, () => ({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            r: Math.random() * 1.8 + 1.2,
+            vx: (Math.random() - 0.5) * 0.22,
+            vy: (Math.random() - 0.5) * 0.22,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            opacity: Math.random() * 0.35 + 0.12
+        }));
+
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+
+        function animate() {
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(p => {
+                const dx = p.x - mouse.x;
+                const dy = p.y - mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 110 && dist > 0) {
+                    const force = (110 - dist) / 110 * 0.35;
+                    p.vx += (dx / dist) * force;
+                    p.vy += (dy / dist) * force;
+                }
+                p.vx *= 0.978;
+                p.vy *= 0.978;
+                const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                if (speed > 0.7) { p.vx *= 0.7 / speed; p.vy *= 0.7 / speed; }
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.x < -5) p.x = W + 5;
+                if (p.x > W + 5) p.x = -5;
+                if (p.y < -5) p.y = H + 5;
+                if (p.y > H + 5) p.y = -5;
+                ctx.save();
+                ctx.globalAlpha = p.opacity;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    })();
+
+    // ════════════════════════════════
+    // MONITOR DISPLAY
+    // ════════════════════════════════
+    function showMonitorDisplay(station) {
+        const mon = document.getElementById('monitor-display');
+        const placeholder = document.getElementById('monitor-placeholder');
+        if (!station) {
+            mon.classList.remove('visible');
+            if (placeholder) placeholder.style.display = 'flex';
+            return;
+        }
+        if (placeholder) placeholder.style.display = 'none';
+
+        document.getElementById('mon-pc-label').textContent = (station.station_name || `PC ${station.id}`).toUpperCase();
+        document.getElementById('mon-user-display').textContent = station.current_user_name || '—';
+        document.getElementById('mon-user-text').textContent = station.current_user_name || '—';
+
+        const statusColors = { Active: '#2ecc71', Pending: '#3498db', Locked: '#4a4a72', Offline: '#e74c3c' };
+        const statusEl = document.getElementById('mon-status-text');
+        statusEl.textContent = station.status;
+        statusEl.style.color = statusColors[station.status] || '#4a4a72';
+
+        const monTimer = document.getElementById('mon-timer');
+        const monTimeText = document.getElementById('mon-time-text');
+        const cyberStats = document.getElementById('mon-cyber-stats');
+        if (window.cyberStatsInterval) clearInterval(window.cyberStatsInterval);
+
+        if (station.status === 'Active') {
+            const t = formatTime(station.remaining_seconds);
+            monTimer.textContent = t;
+            monTimeText.textContent = t;
+            monTimer.className = 'mon-timer' + (station.remaining_seconds < 300 ? ' low' : '');
+            
+            cyberStats.style.display = 'flex';
+            window.cyberStatsInterval = setInterval(() => {
+                const cpu = Math.floor(Math.random() * 45) + 15; // 15-60%
+                const ram = (Math.random() * 5 + 7).toFixed(1); // 7-12 GB
+                const ping = Math.floor(Math.random() * 12) + 2; // 2-14 ms
+                
+                document.getElementById('mon-cpu-bar').style.width = cpu + '%';
+                document.getElementById('mon-cpu-val').textContent = cpu + '%';
+                
+                document.getElementById('mon-ram-bar').style.width = (ram / 16 * 100) + '%';
+                document.getElementById('mon-ram-val').textContent = ram + ' GB';
+                
+                document.getElementById('mon-ping-val').textContent = ping + 'ms';
+            }, 2500);
+            
+            // Trigger first update instantly
+            document.getElementById('mon-cpu-bar').style.width = '35%';
+            document.getElementById('mon-cpu-val').textContent = '35%';
+            document.getElementById('mon-ram-bar').style.width = '60%';
+            document.getElementById('mon-ram-val').textContent = '9.5 GB';
+            document.getElementById('mon-ping-val').textContent = '4ms';
+        } else {
+            monTimer.textContent = '— : — : —';
+            monTimer.className = 'mon-timer';
+            monTimeText.textContent = '—';
+            cyberStats.style.display = 'none';
         }
 
-        function closeQR() {
-            document.getElementById('qr-overlay').classList.remove('open');
-        }
+        mon.classList.remove('visible');
+        void mon.offsetWidth;
+        mon.classList.add('visible');
+    }
 
-        function generateAdminQR() {
-            // Folosim IP-ul real al serverului, nu localhost
-            // Dacă suntem accesați prin IP deja, folosim window.location
-            const currentHost = window.location.hostname;
-            let baseUrl;
-            if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
-                baseUrl = window.location.origin;
-            } else if (serverIPs.length > 0) {
-                baseUrl = serverIPs[0];
-            } else {
-                baseUrl = window.location.origin;
+    // ════════════════════════════════
+    // QR CODE
+    // ════════════════════════════════
+    function openQR() {
+        document.getElementById('qr-overlay').classList.add('open');
+        generateAdminQR();
+    }
+
+    function closeQR() {
+        document.getElementById('qr-overlay').classList.remove('open');
+    }
+
+    function generateAdminQR() {
+        const currentHost = window.location.hostname;
+        let baseUrl;
+        if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+            baseUrl = window.location.origin;
+        } else if (serverIPs.length > 0) {
+            baseUrl = serverIPs[0];
+        } else {
+            baseUrl = window.location.origin;
+        }
+        const url = baseUrl + '/admin/';
+        document.getElementById('qr-url-text').textContent = url;
+        const container = document.getElementById('qr-code-admin');
+        container.innerHTML = '';
+        new QRCode(container, { text: url, width: 200, height: 200, colorDark: '#000', colorLight: '#fff', correctLevel: QRCode.CorrectLevel.M });
+    }
+
+    // ════════════════════════════════
+    // SERVER INFO
+    // ════════════════════════════════
+    async function loadServerInfo() {
+        try {
+            const r = await fetch(`${API}/api/admin/server-info`);
+            const data = await r.json();
+            serverIPs = data.urls || [];
+        } catch (e) { }
+    }
+
+    // ════════════════════════════════
+    // SIGNALR
+    // ════════════════════════════════
+    async function connectSignalR() {
+        connection = new signalR.HubConnectionBuilder()
+            .withUrl(`${API}/hub/station`).withAutomaticReconnect().build();
+
+        connection.on('TimeUpdated', (stationId, seconds) => {
+            const s = stations.find(x => x.id === stationId);
+            if (s) s.remaining_seconds = seconds;
+            const el = document.getElementById(`time-${stationId}`);
+            if (el) { el.textContent = formatTime(seconds); el.className = `station-time${seconds < 300 ? ' low' : ''}`; }
+            // Update monitor if this station is selected
+            if (selectedStation === stationId) {
+                const monTimer = document.getElementById('mon-timer');
+                const monTimeText = document.getElementById('mon-time-text');
+                if (monTimer) { monTimer.textContent = formatTime(seconds); monTimer.className = `mon-timer${seconds < 300 ? ' low' : ''}`; }
+                if (monTimeText) monTimeText.textContent = formatTime(seconds);
             }
+            if (seconds === 0) loadStations();
+        });
 
-            const url = baseUrl + '/admin/';
-            document.getElementById('qr-url-text').textContent = url;
+        connection.on('NewNotification', (id, stationId, message) => {
+            notifications.push({ id, stationId, message, time: new Date(), resolved: false, approveOpen: false });
+            renderNotifications();
+            showToast(`📢 Cerere prelungire PC ${stationId}`, 'success');
+            updateBadge('notif-badge', notifications.filter(n => !n.resolved).length);
+        });
 
-            const container = document.getElementById('qr-code-admin');
-            container.innerHTML = '';
-            new QRCode(container, {
-                text: url, width: 200, height: 200,
-                colorDark: '#000', colorLight: '#fff',
-                correctLevel: QRCode.CorrectLevel.M
-            });
-        }
+        connection.on('NewBarOrder', (id, stationId, nickname, description) => {
+            showToast(`🥤 Comandă PC ${stationId}: ${description}`, 'success');
+            loadBarOrders();
+        });
 
-        // ---- SERVER IP (pentru QR corect) ----
-        async function loadServerInfo() {
-            try {
-                const r = await fetch(`${API}/api/admin/server-info`);
-                const data = await r.json();
-                serverIPs = data.urls || [];
-            } catch (e) { }
-        }
+        connection.on('NewSosRequest', (id, stationId, nickname, message) => {
+            showToast(`🆘 SOS: ${message}`, 'error');
+            loadSosRequests();
+        });
 
-        // ---- SIGNALR ----
-        async function connectSignalR() {
-            connection = new signalR.HubConnectionBuilder()
-                .withUrl(`${API}/hub/station`).withAutomaticReconnect().build();
+        connection.on('StationUpdated', () => { loadStations(); });
 
-            connection.on('TimeUpdated', (stationId, seconds) => {
-                const s = stations.find(x => x.id === stationId);
-                if (s) s.remaining_seconds = seconds;
-                const el = document.getElementById(`time-${stationId}`);
-                if (el) { el.textContent = formatTime(seconds); el.className = `station-time${seconds < 300 ? ' low' : ''}`; }
-                if (seconds === 0) loadStations();
-            });
+        connection.onreconnected(() => setConnStatus(true));
+        connection.onreconnecting(() => setConnStatus(false));
+        connection.onclose(() => { setConnStatus(false); setTimeout(connectSignalR, 3000); });
 
-            connection.on('NewNotification', (id, stationId, message) => {
-                notifications.push({ id, stationId, message, time: new Date(), resolved: false, approveOpen: false });
-                renderNotifications();
-                showToast(`📢 Cerere prelungire PC ${stationId}`, 'success');
-                updateBadge('notif-badge', notifications.filter(n => !n.resolved).length);
-            });
+        try { await connection.start(); await connection.invoke('RegisterAdmin'); setConnStatus(true); }
+        catch (e) { setConnStatus(false); setTimeout(connectSignalR, 3000); }
+    }
 
-            connection.on('NewBarOrder', (id, stationId, nickname, description) => {
-                showToast(`🥤 Comandă PC ${stationId}: ${description}`, 'success');
-                loadBarOrders();
-            });
+    function updateBadge(id, count) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = count;
+        el.style.display = count > 0 ? 'inline' : 'none';
+    }
 
-            connection.on('NewSosRequest', (id, stationId, nickname, message) => {
-                showToast(`🆘 SOS: ${message}`, 'error');
-                loadSosRequests();
-            });
+    function setConnStatus(ok) {
+        const el = document.getElementById('conn-status');
+        el.textContent = ok ? '● Conectat' : '● Deconectat';
+        el.className = ok ? 'connected' : '';
+    }
 
-            connection.on('StationUpdated', () => {
-                loadStations();
-            });
+    // ════════════════════════════════
+    // STATII
+    // ════════════════════════════════
+    async function loadStations() {
+        try {
+            const r = await fetch(`${API}/api/admin/stations`);
+            stations = await r.json();
+            renderStations();
+            if (selectedStation !== null) {
+                const s = stations.find(x => x.id === selectedStation);
+                if (s) showMonitorDisplay(s);
+            }
+        } catch (e) { }
+    }
 
-            connection.onreconnected(() => setConnStatus(true));
-            connection.onreconnecting(() => setConnStatus(false));
-            connection.onclose(() => { setConnStatus(false); setTimeout(connectSignalR, 3000); });
-
-            try { await connection.start(); await connection.invoke('RegisterAdmin'); setConnStatus(true); }
-            catch (e) { setConnStatus(false); setTimeout(connectSignalR, 3000); }
-        }
-
-        function updateBadge(id, count) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.textContent = count;
-            el.style.display = count > 0 ? 'inline' : 'none';
-        }
-
-        function setConnStatus(ok) {
-            const el = document.getElementById('conn-status');
-            el.textContent = ok ? '● Conectat' : '● Deconectat';
-            el.className = ok ? 'connected' : '';
-        }
-
-        // ---- STATII ----
-        async function loadStations() {
-            try {
-                const r = await fetch(`${API}/api/admin/stations`);
-                stations = await r.json();
-                renderStations();
-            } catch (e) { }
-        }
-
-        function renderStations() {
-            const grid = document.getElementById('stations-grid');
-            grid.innerHTML = stations.map(s => {
-                const sc = `status-${s.status.toLowerCase()}`;
-                const numColor = s.status === 'Active' ? 'var(--green)' : s.status === 'Pending' ? 'var(--blue)' : 'var(--muted)';
-                const user = s.current_user_name || (s.status === 'Pending' ? 'Asteapta nickname...' : '—');
-                return `
+    function renderStations() {
+        const grid = document.getElementById('stations-grid');
+        grid.innerHTML = stations.map(s => {
+            const sc = `status-${s.status.toLowerCase()}`;
+            const numColor = s.status === 'Active' ? 'var(--green)' : s.status === 'Pending' ? 'var(--blue)' : 'var(--muted)';
+            const user = s.current_user_name || (s.status === 'Pending' ? 'Asteapta nickname...' : '—');
+            return `
           <div class="station-card ${sc}${selectedStation === s.id ? ' selected' : ''}" onclick="selectStation(${s.id})">
             <div class="station-name">${s.station_name}</div>
-            <div class="station-number" style="color:${numColor}">${s.id}</div>
+            <div class="station-number" style="color:${numColor}">${String(s.id).padStart(2,'0')}</div>
             <div class="station-status">${s.status}</div>
             <div class="station-user">${user}</div>
             ${s.status === 'Active' ? `<div class="station-time${s.remaining_seconds < 300 ? ' low' : ''}" id="time-${s.id}">${formatTime(s.remaining_seconds)}</div>` : ''}
           </div>`;
-            }).join('');
-        }
+        }).join('');
+    }
 
-        setInterval(() => {
-            stations.forEach(s => {
-                if (s.status === 'Active' && s.remaining_seconds > 0) {
-                    s.remaining_seconds--;
-                    const el = document.getElementById(`time-${s.id}`);
-                    if (el) { el.textContent = formatTime(s.remaining_seconds); el.className = `station-time${s.remaining_seconds < 300 ? ' low' : ''}`; }
+    setInterval(() => {
+        stations.forEach(s => {
+            if (s.status === 'Active' && s.remaining_seconds > 0) {
+                s.remaining_seconds--;
+                const el = document.getElementById(`time-${s.id}`);
+                if (el) { el.textContent = formatTime(s.remaining_seconds); el.className = `station-time${s.remaining_seconds < 300 ? ' low' : ''}`; }
+                if (selectedStation === s.id) {
+                    const monTimer = document.getElementById('mon-timer');
+                    const monTimeText = document.getElementById('mon-time-text');
+                    if (monTimer) { monTimer.textContent = formatTime(s.remaining_seconds); monTimer.className = `mon-timer${s.remaining_seconds < 300 ? ' low' : ''}`; }
+                    if (monTimeText) monTimeText.textContent = formatTime(s.remaining_seconds);
                 }
-            });
-        }, 1000);
+            }
+        });
+    }, 1000);
 
-        function selectStation(id) {
-            selectedStation = id;
-            const s = stations.find(x => x.id === id);
-            document.getElementById('selected-info').innerHTML = s
-                ? `Stație selectată: <strong>${s.station_name}</strong> — <strong>${s.status}</strong>${s.current_user_name ? ` — Client: <strong>${s.current_user_name}</strong>` : ''}`
-                : '';
-            document.getElementById('alloc-station').value = id;
-            document.getElementById('add-station').value = id;
-            renderStations();
-        }
+    function selectStation(id) {
+        selectedStation = id;
+        const s = stations.find(x => x.id === id);
+        document.getElementById('selected-info').innerHTML = s
+            ? `Stație selectată: <strong>${s.station_name}</strong> — <strong>${s.status}</strong>${s.current_user_name ? ` — Client: <strong>${s.current_user_name}</strong>` : ''}`
+            : '';
+        document.getElementById('alloc-station').value = id;
+        document.getElementById('add-station').value = id;
+        renderStations();
+        showMonitorDisplay(s);
+    }
 
-        // ---- ACTIUNI ----
-        function checkPaymentMethod(sel, msgId) {
-            document.getElementById(msgId).style.display = sel.value === 'CARD_PENDING' ? 'block' : 'none';
-        }
+    // ════════════════════════════════
+    // ACTIUNI
+    // ════════════════════════════════
+    function checkPaymentMethod(sel, msgId) {
+        document.getElementById(msgId).style.display = sel.value === 'CARD_PENDING' ? 'block' : 'none';
+    }
 
-        async function allocateStation() {
-            const stationId = +document.getElementById('alloc-station').value;
-            const minutes = +document.getElementById('alloc-minutes').value;
-            const nickname = document.getElementById('alloc-nickname').value.trim();
-            const paymentMethod = document.getElementById('alloc-payment').value;
-            if (!minutes || minutes < 1) { showToast('Introdu minute valide.', 'error'); return; }
-            try {
-                await fetch(`${API}/api/admin/allocate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stationId, minutes, paymentMethod }) });
-                if (nickname) {
-                    await fetch(`${API}/api/client/set-nickname`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stationId, nickname }) });
-                    showToast(`✅ PC ${stationId} activ pentru ${nickname} — ${minutes} min!`, 'success');
-                } else {
-                    showToast(`✅ PC ${stationId} pornit — asteapta nickname.`, 'success');
-                }
-                document.getElementById('alloc-nickname').value = '';
-                await loadStations();
-            } catch (e) { showToast('Eroare la alocare.', 'error'); }
-        }
+    async function allocateStation() {
+        const stationId = +document.getElementById('alloc-station').value;
+        const minutes = +document.getElementById('alloc-minutes').value;
+        const nickname = document.getElementById('alloc-nickname').value.trim();
+        const paymentMethod = document.getElementById('alloc-payment').value;
+        if (!minutes || minutes < 1) { showToast('Introdu minute valide.', 'error'); return; }
+        try {
+            await fetch(`${API}/api/admin/allocate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stationId, minutes, paymentMethod }) });
+            if (nickname) {
+                await fetch(`${API}/api/client/set-nickname`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stationId, nickname }) });
+                showToast(`✅ PC ${stationId} activ pentru ${nickname} — ${minutes} min!`, 'success');
+            } else {
+                showToast(`✅ PC ${stationId} pornit — asteapta nickname.`, 'success');
+            }
+            document.getElementById('alloc-nickname').value = '';
+            await loadStations();
+        } catch (e) { showToast('Eroare la alocare.', 'error'); }
+    }
 
-        async function addTime(stationIdOverride, minutesOverride, amountOverride) {
-            const stationId = stationIdOverride || +document.getElementById('add-station').value;
-            const minutes = minutesOverride || +document.getElementById('add-minutes').value;
-            const amountPaid = amountOverride !== undefined ? amountOverride : +document.getElementById('add-amount').value;
-            const paymentMethod = stationIdOverride ? 'CASH' : document.getElementById('add-payment').value;
-            try {
-                await fetch(`${API}/api/admin/add-time`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stationId, minutes, amountPaid, note: `Metoda: ${paymentMethod}` }) });
-                showToast(`✅ +${minutes} min la PC ${stationId}!`, 'success');
-                await loadStations();
-            } catch (e) { showToast('Eroare.', 'error'); }
-        }
+    async function addTime(stationIdOverride, minutesOverride, amountOverride) {
+        const stationId = stationIdOverride || +document.getElementById('add-station').value;
+        const minutes = minutesOverride || +document.getElementById('add-minutes').value;
+        const amountPaid = amountOverride !== undefined ? amountOverride : +document.getElementById('add-amount').value;
+        const paymentMethod = stationIdOverride ? 'CASH' : document.getElementById('add-payment').value;
+        try {
+            await fetch(`${API}/api/admin/add-time`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stationId, minutes, amountPaid, note: `Metoda: ${paymentMethod}` }) });
+            showToast(`✅ +${minutes} min la PC ${stationId}!`, 'success');
+            await loadStations();
+        } catch (e) { showToast('Eroare.', 'error'); }
+    }
 
-        async function forceLock() {
-            const stationId = +document.getElementById('add-station').value;
-            if (!confirm(`Blochezi forțat PC ${stationId}?`)) return;
-            try {
-                await fetch(`${API}/api/admin/force-lock/${stationId}`, { method: 'POST' });
-                showToast(`🔒 PC ${stationId} blocat.`, 'success');
-                await loadStations();
-            } catch (e) { showToast('Eroare.', 'error'); }
-        }
+    async function forceLock() {
+        const stationId = +document.getElementById('add-station').value;
+        if (!confirm(`Blochezi forțat PC ${stationId}?`)) return;
+        try {
+            await fetch(`${API}/api/admin/force-lock/${stationId}`, { method: 'POST' });
+            showToast(`🔒 PC ${stationId} blocat.`, 'success');
+            await loadStations();
+        } catch (e) { showToast('Eroare.', 'error'); }
+    }
 
-        // ---- NOTIFICARI ----
-        function renderNotifications() {
-            const list = document.getElementById('notif-list');
-            const unresolved = notifications.filter(n => !n.resolved);
-            updateBadge('notif-badge', unresolved.length);
-            if (!unresolved.length) { list.innerHTML = '<div class="notif-empty">Nicio cerere nouă.</div>'; return; }
-            list.innerHTML = unresolved.map(n => `
+    // ════════════════════════════════
+    // NOTIFICARI
+    // ════════════════════════════════
+    function renderNotifications() {
+        const list = document.getElementById('notif-list');
+        const unresolved = notifications.filter(n => !n.resolved);
+        updateBadge('notif-badge', unresolved.length);
+        if (!unresolved.length) { list.innerHTML = '<div class="notif-empty">Nicio cerere nouă.</div>'; return; }
+        list.innerHTML = unresolved.map(n => `
         <div>
           <div class="notif-item" onclick="toggleApprove(${n.id})">
             <div style="flex:1">
@@ -1177,105 +1603,111 @@
             </div>
           </div>
         </div>`).join('');
-        }
+    }
 
-        function toggleApprove(id) {
-            const n = notifications.find(x => x.id === id);
-            if (n) { n.approveOpen = !n.approveOpen; renderNotifications(); }
-        }
+    function toggleApprove(id) {
+        const n = notifications.find(x => x.id === id);
+        if (n) { n.approveOpen = !n.approveOpen; renderNotifications(); }
+    }
 
-        async function approveNotif(id, stationId) {
-            const minutes = +document.getElementById(`qa-min-${id}`).value;
-            const amount = +document.getElementById(`qa-amt-${id}`).value;
-            await addTime(stationId, minutes, amount);
-            const n = notifications.find(x => x.id === id);
-            if (n) n.resolved = true;
-            await fetch(`${API}/api/admin/notifications/${id}/resolve`, { method: 'POST' });
-            renderNotifications();
-        }
+    async function approveNotif(id, stationId) {
+        const minutes = +document.getElementById(`qa-min-${id}`).value;
+        const amount = +document.getElementById(`qa-amt-${id}`).value;
+        await addTime(stationId, minutes, amount);
+        const n = notifications.find(x => x.id === id);
+        if (n) n.resolved = true;
+        await fetch(`${API}/api/admin/notifications/${id}/resolve`, { method: 'POST' });
+        renderNotifications();
+    }
 
-        async function rejectNotif(id) {
-            const n = notifications.find(x => x.id === id);
-            if (n) n.resolved = true;
-            await fetch(`${API}/api/admin/notifications/${id}/resolve`, { method: 'POST' });
-            renderNotifications();
-            showToast('Cerere respinsă.', '');
-        }
+    async function rejectNotif(id) {
+        const n = notifications.find(x => x.id === id);
+        if (n) n.resolved = true;
+        await fetch(`${API}/api/admin/notifications/${id}/resolve`, { method: 'POST' });
+        renderNotifications();
+        showToast('Cerere respinsă.', '');
+    }
 
-        // ---- BAR COMENZI ----
-        async function loadBarOrders() {
-            try {
-                const r = await fetch(`${API}/api/bar/orders/pending`);
-                const orders = await r.json();
-                const list = document.getElementById('bar-orders-list');
-                if (!orders.length) { list.innerHTML = '<div class="notif-empty">Nicio comandă activă.</div>'; updateBadge('bar-badge', 0); return; }
-                list.innerHTML = orders.map(o => `
-          <div class="notif-item" style="border-color:rgba(243,156,18,0.3);cursor:default">
+    // ════════════════════════════════
+    // BAR COMENZI
+    // ════════════════════════════════
+    async function loadBarOrders() {
+        try {
+            const r = await fetch(`${API}/api/bar/orders/pending`);
+            const orders = await r.json();
+            const list = document.getElementById('bar-orders-list');
+            if (!orders.length) { list.innerHTML = '<div class="notif-empty">Nicio comandă activă.</div>'; updateBadge('bar-badge', 0); return; }
+            list.innerHTML = orders.map(o => `
+          <div class="notif-item" style="border-color:rgba(255,184,41,0.25);cursor:default">
             <div style="flex:1">
               <div class="notif-text">🥤 <strong>PC ${o.station_id}</strong> (${o.current_user_name || '—'}): ${o.quantity}x ${o.product_name} — <strong>${o.product_price * o.quantity} MDL</strong></div>
               <div class="notif-time">${new Date(o.created_at).toLocaleTimeString('ro-RO')}</div>
             </div>
             <div style="display:flex;gap:0.4rem">
-              <button class="btn btn-success" style="padding:0.3rem 0.8rem;font-size:0.78rem" onclick="deliverOrder(${o.id})">✓ Livrat</button>
-              <button class="btn btn-danger" style="padding:0.3rem 0.8rem;font-size:0.78rem" onclick="cancelOrder(${o.id})">✗ Anulează</button>
+              <button class="btn btn-success" style="padding:0.28rem 0.8rem;font-size:0.76rem" onclick="deliverOrder(${o.id})">✓ Livrat</button>
+              <button class="btn btn-danger" style="padding:0.28rem 0.8rem;font-size:0.76rem" onclick="cancelOrder(${o.id})">✗ Anulează</button>
             </div>
           </div>`).join('');
-                updateBadge('bar-badge', orders.length);
-            } catch (e) { }
-        }
+            updateBadge('bar-badge', orders.length);
+        } catch (e) { }
+    }
 
-        async function deliverOrder(id) {
-            await fetch(`${API}/api/bar/orders/${id}/deliver`, { method: 'POST' });
-            showToast('✅ Comandă livrată!', 'success');
-            await loadBarOrders();
-        }
+    async function deliverOrder(id) {
+        await fetch(`${API}/api/bar/orders/${id}/deliver`, { method: 'POST' });
+        showToast('✅ Comandă livrată!', 'success');
+        await loadBarOrders();
+    }
 
-        async function cancelOrder(id) {
-            await fetch(`${API}/api/bar/orders/${id}/cancel`, { method: 'POST' });
-            showToast('Comandă anulată.', '');
-            await loadBarOrders();
-        }
+    async function cancelOrder(id) {
+        await fetch(`${API}/api/bar/orders/${id}/cancel`, { method: 'POST' });
+        showToast('Comandă anulată.', '');
+        await loadBarOrders();
+    }
 
-        // ---- SOS ----
-        async function loadSosRequests() {
-            try {
-                const r = await fetch(`${API}/api/bar/sos/pending`);
-                const requests = await r.json();
-                const list = document.getElementById('sos-list');
-                const icons = { audio: '🎧', cleaning: '🧹', noise: '⚠️', hardware: '🖥️' };
-                if (!requests.length) { list.innerHTML = '<div class="notif-empty">Nicio cerere activă.</div>'; updateBadge('sos-badge', 0); return; }
-                list.innerHTML = requests.map(s => `
-          <div class="notif-item" style="border-color:rgba(231,76,60,0.3);cursor:default">
+    // ════════════════════════════════
+    // SOS
+    // ════════════════════════════════
+    async function loadSosRequests() {
+        try {
+            const r = await fetch(`${API}/api/bar/sos/pending`);
+            const requests = await r.json();
+            const list = document.getElementById('sos-list');
+            const icons = { audio: '🎧', cleaning: '🧹', noise: '⚠️', hardware: '🖥️' };
+            if (!requests.length) { list.innerHTML = '<div class="notif-empty">Nicio cerere activă.</div>'; updateBadge('sos-badge', 0); return; }
+            list.innerHTML = requests.map(s => `
+          <div class="notif-item" style="border-color:rgba(231,76,60,0.25);cursor:default">
             <div style="flex:1">
               <div class="notif-text">${icons[s.type] || '🆘'} <strong>PC ${s.station_id}</strong> (${s.current_user_name || 'anonim'}): ${s.message}</div>
               <div class="notif-time">${new Date(s.created_at).toLocaleTimeString('ro-RO')}</div>
             </div>
-            <button class="btn btn-success" style="padding:0.3rem 0.8rem;font-size:0.78rem" onclick="resolveSos(${s.id})">✓ Rezolvat</button>
+            <button class="btn btn-success" style="padding:0.28rem 0.8rem;font-size:0.76rem" onclick="resolveSos(${s.id})">✓ Rezolvat</button>
           </div>`).join('');
-                updateBadge('sos-badge', requests.length);
-            } catch (e) { }
-        }
+            updateBadge('sos-badge', requests.length);
+        } catch (e) { }
+    }
 
-        async function resolveSos(id) {
-            await fetch(`${API}/api/bar/sos/${id}/resolve`, { method: 'POST' });
-            showToast('✅ SOS rezolvat!', 'success');
-            await loadSosRequests();
-        }
+    async function resolveSos(id) {
+        await fetch(`${API}/api/bar/sos/${id}/resolve`, { method: 'POST' });
+        showToast('✅ SOS rezolvat!', 'success');
+        await loadSosRequests();
+    }
 
-        // ---- MANAGEMENT PRODUSE BAR ----
-        async function loadAdminProducts() {
-            try {
-                const r = await fetch(`${API}/api/bar/products/all`);
-                const products = await r.json();
-                const grid = document.getElementById('admin-products-grid');
-                if (!products.length) { grid.innerHTML = '<div class="notif-empty">Niciun produs. Apasă "+ Adaugă produs nou".</div>'; return; }
-                grid.innerHTML = products.map(p => {
-                    const stockLabel = p.stock === -1 ? 'Nelimitat' : p.stock === 0 ? 'Epuizat' : `${p.stock} buc`;
-                    const stockClass = p.stock === -1 ? 'stock-ok' : p.stock === 0 ? 'stock-out' : p.stock < 5 ? 'stock-low' : 'stock-ok';
-                    const imgHtml = p.image_url
-                        ? `<img src="${p.image_url}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="${p.name}"><span style="display:none;font-size:2.5rem;width:100%;height:100%;align-items:center;justify-content:center">${p.emoji}</span>`
-                        : `<span style="font-size:2.5rem">${p.emoji}</span>`;
-                    return `
+    // ════════════════════════════════
+    // MANAGEMENT PRODUSE BAR
+    // ════════════════════════════════
+    async function loadAdminProducts() {
+        try {
+            const r = await fetch(`${API}/api/bar/products/all`);
+            const products = await r.json();
+            const grid = document.getElementById('admin-products-grid');
+            if (!products.length) { grid.innerHTML = '<div class="notif-empty">Niciun produs. Apasă "+ Adaugă produs nou".</div>'; return; }
+            grid.innerHTML = products.map(p => {
+                const stockLabel = p.stock === -1 ? 'Nelimitat' : p.stock === 0 ? 'Epuizat' : `${p.stock} buc`;
+                const stockClass = p.stock === -1 ? 'stock-ok' : p.stock === 0 ? 'stock-out' : p.stock < 5 ? 'stock-low' : 'stock-ok';
+                const imgHtml = p.image_url
+                    ? `<img src="${p.image_url}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="${p.name}"><span style="display:none;font-size:2.5rem;width:100%;height:100%;align-items:center;justify-content:center">${p.emoji}</span>`
+                    : `<span style="font-size:2.5rem">${p.emoji}</span>`;
+                return `
             <div class="bar-product-card${p.is_available ? '' : ' inactive'}">
               <div class="bar-product-img">${imgHtml}</div>
               <div class="bar-product-info">
@@ -1286,151 +1718,181 @@
                   <span class="bar-product-stock ${stockClass}">${stockLabel}</span>
                 </div>
                 <div class="bar-product-actions">
-                  <button onclick="openProductModal(${JSON.stringify(p).replace(/"/g, '&quot;')})" style="background:rgba(243,156,18,0.15);color:var(--accent)">✏️ Editează</button>
-                  <button onclick="toggleProductAvail(${p.id},${p.is_available})" style="background:${p.is_available ? 'rgba(231,76,60,0.15)' : 'rgba(46,204,113,0.15)'};color:${p.is_available ? 'var(--red)' : 'var(--green)'}">
+                  <button onclick="openProductModal(${JSON.stringify(p).replace(/"/g, '&quot;')})" style="background:rgba(255,184,41,0.12);color:var(--accent)">✏️ Editează</button>
+                  <button onclick="toggleProductAvail(${p.id},${p.is_available})" style="background:${p.is_available ? 'rgba(231,76,60,0.12)' : 'rgba(46,204,113,0.12)'};color:${p.is_available ? 'var(--red)' : 'var(--green)'}">
                     ${p.is_available ? '❌ Dezactivează' : '✅ Activează'}
                   </button>
                 </div>
               </div>
             </div>`;
-                }).join('');
-            } catch (e) { }
-        }
+            }).join('');
+        } catch (e) { }
+    }
 
-        function openProductModal(product) {
-            editingProductId = product ? product.id : null;
-            document.getElementById('modal-title').textContent = product ? 'Editează produs' : 'Adaugă produs nou';
-            document.getElementById('delete-prod-btn').style.display = product ? 'inline-block' : 'none';
-            document.getElementById('prod-name').value = product ? product.name : '';
-            document.getElementById('prod-emoji').value = product ? product.emoji : '🥤';
-            document.getElementById('prod-category').value = product ? product.category : 'racoritoare';
-            document.getElementById('prod-price').value = product ? product.price : 15;
-            document.getElementById('prod-stock').value = product ? product.stock : -1;
-            document.getElementById('prod-image').value = product ? (product.image_url || '') : '';
-            document.getElementById('prod-available').value = product ? String(product.is_available) : 'true';
-            updatePreview();
-            document.getElementById('product-modal').classList.add('open');
-        }
+    function openProductModal(product) {
+        editingProductId = product ? product.id : null;
+        document.getElementById('modal-title').textContent = product ? 'Editează produs' : 'Adaugă produs nou';
+        document.getElementById('delete-prod-btn').style.display = product ? 'inline-block' : 'none';
+        document.getElementById('prod-name').value = product ? product.name : '';
+        document.getElementById('prod-emoji').value = product ? product.emoji : '🥤';
+        document.getElementById('prod-category').value = product ? product.category : 'racoritoare';
+        document.getElementById('prod-price').value = product ? product.price : 15;
+        document.getElementById('prod-stock').value = product ? product.stock : -1;
+        document.getElementById('prod-image').value = product ? (product.image_url || '') : '';
+        document.getElementById('prod-available').value = product ? String(product.is_available) : 'true';
+        updatePreview();
+        document.getElementById('product-modal').classList.add('open');
+    }
 
-        function closeProductModal() {
-            document.getElementById('product-modal').classList.remove('open');
-            editingProductId = null;
-        }
+    function closeProductModal() {
+        document.getElementById('product-modal').classList.remove('open');
+        editingProductId = null;
+    }
 
-        function updatePreview() {
-            const url = document.getElementById('prod-image').value;
-            const emoji = document.getElementById('prod-emoji').value || '🥤';
-            const preview = document.getElementById('product-preview');
-            if (url) {
-                preview.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span style=font-size:3rem>${emoji}</span>'" alt="preview">`;
+    function updatePreview() {
+        const url = document.getElementById('prod-image').value;
+        const emoji = document.getElementById('prod-emoji').value || '🥤';
+        const preview = document.getElementById('product-preview');
+        if (url) {
+            preview.innerHTML = `<img src="${url}" onerror="this.parentElement.innerHTML='<span style=font-size:3rem>${emoji}</span>'" alt="preview">`;
+        } else {
+            preview.innerHTML = `<span id="preview-emoji" style="font-size:3rem">${emoji}</span>`;
+        }
+    }
+
+    async function saveProduct() {
+        const product = {
+            name: document.getElementById('prod-name').value.trim(),
+            emoji: document.getElementById('prod-emoji').value || '🥤',
+            category: document.getElementById('prod-category').value,
+            price: +document.getElementById('prod-price').value,
+            stock: +document.getElementById('prod-stock').value,
+            image_url: document.getElementById('prod-image').value.trim() || null,
+            is_available: document.getElementById('prod-available').value === 'true'
+        };
+        if (!product.name || !product.price) { showToast('Completează numele și prețul.', 'error'); return; }
+        try {
+            if (editingProductId) {
+                await fetch(`${API}/api/bar/products/${editingProductId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product) });
+                showToast('✅ Produs actualizat!', 'success');
             } else {
-                preview.innerHTML = `<span id="preview-emoji" style="font-size:3rem">${emoji}</span>`;
+                await fetch(`${API}/api/bar/products`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product) });
+                showToast('✅ Produs adăugat!', 'success');
             }
-        }
-
-        async function saveProduct() {
-            const product = {
-                name: document.getElementById('prod-name').value.trim(),
-                emoji: document.getElementById('prod-emoji').value || '🥤',
-                category: document.getElementById('prod-category').value,
-                price: +document.getElementById('prod-price').value,
-                stock: +document.getElementById('prod-stock').value,
-                image_url: document.getElementById('prod-image').value.trim() || null,
-                is_available: document.getElementById('prod-available').value === 'true'
-            };
-            if (!product.name || !product.price) { showToast('Completează numele și prețul.', 'error'); return; }
-            try {
-                if (editingProductId) {
-                    await fetch(`${API}/api/bar/products/${editingProductId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product) });
-                    showToast('✅ Produs actualizat!', 'success');
-                } else {
-                    await fetch(`${API}/api/bar/products`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(product) });
-                    showToast('✅ Produs adăugat!', 'success');
-                }
-                closeProductModal();
-                await loadAdminProducts();
-            } catch (e) { showToast('Eroare la salvare.', 'error'); }
-        }
-
-        async function deleteProduct() {
-            if (!editingProductId) return;
-            if (!confirm('Ștergi definitiv acest produs?')) return;
-            try {
-                await fetch(`${API}/api/bar/products/${editingProductId}`, { method: 'DELETE' });
-                showToast('Produs șters.', '');
-                closeProductModal();
-                await loadAdminProducts();
-            } catch (e) { showToast('Eroare la ștergere.', 'error'); }
-        }
-
-        async function toggleProductAvail(id, currentlyAvail) {
-            await fetch(`${API}/api/bar/products/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_available: !currentlyAvail }) });
-            showToast(currentlyAvail ? 'Produs dezactivat.' : '✅ Produs activat!', currentlyAvail ? '' : 'success');
+            closeProductModal();
             await loadAdminProducts();
-        }
+        } catch (e) { showToast('Eroare la salvare.', 'error'); }
+    }
 
-        // ---- INCASARI ----
-        async function loadRevenue() {
-            try {
-                const r = await fetch(`${API}/api/admin/revenue/today`);
-                if (!r.ok) return;
-                const data = await r.json();
-                document.getElementById('rev-today').textContent = data.totalAmount ?? '0';
-                document.getElementById('rev-minutes').textContent = data.totalMinutes ?? '0';
-                document.getElementById('rev-count').textContent = data.totalTransactions ?? '0';
-            } catch (e) { }
-        }
+    async function deleteProduct() {
+        if (!editingProductId) return;
+        if (!confirm('Ștergi definitiv acest produs?')) return;
+        try {
+            await fetch(`${API}/api/bar/products/${editingProductId}`, { method: 'DELETE' });
+            showToast('Produs șters.', '');
+            closeProductModal();
+            await loadAdminProducts();
+        } catch (e) { showToast('Eroare la ștergere.', 'error'); }
+    }
 
-        // ---- SETARI ----
-        async function loadPrice() {
-            try {
-                const r = await fetch(`${API}/api/admin/price`);
-                const data = await r.json();
-                document.getElementById('price-display').textContent = data.pricePerHour;
-                document.getElementById('price-input').value = data.pricePerHour;
-            } catch (e) { }
-        }
+    async function toggleProductAvail(id, currentlyAvail) {
+        await fetch(`${API}/api/bar/products/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_available: !currentlyAvail }) });
+        showToast(currentlyAvail ? 'Produs dezactivat.' : '✅ Produs activat!', currentlyAvail ? '' : 'success');
+        await loadAdminProducts();
+    }
 
-        async function updatePrice() {
-            const price = document.getElementById('price-input').value;
-            try {
-                await fetch(`${API}/api/admin/price`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price: +price }) });
-                document.getElementById('price-display').textContent = price;
-                showToast('✅ Tarif actualizat!', 'success');
-            } catch (e) { showToast('Eroare.', 'error'); }
-        }
+    // ════════════════════════════════
+    // INCASARI
+    // ════════════════════════════════
+    async function loadRevenue() {
+        try {
+            const r = await fetch(`${API}/api/admin/revenue/today`);
+            if (!r.ok) return;
+            const data = await r.json();
+            document.getElementById('rev-today').textContent = data.totalAmount ?? '0';
+            document.getElementById('rev-minutes').textContent = data.totalMinutes ?? '0';
+            document.getElementById('rev-count').textContent = data.totalTransactions ?? '0';
+        } catch (e) { }
+    }
 
-        // ---- UI HELPERS ----
-        function switchTab(name) {
-            const names = ['allocate', 'addtime', 'notifications', 'bar', 'sos', 'bar-products', 'revenue', 'settings'];
-            document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', names[i] === name));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(`tab-${name}`).classList.add('active');
-            if (name === 'revenue') loadRevenue();
-            if (name === 'bar') loadBarOrders();
-            if (name === 'sos') loadSosRequests();
-            if (name === 'bar-products') loadAdminProducts();
-        }
+    // ════════════════════════════════
+    // SETARI
+    // ════════════════════════════════
+    async function loadPrice() {
+        try {
+            const r = await fetch(`${API}/api/admin/price`);
+            const data = await r.json();
+            document.getElementById('price-display').textContent = data.pricePerHour;
+            document.getElementById('price-input').value = data.pricePerHour;
+        } catch (e) { }
+    }
 
-        function formatTime(sec) {
-            const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
-            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
+    async function updatePrice() {
+        const price = document.getElementById('price-input').value;
+        try {
+            await fetch(`${API}/api/admin/price`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ price: +price }) });
+            document.getElementById('price-display').textContent = price;
+            showToast('✅ Tarif actualizat!', 'success');
+        } catch (e) { showToast('Eroare.', 'error'); }
+    }
 
-        let toastTimer;
-        function showToast(msg, type = '') {
-            const t = document.getElementById('toast');
-            t.textContent = msg; t.className = `show ${type}`;
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.className = '', 3000);
-        }
+    // ════════════════════════════════
+    // UI HELPERS
+    // ════════════════════════════════
+    function switchTab(name) {
+        const names = ['allocate', 'addtime', 'notifications', 'bar', 'sos', 'bar-products', 'revenue', 'settings'];
+        document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', names[i] === name));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`tab-${name}`).classList.add('active');
+        if (name === 'revenue') loadRevenue();
+        if (name === 'bar') loadBarOrders();
+        if (name === 'sos') loadSosRequests();
+        if (name === 'bar-products') loadAdminProducts();
+    }
 
-        // ---- INIT ----
-        setInterval(loadStations, 30000);
-        loadServerInfo();
-        connectSignalR();
-        loadStations();
-        loadPrice();
-    </script>
+    function formatTime(sec) {
+        const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function showToast(msg, type = '') {
+        const container = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        t.className = `toast-msg ${type}`;
+        t.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem"><span>${msg}</span><span style="cursor:pointer;font-size:1.2rem;opacity:0.8;padding-left:0.5rem">&times;</span></div>`;
+        
+        t.querySelector('span:last-child').onclick = () => {
+            t.style.opacity = '0';
+            t.style.transform = 'translateY(20px)';
+            setTimeout(() => t.remove(), 300);
+        };
+        
+        container.appendChild(t);
+        
+        // Trigger animation
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                t.classList.add('show');
+            });
+        });
+        
+        setTimeout(() => {
+            if(t.parentElement) {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(20px)';
+                setTimeout(() => t.remove(), 300);
+            }
+        }, 15000);
+    }
+
+    // ════════════════════════════════
+    // INIT
+    // ════════════════════════════════
+    setInterval(loadStations, 30000);
+    loadServerInfo();
+    connectSignalR();
+    loadStations();
+    loadPrice();
+</script>
 </body>
 </html>
