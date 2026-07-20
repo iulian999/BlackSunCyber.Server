@@ -671,14 +671,14 @@
 
     <!-- Timer -->
     <div class="timer-card">
-        <div class="timer-label">Timp Rămas</div>
+        <div class="timer-label">Timpul Rămas</div>
         <div class="timer-display" id="timer-display">00:00:00</div>
     </div>
 
     <!-- Info grid -->
     <div class="info-grid">
         <div class="info-card">
-            <div class="info-label">Tarif orar</div>
+            <div class="info-label">Tariful per/h</div>
             <div class="info-value accent" id="price-display">—</div>
             <div style="font-size:0.66rem;color:var(--muted)">MDL / oră</div>
         </div>
@@ -691,9 +691,9 @@
     <!-- TABS -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('extend')">⏱ Timp</button>
-        <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar</button>
-        <button class="tab-btn" onclick="switchTab('sos')">🆘 Asistență</button>
-        <button class="tab-btn" onclick="switchTab('system')">🖥️ Sistem</button>
+        <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar </button>
+        <button class="tab-btn" onclick="switchTab('sos')">🆘 Asistență </button>
+        <button class="tab-btn" onclick="switchTab('system')">🖥️ Sistem </button>
     </div>
 
     <!-- TAB: PRELUNGIRE -->
@@ -707,8 +707,8 @@
             <div class="form-group">
                 <label>Metoda de plată</label>
                 <select id="extend-payment" onchange="checkExtendPayment()">
-                    <option value="CASH">💵 CASH (la recepție)</option>
-                    <option value="CARD_PENDING">💳 CARD ONLINE</option>
+                    <option value="CASH">💵 Plata CASH (la recepție)</option>
+                    <option value="CARD_PENDING">💳 Plata CARD ONLINE</option>
                 </select>
             </div>
             <div id="extend-card-msg" class="card-msg">💳 Plata cu cardul este în curs de dezvoltare (Coming Soon).</div>
