@@ -1,0 +1,13 @@
+{
+  "GitHubOwner": "iulian999",
+  "GitHubRepo": "BlackSunCyber.Server",
+  "CheckIntervalMinutes": 5,
+  "ServerInstallPath": "C:\\BlackSunCyber\\Server",
+  "ClientZipDestPath": "C:\\BlackSunCyber\\Server\\wwwroot\\downloads",
+  "ServiceName": "BlackSunCyber Server",
+  "ServerExeName": "BlackSunCyber.Server.exe",
+  "PreserveFiles": [
+    "appsettings.json",
+    "appsettings.Production.json"
+  ]
+}

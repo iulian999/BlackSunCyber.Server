@@ -1,0 +1,261 @@
+<Window x:Class="BlackSunCyber.ClientAgent.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="BlackSun Cyber"
+        WindowStyle="None"
+        WindowState="Maximized"
+        Topmost="True"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="#07070E">
+
+    <Window.Resources>
+        <LinearGradientBrush x:Key="BrandGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#8052FF" Offset="0"/>
+            <GradientStop Color="#15846E" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Resources>
+
+    <Grid>
+        <!-- ============== STAREA 1: LOCKED ============== -->
+        <Grid x:Name="LockedPanel" Visibility="Visible">
+            <Grid.Background>
+                <RadialGradientBrush Center="0.5,0.4" GradientOrigin="0.5,0.4" RadiusX="0.6" RadiusY="0.6">
+                    <GradientStop Color="#111128" Offset="0"/>
+                    <GradientStop Color="#07070E" Offset="1"/>
+                </RadialGradientBrush>
+            </Grid.Background>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                
+                <!-- Logo central mare -->
+                <Grid Width="72" Height="72" HorizontalAlignment="Center" Margin="0,0,0,24">
+                    <Rectangle RadiusX="18" RadiusY="18" Fill="{StaticResource BrandGradient}">
+                        <Rectangle.Effect>
+                            <DropShadowEffect Color="#8052FF" BlurRadius="40" Opacity="0.5" ShadowDepth="0"/>
+                        </Rectangle.Effect>
+                    </Rectangle>
+
+                    <Path HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Path.Fill>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#0D0D0D" Offset="0"/>
+                                <GradientStop Color="#2B2B2B" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Path.Fill>
+                        <Path.Data>
+                            <CombinedGeometry GeometryCombineMode="Exclude">
+                                <CombinedGeometry.Geometry1>
+                                    <EllipseGeometry Center="16,16" RadiusX="16" RadiusY="16"/>
+                                </CombinedGeometry.Geometry1>
+                                <CombinedGeometry.Geometry2>
+                                    <EllipseGeometry Center="22,12" RadiusX="13" RadiusY="13"/>
+                                </CombinedGeometry.Geometry2>
+                            </CombinedGeometry>
+                        </Path.Data>
+                        <Path.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.4" ShadowDepth="1"/>
+                        </Path.Effect>
+                    </Path>
+                </Grid>
+
+                <TextBlock Text="BlackSun Cyber" FontFamily="Rajdhani" FontSize="64" FontWeight="Bold"
+                           Foreground="#FFB829" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                
+                <TextBlock Text="STAȚIE BLOCATĂ" FontFamily="Inter" FontSize="20" FontWeight="SemiBold"
+                           Foreground="#8052FF" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+                
+                <Border Background="#0C0C1E" CornerRadius="16" Padding="40,24"
+                        BorderBrush="#1A1A3A" BorderThickness="1">
+                    <TextBlock Text="Mergi la recepție pentru a începe o sesiune."
+                               FontFamily="Inter" FontSize="18" Foreground="#C8C8E8" HorizontalAlignment="Center"/>
+                </Border>
+                
+                <TextBlock x:Name="ConnectionStatusText" Text="Conectare la server..."
+                           FontFamily="Inter" FontSize="13" Foreground="#4A4A72"
+                           HorizontalAlignment="Center" Margin="0,50,0,0"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- ============== STAREA 2: PENDING (introdu nickname) ============== -->
+        <Grid x:Name="PendingPanel" Visibility="Collapsed">
+            <Grid.Background>
+                <RadialGradientBrush Center="0.5,0.4" GradientOrigin="0.5,0.4" RadiusX="0.6" RadiusY="0.6">
+                    <GradientStop Color="#111128" Offset="0"/>
+                    <GradientStop Color="#07070E" Offset="1"/>
+                </RadialGradientBrush>
+            </Grid.Background>
+            
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="520">
+                
+                <Viewbox Width="60" Height="60" Margin="0,0,0,20">
+                    <Grid Width="72" Height="72" HorizontalAlignment="Center">
+                        <Rectangle RadiusX="18" RadiusY="18" Fill="{StaticResource BrandGradient}">
+                            <Rectangle.Effect>
+                                <DropShadowEffect Color="#8052FF" BlurRadius="40" Opacity="0.5" ShadowDepth="0"/>
+                            </Rectangle.Effect>
+                        </Rectangle>
+
+                        <Path HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#0D0D0D" Offset="0"/>
+                                    <GradientStop Color="#2B2B2B" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                            <Path.Data>
+                                <CombinedGeometry GeometryCombineMode="Exclude">
+                                    <CombinedGeometry.Geometry1>
+                                        <EllipseGeometry Center="16,16" RadiusX="16" RadiusY="16"/>
+                                    </CombinedGeometry.Geometry1>
+                                    <CombinedGeometry.Geometry2>
+                                        <EllipseGeometry Center="22,12" RadiusX="13" RadiusY="13"/>
+                                    </CombinedGeometry.Geometry2>
+                                </CombinedGeometry>
+                            </Path.Data>
+                            <Path.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.4" ShadowDepth="1"/>
+                            </Path.Effect>
+                        </Path>
+                    </Grid>
+                </Viewbox>
+
+                <TextBlock Text="Bun venit la BlackSun Cyber" FontFamily="Rajdhani" FontSize="42" FontWeight="Bold"
+                           Foreground="#C8C8E8" HorizontalAlignment="Center"
+                           Margin="0,0,0,8" TextWrapping="Wrap" TextAlignment="Center"/>
+                
+                <TextBlock x:Name="PendingMinutesText" Text="Sesiune alocată: 0 minute"
+                           FontFamily="Inter" FontSize="16" Foreground="#FFB829" FontWeight="Medium"
+                           HorizontalAlignment="Center" Margin="0,0,0,40"/>
+                
+                <Border Background="#0C0C1E" BorderBrush="#1A1A3A" BorderThickness="1" CornerRadius="20" Padding="30">
+                    <StackPanel>
+                        <TextBlock Text="NICKNAME-UL TĂU:" FontFamily="Inter" FontSize="12" FontWeight="Bold"
+                                   Foreground="#8052FF" Margin="0,0,0,10"/>
+                        
+                        <TextBox x:Name="NicknameInput" FontFamily="Inter" FontSize="22" Padding="16"
+                                 Background="#111128" Foreground="White"
+                                 BorderBrush="#2A2A4A" BorderThickness="1"
+                                 CaretBrush="#FFB829" KeyDown="NicknameInput_KeyDown">
+                            <TextBox.Resources>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="CornerRadius" Value="12"/>
+                                </Style>
+                            </TextBox.Resources>
+                        </TextBox>
+                        
+                        <Button x:Name="ConfirmNicknameButton" Content="Intră în cabinet"
+                                FontFamily="Inter" FontSize="16" Padding="0,16" Margin="0,24,0,0"
+                                Background="#FFB829" Foreground="#000000" FontWeight="Bold"
+                                BorderThickness="0" Click="ConfirmNicknameButton_Click" Cursor="Hand">
+                            <Button.Resources>
+                                <Style TargetType="{x:Type Border}">
+                                    <Setter Property="CornerRadius" Value="14"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                        
+                        <TextBlock x:Name="PendingErrorText" Foreground="#E74C3C" FontFamily="Inter" FontSize="14"
+                                   Margin="0,15,0,0" HorizontalAlignment="Center" Visibility="Collapsed"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+
+        <!-- ============== STAREA 3: ACTIVE — Cabinet complet cu WebView2 ============== -->
+        <Grid x:Name="ActivePanel" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <!-- Bara de sus cu timer si butoane rapide -->
+                <RowDefinition Height="64"/>
+                <!-- Cabinetul complet (portalul web embedded) -->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Bara superioara: mereu vizibila deasupra cabinetului -->
+            <Border Grid.Row="0" Background="#0C0C1E"
+                    BorderBrush="#1A1A3A" BorderThickness="0,0,0,1">
+                <Grid Margin="24,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Logo + Nickname -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Viewbox Width="28" Height="28" Margin="0,0,14,0">
+                            <Grid Width="72" Height="72">
+                                <Rectangle RadiusX="18" RadiusY="18" Fill="{StaticResource BrandGradient}">
+                                    <Rectangle.Effect>
+                                        <DropShadowEffect Color="#8052FF" BlurRadius="40" Opacity="0.5" ShadowDepth="0"/>
+                                    </Rectangle.Effect>
+                                </Rectangle>
+                                <Path HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Path.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#0D0D0D" Offset="0"/>
+                                            <GradientStop Color="#2B2B2B" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Path.Fill>
+                                    <Path.Data>
+                                        <CombinedGeometry GeometryCombineMode="Exclude">
+                                            <CombinedGeometry.Geometry1>
+                                                <EllipseGeometry Center="16,16" RadiusX="16" RadiusY="16"/>
+                                            </CombinedGeometry.Geometry1>
+                                            <CombinedGeometry.Geometry2>
+                                                <EllipseGeometry Center="22,12" RadiusX="13" RadiusY="13"/>
+                                            </CombinedGeometry.Geometry2>
+                                        </CombinedGeometry>
+                                    </Path.Data>
+                                    <Path.Effect>
+                                        <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.4" ShadowDepth="1"/>
+                                    </Path.Effect>
+                                </Path>
+                            </Grid>
+                        </Viewbox>
+                        <TextBlock Text="BlackSun Cyber" FontFamily="Rajdhani" FontSize="18" FontWeight="Bold"
+                                   Foreground="#FFB829" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                        <Border Width="1" Height="20" Background="#2A2A4A" Margin="0,0,16,0"/>
+                        <TextBlock x:Name="ActiveNickname" Text="Salut, Player!"
+                                   FontFamily="Inter" FontSize="15" Foreground="#C8C8E8" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Timer live -->
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center"
+                                HorizontalAlignment="Right" Margin="0,0,30,0">
+                        <TextBlock Text="TIMP RĂMAS" FontFamily="Inter" FontSize="10" FontWeight="Bold" 
+                                   Foreground="#4A4A72"
+                                   HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                        <TextBlock x:Name="ActiveTimer" Text="00:00:00"
+                                   FontSize="24" FontWeight="Bold" Foreground="#2ECC71"
+                                   FontFamily="Consolas" HorizontalAlignment="Center">
+                            <TextBlock.Effect>
+                                <DropShadowEffect Color="#2ECC71" Opacity="0.4" BlurRadius="10" ShadowDepth="0"/>
+                            </TextBlock.Effect>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <!-- Buton minimizare cabinet (arata/ascunde WebView) -->
+                    <Button Grid.Column="3" x:Name="ToggleCabinetBtn"
+                            Content="▼  Ascunde cabinet" FontFamily="Inter" FontSize="13" FontWeight="SemiBold"
+                            Padding="16,10" Background="#111128" Foreground="#8052FF"
+                            BorderBrush="#1A1A3A" BorderThickness="1"
+                            Click="ToggleCabinet_Click" Cursor="Hand"
+                            VerticalAlignment="Center">
+                        <Button.Resources>
+                            <Style TargetType="{x:Type Border}">
+                                <Setter Property="CornerRadius" Value="20"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Cabinet complet: portalul web /client/ embedded -->
+            <wv2:WebView2 Grid.Row="1" x:Name="ClientWebView"
+                          Source="about:blank"/>
+        </Grid>
+
+    </Grid>
+</Window>
