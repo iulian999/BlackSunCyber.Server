@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="../BlackSunCyber.ClientAgent/BlackSunCyber.ClientAgent.csproj" />
   <Project Path="BlackSunCyber.Server.csproj" />
+  <Project Path="../BlackSunCyber.Watcher/BlackSunCyber.Watcher.csproj" />
+  <Project Path="../BlackSunCyber.Updater/BlackSunCyber.Updater.csproj" />
 </Solution>

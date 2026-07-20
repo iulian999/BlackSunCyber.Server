@@ -1,0 +1,101 @@
+name: Build & Release BlackSunCyber
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # permite si lansare manuala de pe GitHub
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write   # necesar pentru a crea Release-ul
+
+    steps:
+      # ── 1. Checkout cod sursa ──────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. Instaleaza .NET 10 ──────────────────────────────────────────────
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # ── 3. Genereaza versiunea (an.luna.zi.HHMM) ───────────────────────────
+      - name: Generate version
+        id: version
+        shell: pwsh
+        run: |
+          $v = (Get-Date -Format "yyyy.MM.dd.HHmm")
+          echo "VERSION=$v" >> $env:GITHUB_OUTPUT
+          echo "TAG=v$v" >> $env:GITHUB_OUTPUT
+
+      # ── 4. Publica Server (self-contained, win-x64, single file) ───────────
+      - name: Publish Server
+        run: |
+          dotnet publish BlackSunCyber.Server/BlackSunCyber.Server.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -o publish/server
+
+      # ── 5. Publica ClientAgent (self-contained, win-x64, single file) ──────
+      - name: Publish ClientAgent
+        run: |
+          dotnet publish BlackSunCyber.ClientAgent/BlackSunCyber.ClientAgent.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -o publish/client
+
+      # ── 6. Publica Watcher (self-contained, win-x64, single file) ─────────
+      - name: Publish Watcher
+        run: |
+          dotnet publish BlackSunCyber.Watcher/BlackSunCyber.Watcher.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -o publish/watcher
+
+      # ── 7. Creeaza version.json (citit de Watcher si Updater) ─────────────
+      - name: Create version.json
+        shell: pwsh
+        run: |
+          $version = "${{ steps.version.outputs.VERSION }}"
+          $json = @{ version = $version } | ConvertTo-Json
+          $json | Set-Content publish/server/version.json
+          $json | Set-Content publish/client/version.json
+
+      # ── 8. Arhiveaza in ZIP ────────────────────────────────────────────────
+      - name: Zip artifacts
+        shell: pwsh
+        run: |
+          Compress-Archive -Path publish/server/* -DestinationPath BlackSunCyber-Server-${{ steps.version.outputs.VERSION }}.zip
+          Compress-Archive -Path publish/client/* -DestinationPath BlackSunCyber-Client-${{ steps.version.outputs.VERSION }}.zip
+          Compress-Archive -Path publish/watcher/* -DestinationPath BlackSunCyber-Watcher-${{ steps.version.outputs.VERSION }}.zip
+
+      # ── 9. Creeaza GitHub Release cu toate fisierele ───────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.TAG }}
+          name: "BlackSunCyber ${{ steps.version.outputs.VERSION }}"
+          body: |
+            🚀 **Deploy automat** din push pe branch `main`
+            
+            **Versiune:** `${{ steps.version.outputs.VERSION }}`
+            **Commit:** ${{ github.sha }}
+            **Autor:** ${{ github.actor }}
+          files: |
+            BlackSunCyber-Server-${{ steps.version.outputs.VERSION }}.zip
+            BlackSunCyber-Client-${{ steps.version.outputs.VERSION }}.zip
+            BlackSunCyber-Watcher-${{ steps.version.outputs.VERSION }}.zip
+          draft: false
+          prerelease: false

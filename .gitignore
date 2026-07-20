@@ -3,6 +3,30 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# ============================================================
+# BlackSunCyber - Reguli de securitate
+# ============================================================
+
+# IMPORTANT: Cheile Supabase (URL, SecretKey, PublishableKey) NU merg pe GitHub!
+# Fisierul appsettings.json din rădacina proiectului rămâne local pe PC Main.
+appsettings.Production.json
+# Pastreaza appsettings.json (contine structura, nu secrete in dev)
+# daca vrei sa ascunzi si pe acesta, decomenteza linia de mai jos:
+# appsettings.json
+
+# Fisierul watchersettings.json (contine config locala a serverului)
+# NU il ignora — e ok sa fie pe GitHub (nu contine secrete)
+
+# Fisiere generate automat de BlackSunWatcher pe PC Main (nu in sursa)
+wwwroot/downloads/client.zip
+wwwroot/downloads/*.zip
+
+# Log-uri updater generate pe clienti
+updater.log
+*.log
+
+# ============================================================
+
 # User-specific files
 *.rsuser
 *.suo
