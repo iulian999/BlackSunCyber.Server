@@ -60,7 +60,7 @@
                 </Grid>
 
                 <TextBlock Text="BlackSun Cyber" FontFamily="Rajdhani" FontSize="64" FontWeight="Bold"
-                           Foreground="#FFB829" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                           Foreground="Khaki" HorizontalAlignment="Center" Margin="0,0,0,10"/>
                 
                 <TextBlock Text="STAȚIE BLOCATĂ" FontFamily="Inter" FontSize="20" FontWeight="SemiBold"
                            Foreground="#8052FF" HorizontalAlignment="Center" Margin="0,0,0,40"/>

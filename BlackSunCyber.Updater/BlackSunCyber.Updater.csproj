@@ -1,18 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>BlackSunCyber.Updater</RootNamespace>
     <AssemblyName>BlackSunUpdater</AssemblyName>
-    <!-- Ruleaza fara fereastra de consola vizibila -->
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <!-- Single-file pentru distributie simpla -->
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- WinExe = ruleaza invizibil fara consola, compatibil cu toate versiunile Windows -->
+    <!-- Publicat normal (nu single-file) pentru compatibilitate maxima cu Windows vechi -->
   </PropertyGroup>
 
   <ItemGroup>
