@@ -2,7 +2,7 @@ name: Build & Release BlackSunCyber
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:   # permite si lansare manuala de pe GitHub
 
 jobs:
