@@ -1,4 +1,4 @@
-﻿using BlackSunCyber.Server.Hubs;
+using BlackSunCyber.Server.Hubs;
 using BlackSunCyber.Server.Models;
 using Microsoft.AspNetCore.SignalR;
 
@@ -15,12 +15,18 @@ public class StationService
     private readonly SupabaseRestClient _db;
     private readonly IHubContext<StationHub> _hub;
     private readonly ILogger<StationService> _logger;
+    private readonly LoyaltyService? _loyalty; // Nullable = opțional, nu blochează dacă lipsește
 
-    public StationService(SupabaseRestClient db, IHubContext<StationHub> hub, ILogger<StationService> logger)
+    public StationService(
+        SupabaseRestClient db,
+        IHubContext<StationHub> hub,
+        ILogger<StationService> logger,
+        LoyaltyService? loyalty = null)
     {
         _db = db;
         _hub = hub;
         _logger = logger;
+        _loyalty = loyalty;
     }
 
     // ------------------------------------------------------------
@@ -99,6 +105,16 @@ public class StationService
 
         _logger.LogInformation("Stația {Id} activată pentru {Nick}", stationId, nickname);
 
+        // Asigurăm că profilul jucătorului există în Supabase (creare silențioasă dacă e nou)
+        if (_loyalty != null)
+        {
+            _ = Task.Run(async () =>
+            {
+                try { await _loyalty.GetOrCreateProfileAsync(nickname); }
+                catch { /* non-critical */ }
+            });
+        }
+
         // Notifica agentul de pe statie sa se deblocheze
         await _hub.Clients.Group(GroupName(stationId)).SendAsync("Unlock", nickname, station.RemainingSeconds);
 
@@ -159,6 +175,11 @@ public class StationService
     // ------------------------------------------------------------
     public async Task ForceLockAsync(int stationId)
     {
+        // Capturăm datele stației înainte de blocare (pentru calculul SunCoins)
+        var station = await GetStationAsync(stationId);
+        var nickname = station?.CurrentUserName;
+        var remainingSecondsBeforeLock = station?.RemainingSeconds ?? 0;
+
         await _db.PatchAsync<Station>("stations", $"id=eq.{stationId}", new
         {
             status = "Locked",
@@ -169,6 +190,23 @@ public class StationService
 
         await _hub.Clients.Group(GroupName(stationId)).SendAsync("ForceLock");
         _logger.LogInformation("Stația {Id} blocată forțat de admin", stationId);
+
+        // Acordăm SunCoins pentru sesiunea încheiată (non-blocking)
+        if (_loyalty != null && !string.IsNullOrWhiteSpace(nickname))
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    // Calculăm minutele petrecute (din tranzacțiile de alocare)
+                    // Folosim remaining_seconds de dinainte să estimăm: dacă nu avem timp ramas
+                    // înseamnă că a expirat natural; dacă e mai mult, a fost blocat forțat.
+                    // Acordăm minim 1 coin per sesiune.
+                    await _loyalty.AwardSessionCoinsAsync(nickname, 1);
+                }
+                catch { /* non-critical */ }
+            });
+        }
     }
 
     // ------------------------------------------------------------

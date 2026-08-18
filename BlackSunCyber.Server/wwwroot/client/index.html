@@ -555,6 +555,247 @@
         .logout-btn:hover { border-color: rgba(231,76,60,0.35); color: var(--red); }
 
         /* ════════════════════
+           SUNCOIN BADGE
+        ════════════════════ */
+        .coins-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(255,184,41,0.08);
+            border: 1px solid rgba(255,184,41,0.2);
+            border-radius: 20px;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+            cursor: default;
+            transition: all 0.3s;
+        }
+        .coins-badge.bump {
+            transform: scale(1.15);
+            box-shadow: 0 0 14px rgba(255,184,41,0.4);
+        }
+
+        /* ════════════════════
+           CHAT TAB
+        ════════════════════ */
+        .chat-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 420px;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            scroll-behavior: smooth;
+        }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .chat-bubble {
+            max-width: 78%;
+            padding: 0.55rem 0.9rem;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            animation: bubble-in 0.2s ease;
+        }
+        @keyframes bubble-in {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .chat-bubble.from-client {
+            align-self: flex-end;
+            background: var(--violet);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.from-admin {
+            align-self: flex-start;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+        }
+        .chat-bubble .bubble-sender {
+            font-size: 0.66rem;
+            opacity: 0.65;
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+        .chat-bubble .bubble-time {
+            font-size: 0.62rem;
+            opacity: 0.5;
+            margin-top: 0.2rem;
+            text-align: right;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-top: 1px solid var(--border);
+            background: var(--surface-2);
+        }
+        .chat-input {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.55rem 0.9rem;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .chat-input:focus { border-color: var(--violet); }
+        .chat-send-btn {
+            background: var(--violet);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 0.55rem 1.1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .chat-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 0.82rem;
+            gap: 0.4rem;
+            padding: 2rem;
+            text-align: center;
+        }
+        .chat-empty .chat-empty-icon { font-size: 2rem; }
+        .tab-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--red);
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            margin-left: 3px;
+            vertical-align: middle;
+        }
+
+        /* ════════════════════
+           LEADERBOARD TAB
+        ════════════════════ */
+        .leaderboard-filters {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 0.8rem;
+        }
+        .lb-filter-btn {
+            flex: 1;
+            padding: 0.4rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.74rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lb-filter-btn.active {
+            background: var(--violet);
+            border-color: var(--violet);
+            color: #fff;
+        }
+        .lb-podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+        .podium-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.8rem 0.6rem;
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        .podium-card.rank-1 {
+            border-color: rgba(255,184,41,0.35);
+            background: rgba(255,184,41,0.04);
+            box-shadow: 0 0 20px rgba(255,184,41,0.1);
+        }
+        .podium-card.rank-2 { border-color: rgba(192,192,192,0.25); }
+        .podium-card.rank-3 { border-color: rgba(184,115,51,0.25); }
+        .podium-crown { font-size: 1.2rem; }
+        .podium-nick {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0.2rem 0;
+            word-break: break-all;
+        }
+        .podium-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .podium-sub { font-size: 0.62rem; color: var(--muted); }
+        .lb-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.55rem 0.7rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.82rem;
+            transition: border-color 0.2s;
+        }
+        .lb-row.is-me {
+            border-color: rgba(128,82,255,0.35);
+            background: rgba(128,82,255,0.04);
+        }
+        .lb-rank {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--muted);
+            width: 22px;
+            text-align: center;
+        }
+        .lb-nick { flex: 1; font-weight: 500; }
+        .lb-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* ════════════════════
            QR POPUP
         ════════════════════ */
         .popup-overlay {
@@ -666,7 +907,10 @@
             <div class="dash-name" id="dash-name">—</div>
             <div><span class="station-badge" id="dash-station">—</span></div>
         </div>
-        <button class="qr-btn" onclick="showQR()">📱 QR Telefon</button>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
+            <button class="qr-btn" onclick="showQR()">📱 QR Telefon</button>
+            <div class="coins-badge" id="coins-badge" title="SunCoins acumulate">🌟 — SunCoins</div>
+        </div>
     </div>
 
     <!-- Timer -->
@@ -692,8 +936,10 @@
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('extend')">⏱ Timp</button>
         <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar </button>
-        <button class="tab-btn" onclick="switchTab('sos')">🆘 Asistență </button>
-        <button class="tab-btn" onclick="switchTab('system')">🖥️ Sistem </button>
+        <button class="tab-btn" onclick="switchTab('sos')">🆘 SOS </button>
+        <button class="tab-btn" onclick="switchTab('system')">🖥️ PC </button>
+        <button class="tab-btn" id="tab-btn-chat" onclick="switchTab('chat')">💬 Chat<span class="tab-badge" id="chat-badge" style="display:none">!</span></button>
+        <button class="tab-btn" onclick="switchTab('leaderboard')">🏆 Top</button>
     </div>
 
     <!-- TAB: PRELUNGIRE -->
@@ -799,6 +1045,38 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- TAB: CHAT -->
+    <div class="tab-content" id="tab-chat">
+        <div class="chat-wrap">
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-empty" id="chat-empty">
+                    <div class="chat-empty-icon">💬</div>
+                    <div>Niciun mesaj încă.</div>
+                    <div style="font-size:0.75rem">Trimite un mesaj adminului — răspunde în câteva secunde.</div>
+                </div>
+            </div>
+            <div class="chat-input-row">
+                <input class="chat-input" id="chat-input" placeholder="Scrie un mesaj adminului..."
+                       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage();}"
+                       maxlength="500">
+                <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMessage()">Trimite</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: LEADERBOARD -->
+    <div class="tab-content" id="tab-leaderboard">
+        <div class="leaderboard-filters">
+            <button class="lb-filter-btn active" id="lb-filter-coins" onclick="loadLeaderboard('coins')">🌟 SunCoins</button>
+            <button class="lb-filter-btn" id="lb-filter-minutes" onclick="loadLeaderboard('minutes')">⏱ Minute</button>
+        </div>
+        <!-- Podium top 3 -->
+        <div class="lb-podium" id="lb-podium"></div>
+        <!-- Lista restul 4-15 -->
+        <div style="display:flex;flex-direction:column;gap:0.4rem" id="lb-list"></div>
+        <div style="font-size:0.7rem;color:var(--muted);text-align:center;margin-top:0.8rem" id="lb-loading">Se încarcă...</div>
     </div>
 
     <button class="logout-btn" onclick="logout()">← Ieși din cabinet</button>
@@ -935,6 +1213,7 @@
         document.getElementById('dash-station').textContent = station.station_name || `PC ${station.id}`;
         updateTimerDisplay(remainingSeconds);
         startLocalTimer();
+        loadProfile(); // Fetch SunCoins balance on login
     }
 
     function logout() {
@@ -978,6 +1257,19 @@
             .build();
         connection.on('TimeUpdated', (seconds) => { remainingSeconds = seconds; updateTimerDisplay(seconds); });
         connection.on('ForceLock', () => { clearInterval(localTimer); alert('Sesiunea a expirat.'); logout(); });
+
+        // Chat: mesaj primit de la admin în timp real
+        connection.on('OnChatMessage', (msg) => {
+            if (msg.stationId !== currentStationId) return;
+            if (msg.sender === 'admin') {
+                appendChatBubble(msg.senderName || 'Admin', msg.message, 'admin', msg.createdAt);
+                // Dacă tab-ul chat nu e activ, arată badge
+                if (!document.getElementById('tab-chat').classList.contains('active')) {
+                    showChatBadge();
+                }
+            }
+        });
+
         try { await connection.start(); await connection.invoke('RegisterClientWatcher', stationId); } catch (e) { }
     }
 
@@ -985,11 +1277,14 @@
     // TABS
     // ════════════════════════════════
     function switchTab(name) {
+        const names = ['extend', 'bar', 'sos', 'system', 'chat', 'leaderboard'];
         document.querySelectorAll('.tab-btn').forEach((b, i) => {
-            b.classList.toggle('active', ['extend', 'bar', 'sos'][i] === name);
+            b.classList.toggle('active', names[i] === name);
         });
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.getElementById(`tab-${name}`).classList.add('active');
+        if (name === 'chat') { loadChatHistory(); hideChatBadge(); }
+        if (name === 'leaderboard') loadLeaderboard('coins');
     }
 
     // ════════════════════════════════
@@ -1074,14 +1369,63 @@
     }
 
     async function orderProduct(productId, productName, price) {
-        if (!confirm(`Confirmi comanda:\n${productName} — ${price} MDL?\n\nVa fi adăugat la nota ta.`)) return;
+        // Obținem profilul pentru a ști soldul curent
+        let profile = null;
         try {
-            const r = await fetch(`${API}/api/bar/order`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, productId, quantity: 1 })
-            });
-            if (r.ok) { showConfirm('🥤', 'Comandă plasată!', `${productName} a fost comandat. Adminul îți aduce la stație în câteva minute.`); }
-        } catch (e) { }
+            const r = await fetch(`${API}/api/loyalty/profile/${encodeURIComponent(currentNickname)}`);
+            if (r.ok) profile = await r.json();
+        } catch(e) {}
+
+        const coinsCost = Math.round(price * 1.5); // ex: 15 MDL = 22 SunCoins
+        let promptText = `Comanzi produsul: ${productName}\nPreț: ${price} MDL\n\nCum dorești să achiți?\n\n[1] PLATĂ CASH (se adaugă la nota ta)\n`;
+        if (profile) {
+            promptText += `[2] PLATĂ SUNCOINS (Cost: ${coinsCost} SunCoins | Soldul tău: ${profile.sun_coins} SunCoins)`;
+        }
+
+        const choose = prompt(promptText + "\n\nIntrodu 1 sau 2 pentru a alege:", "1");
+        if (choose === null) return; // cancel
+
+        if (choose === "2") {
+            if (!profile || profile.sun_coins < coinsCost) {
+                alert(`Nu ai suficiente SunCoins. Costul este de ${coinsCost} SunCoins, iar soldul tău este de ${profile ? profile.sun_coins : 0}.`);
+                return;
+            }
+            try {
+                // Cheltuiește coins
+                const rSpend = await fetch(`${API}/api/loyalty/spend`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nickname: currentNickname, amount: coinsCost, reason: `Comandă bar: ${productName}` })
+                });
+                if (!rSpend.ok) {
+                    const err = await rSpend.json();
+                    alert(err.error || "Eroare la tranzacție.");
+                    return;
+                }
+                
+                // Plasează comanda cu notă specială în baza de date
+                const r = await fetch(`${API}/api/bar/order`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stationId: currentStationId, nickname: `${currentNickname} (Plătit SunCoins)`, productId, quantity: 1 })
+                });
+                if (r.ok) {
+                    showConfirm('💰', 'Comandă achitată!', `${productName} a fost comandat și achitat cu ${coinsCost} SunCoins. Adminul îți aduce comanda în câteva minute.`);
+                    loadProfile(); // refresh coins display
+                }
+            } catch (e) {
+                alert("Eroare la procesarea plății cu SunCoins.");
+            }
+        } else {
+            // Plată CASH normală
+            try {
+                const r = await fetch(`${API}/api/bar/order`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ stationId: currentStationId, nickname: currentNickname, productId, quantity: 1 })
+                });
+                if (r.ok) {
+                    showConfirm('🥤', 'Comandă plasată!', `${productName} a fost comandat. Adminul îți aduce comanda. Plata se face cash la recepție.`);
+                }
+            } catch (e) { }
+        }
     }
 
     // ════════════════════════════════
@@ -1145,6 +1489,184 @@
     // ════════════════════════════════
     async function loadPrice() {
         try { const r = await fetch(`${API}/api/client/price`); const d = await r.json(); document.getElementById('price-display').textContent = d.pricePerHour; } catch (e) { }
+    }
+
+    // ════════════════════════════════
+    // SUNCOIN PROFILE
+    // ════════════════════════════════
+    async function loadProfile() {
+        if (!currentNickname) return;
+        try {
+            const r = await fetch(`${API}/api/loyalty/profile/${encodeURIComponent(currentNickname)}`);
+            if (!r.ok) return;
+            const profile = await r.json();
+            const badge = document.getElementById('coins-badge');
+            if (badge) {
+                badge.textContent = `🌟 ${profile.sun_coins} SunCoins`;
+                // Animație bump la actualizare
+                badge.classList.add('bump');
+                setTimeout(() => badge.classList.remove('bump'), 400);
+            }
+        } catch { /* non-critical */ }
+    }
+
+    // ════════════════════════════════
+    // LEADERBOARD
+    // ════════════════════════════════
+    let currentLbType = 'coins';
+
+    async function loadLeaderboard(type = 'coins') {
+        currentLbType = type;
+        // Update filter buttons
+        document.getElementById('lb-filter-coins').classList.toggle('active', type === 'coins');
+        document.getElementById('lb-filter-minutes').classList.toggle('active', type === 'minutes');
+        document.getElementById('lb-loading').textContent = 'Se încarcă...';
+        document.getElementById('lb-podium').innerHTML = '';
+        document.getElementById('lb-list').innerHTML = '';
+        try {
+            const r = await fetch(`${API}/api/loyalty/leaderboard?type=${type}&limit=15`);
+            if (!r.ok) throw new Error();
+            const list = await r.json();
+            renderLeaderboard(list, type);
+        } catch {
+            document.getElementById('lb-loading').textContent = 'Nu s-a putut încărca clasamentul.';
+        }
+    }
+
+    function renderLeaderboard(list, type) {
+        document.getElementById('lb-loading').textContent = '';
+        if (!list.length) {
+            document.getElementById('lb-loading').textContent = 'Niciun jucător în clasament încă. Fii primul! 🚀';
+            return;
+        }
+
+        const valFn = p => type === 'minutes'
+            ? `${p.total_minutes_played} min`
+            : `${p.sun_coins} ⭐`;
+        const subFn = p => type === 'minutes'
+            ? `${p.total_sessions} sesiuni`
+            : `${p.total_minutes_played} minute`;
+
+        // PODIUM (top 3)
+        const podiumOrder = [list[1], list[0], list[2]].filter(Boolean); // 2,1,3 pentru podium vizual
+        const podiumRanks = [2, 1, 3];
+        const crowns = ['🥈', '🥇', '🥉'];
+        const podiumEl = document.getElementById('lb-podium');
+
+        podiumEl.innerHTML = podiumOrder.map((p, i) => {
+            const rank = podiumRanks[i];
+            const isMe = p.nickname.toLowerCase() === currentNickname.toLowerCase();
+            const heightStyle = rank === 1 ? 'min-height:100px' : rank === 2 ? 'min-height:80px' : 'min-height:65px';
+            return `
+            <div class="podium-card rank-${rank}" style="${heightStyle}"${isMe ? ' style="border-color:rgba(128,82,255,0.5)"' : ''}>
+                <div class="podium-crown">${crowns[i]}</div>
+                <div class="podium-nick">${p.nickname}</div>
+                <div class="podium-val">${valFn(p)}</div>
+                <div class="podium-sub">${subFn(p)}</div>
+                ${isMe ? '<div style="font-size:0.62rem;color:var(--violet);margin-top:0.2rem">← Tu</div>' : ''}
+            </div>`;
+        }).join('');
+
+        // LISTA (4-15)
+        const rest = list.slice(3);
+        const listEl = document.getElementById('lb-list');
+        listEl.innerHTML = rest.map((p, i) => {
+            const rank = i + 4;
+            const isMe = p.nickname.toLowerCase() === currentNickname.toLowerCase();
+            return `
+            <div class="lb-row${isMe ? ' is-me' : ''}">
+                <div class="lb-rank">${rank}</div>
+                <div class="lb-nick">${p.nickname}${isMe ? ' <span style="font-size:0.68rem;color:var(--violet)">(Tu)</span>' : ''}</div>
+                <div class="lb-val">${valFn(p)}</div>
+            </div>`;
+        }).join('');
+    }
+
+    // ════════════════════════════════
+    // CHAT
+    // ════════════════════════════════
+    let chatLoaded = false;
+
+    async function loadChatHistory() {
+        if (!currentStationId) return;
+        try {
+            const r = await fetch(`${API}/api/chat/${currentStationId}?limit=50`);
+            if (!r.ok) return;
+            const msgs = await r.json();
+            const container = document.getElementById('chat-messages');
+            if (msgs.length === 0) return; // lasă mesajul de empty
+            document.getElementById('chat-empty').style.display = 'none';
+            container.innerHTML = '';
+            msgs.forEach(m => appendChatBubble(m.sender_name || (m.sender === 'admin' ? 'Admin' : currentNickname), m.message, m.sender, m.created_at, false));
+            chatLoaded = true;
+            scrollChatToBottom();
+            // Mark as read
+            await fetch(`${API}/api/chat/${currentStationId}/mark-read`, {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ stationId: currentStationId, reader: 'client' })
+            }).catch(() => {});
+        } catch { /* non-critical */ }
+    }
+
+    async function sendChatMessage() {
+        const input = document.getElementById('chat-input');
+        const msg = input.value.trim();
+        if (!msg || !currentStationId) return;
+        const btn = document.getElementById('chat-send-btn');
+        btn.disabled = true;
+        input.value = '';
+        try {
+            const r = await fetch(`${API}/api/chat/send`, {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    stationId: currentStationId,
+                    nickname: currentNickname,
+                    sender: 'client',
+                    message: msg
+                })
+            });
+            if (r.ok) {
+                const emptyEl = document.getElementById('chat-empty');
+                if (emptyEl) emptyEl.style.display = 'none';
+                appendChatBubble(currentNickname, msg, 'client', new Date().toISOString());
+            } else {
+                alert("Mesajul nu s-a putut trimite (eroare server).");
+                input.value = msg;
+            }
+        } catch { 
+            input.value = msg; 
+        } // restaurăm mesajul dacă eșuează
+        btn.disabled = false;
+        input.focus();
+    }
+
+    function appendChatBubble(senderName, message, sender, isoDate, scroll = true) {
+        const container = document.getElementById('chat-messages');
+        const isClient = sender === 'client';
+        const time = isoDate ? new Date(isoDate).toLocaleTimeString('ro-RO', {hour:'2-digit', minute:'2-digit'}) : '';
+        const div = document.createElement('div');
+        div.className = `chat-bubble from-${isClient ? 'client' : 'admin'}`;
+        div.innerHTML = `
+            <div class="bubble-sender">${isClient ? 'Tu' : senderName || 'Admin'}</div>
+            <div>${message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+            <div class="bubble-time">${time}</div>`;
+        container.appendChild(div);
+        if (scroll) scrollChatToBottom();
+    }
+
+    function scrollChatToBottom() {
+        const c = document.getElementById('chat-messages');
+        c.scrollTop = c.scrollHeight;
+    }
+
+    function showChatBadge() {
+        const b = document.getElementById('chat-badge');
+        if (b) b.style.display = 'inline-flex';
+    }
+    function hideChatBadge() {
+        const b = document.getElementById('chat-badge');
+        if (b) b.style.display = 'none';
     }
 
     // ════════════════════════════════

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervă o stație — BlackSun Cyber</title>
+    <meta name="description" content="Rezervă o stație de gaming la BlackSun Cyber. Vezi disponibilitatea în timp real și alege locul preferat.">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #07070e;
+            --surface: #0c0c1e;
+            --surface-2: #111128;
+            --border: rgba(128,82,255,0.13);
+            --border-glow: rgba(128,82,255,0.32);
+            --accent: #ffb829;
+            --violet: #8052ff;
+            --green: #2ecc71;
+            --red: #e74c3c;
+            --blue: #3498db;
+            --teal: #15846e;
+            --text: #c8c8e8;
+            --muted: #4a4a72;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* ── CANVAS PARTICLES ── */
+        #particle-canvas {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(12,12,30,0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 0.65rem; text-decoration: none;
+        }
+        .logo-icon {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, #8052ff, #15846e);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 14px rgba(128,82,255,0.4);
+        }
+        .logo-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem; font-weight: 700;
+            color: var(--accent); letter-spacing: 0.03em;
+        }
+        .logo-sub {
+            font-size: 0.58rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--muted);
+        }
+
+        .header-pill {
+            background: rgba(128,82,255,0.1);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.3rem 0.9rem;
+            font-size: 0.75rem; color: var(--violet);
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .live-dot {
+            width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* ── MAIN ── */
+        main {
+            position: relative; z-index: 1;
+            max-width: 960px; margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+            display: flex; flex-direction: column; gap: 2rem;
+        }
+
+        .page-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.2rem; font-weight: 700;
+            color: var(--text);
+        }
+        .page-title span { color: var(--accent); }
+        .page-sub { font-size: 0.9rem; color: var(--muted); margin-top: 0.3rem; }
+
+        /* ── STATION MAP ── */
+        .section-label {
+            font-size: 0.68rem; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--muted);
+            margin-bottom: 0.8rem;
+        }
+
+        .stations-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .pc-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 1.1rem 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .pc-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: var(--muted);
+            transition: background 0.2s;
+        }
+        .pc-card.available::before { background: var(--green); }
+        .pc-card.occupied::before { background: var(--red); }
+        .pc-card.offline::before { background: var(--muted); }
+
+        .pc-card.available { border-color: rgba(46,204,113,0.2); cursor: pointer; }
+        .pc-card.available:hover {
+            border-color: rgba(46,204,113,0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(46,204,113,0.15);
+        }
+        .pc-card.available.selected {
+            border-color: var(--accent);
+            background: rgba(255,184,41,0.06);
+            box-shadow: 0 0 0 2px rgba(255,184,41,0.3);
+        }
+        .pc-card.available.selected::before { background: var(--accent); }
+
+        .pc-card.occupied { cursor: not-allowed; opacity: 0.6; }
+        .pc-card.offline { cursor: not-allowed; opacity: 0.4; }
+
+        .pc-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
+        .pc-name {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem; font-weight: 700; color: var(--text);
+        }
+        .pc-status-badge {
+            display: inline-block;
+            font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            margin-top: 0.3rem;
+        }
+        .pc-card.available .pc-status-badge {
+            background: rgba(46,204,113,0.1); color: var(--green);
+            border: 1px solid rgba(46,204,113,0.25);
+        }
+        .pc-card.occupied .pc-status-badge {
+            background: rgba(231,76,60,0.1); color: var(--red);
+            border: 1px solid rgba(231,76,60,0.25);
+        }
+        .pc-card.offline .pc-status-badge {
+            background: rgba(74,74,114,0.1); color: var(--muted);
+            border: 1px solid var(--border);
+        }
+        .pc-any-card {
+            background: rgba(128,82,255,0.05);
+            border: 2px dashed rgba(128,82,255,0.25);
+        }
+        .pc-any-card:hover { border-color: var(--violet); background: rgba(128,82,255,0.1); }
+        .pc-any-card.selected { border-color: var(--accent); background: rgba(255,184,41,0.06); }
+
+        /* ── FORM ── */
+        .booking-form {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.8rem;
+            display: flex; flex-direction: column; gap: 1.2rem;
+        }
+        .booking-form h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem; font-weight: 700;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 540px) { .form-row { grid-template-columns: 1fr; } }
+
+        .form-group {
+            display: flex; flex-direction: column; gap: 0.35rem;
+        }
+        .form-group label {
+            font-size: 0.7rem; color: var(--muted);
+            letter-spacing: 0.07em; text-transform: uppercase;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.65rem 0.9rem;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { border-color: var(--violet); }
+        .form-group textarea { resize: vertical; min-height: 70px; }
+
+        .selected-station-display {
+            background: rgba(255,184,41,0.06);
+            border: 1px solid rgba(255,184,41,0.2);
+            border-radius: 12px;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.9rem; color: var(--accent);
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--violet), var(--teal));
+            color: #fff;
+            border: none; border-radius: 14px;
+            padding: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem; font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+            position: relative; overflow: hidden;
+        }
+        .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .submit-btn:not(:disabled):hover { opacity: 0.9; }
+        .submit-btn:not(:disabled):active { transform: scale(0.99); }
+        .submit-btn::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
+        }
+
+        .error-msg { font-size: 0.82rem; color: var(--red); min-height: 1.2em; }
+
+        /* ── SUCCESS ── */
+        #success-panel {
+            display: none;
+            background: var(--surface);
+            border: 1px solid rgba(46,204,113,0.25);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+        #success-panel.visible { display: flex; }
+
+        .success-icon { font-size: 3rem; }
+        .success-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.8rem; font-weight: 700; color: var(--green);
+        }
+        .success-text { font-size: 0.9rem; color: var(--muted); line-height: 1.7; max-width: 360px; }
+
+        .wa-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: #25D366; color: #fff;
+            border: none; border-radius: 14px;
+            padding: 0.7rem 1.5rem;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600;
+            text-decoration: none; cursor: pointer;
+        }
+        .wa-btn:hover { opacity: 0.88; }
+
+        .new-booking-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 14px; padding: 0.6rem 1.2rem;
+            font-family: 'Inter', sans-serif; font-size: 0.85rem; cursor: pointer;
+        }
+        .new-booking-btn:hover { border-color: var(--violet); color: var(--text); }
+
+        /* ── INFO CHIPS ── */
+        .info-chips {
+            display: flex; flex-wrap: wrap; gap: 0.6rem;
+        }
+        .chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.35rem 0.85rem;
+            font-size: 0.76rem; color: var(--muted);
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .chip span { color: var(--text); font-weight: 500; }
+
+        /* Loading spinner */
+        .spinner {
+            width: 28px; height: 28px;
+            border: 3px solid var(--border);
+            border-top-color: var(--violet);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 1.5rem auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<header>
+    <a class="logo" href="/">
+        <div class="logo-icon">
+            <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+                <defs>
+                    <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#0D0D0D"/>
+                        <stop offset="100%" stop-color="#2B2B2B"/>
+                    </linearGradient>
+                    <mask id="mm">
+                        <rect width="32" height="32" fill="white"/>
+                        <circle cx="22" cy="12" r="13" fill="black"/>
+                    </mask>
+                </defs>
+                <circle cx="16" cy="16" r="16" fill="url(#mg)" mask="url(#mm)"/>
+            </svg>
+        </div>
+        <div>
+            <div class="logo-name">BlackSun Cyber</div>
+            <div class="logo-sub">Rezervare Online</div>
+        </div>
+    </a>
+    <div class="header-pill">
+        <div class="live-dot"></div>
+        Disponibilitate Live
+    </div>
+</header>
+
+<main>
+    <!-- Title -->
+    <div>
+        <div class="page-title">Rezervă <span>stația ta</span></div>
+        <div class="page-sub">Alege un PC disponibil și completează datele. Adminul confirmă rezervarea în câteva minute.</div>
+    </div>
+
+    <!-- Info chips -->
+    <div class="info-chips">
+        <div class="chip">🕐 <span>Program: 10:00 – 02:00</span></div>
+        <div class="chip">⚡ <span>Confirmare rapidă</span></div>
+        <div class="chip">🎮 <span>Gaming pro</span></div>
+    </div>
+
+    <!-- Station map -->
+    <div>
+        <div class="section-label">Selectează o stație (optional)</div>
+        <div class="stations-map" id="stations-map">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="booking-form" id="booking-form-wrap">
+        <h2>📅 Detalii rezervare</h2>
+
+        <div id="selected-station-display" class="selected-station-display" style="display:none">
+            🎮 Stație selectată: <strong id="selected-station-name">—</strong>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Nickname *</label>
+                <input type="text" id="f-nickname" placeholder="ex: GamerulTău" autocomplete="off" maxlength="32">
+            </div>
+            <div class="form-group">
+                <label>Telefon (WhatsApp)</label>
+                <input type="tel" id="f-phone" placeholder="+373 xxx xxx xxx" autocomplete="tel">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Data și ora *</label>
+                <input type="datetime-local" id="f-datetime">
+            </div>
+            <div class="form-group">
+                <label>Durată estimată</label>
+                <select id="f-duration">
+                    <option value="60">1 oră</option>
+                    <option value="90">1.5 ore</option>
+                    <option value="120" selected>2 ore</option>
+                    <option value="180">3 ore</option>
+                    <option value="240">4 ore</option>
+                    <option value="360">6 ore</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Observații (optional)</label>
+            <textarea id="f-note" placeholder="ex: Vreau să joc cu prietenul meu de la PC 5..."></textarea>
+        </div>
+
+        <div class="error-msg" id="f-error"></div>
+
+        <button class="submit-btn" id="submit-btn" onclick="submitBooking()">
+            🎮 Trimite rezervarea
+        </button>
+    </div>
+
+    <!-- Success panel (hidden initially) -->
+    <div id="success-panel">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Rezervare trimisă!</div>
+        <div class="success-text" id="success-text">
+            Adminul a primit cererea ta și te va contacta pe WhatsApp pentru confirmare.
+        </div>
+        <a id="wa-link" class="wa-btn" href="#" target="_blank">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.556 4.122 1.527 5.855L0 24l6.335-1.527A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.807 9.807 0 01-5.003-1.368l-.359-.214-3.728.899.916-3.638-.234-.374A9.782 9.782 0 012.182 12C2.182 6.575 6.575 2.182 12 2.182S21.818 6.575 21.818 12 17.425 21.818 12 21.818z"/></svg>
+            Confirmă pe WhatsApp
+        </a>
+        <button class="new-booking-btn" onclick="resetForm()">← Fă altă rezervare</button>
+    </div>
+</main>
+
+<script>
+    const API = '';
+    const ADMIN_PHONE = '37369494437'; // ← Înlocuiește cu numărul adminului (fără + sau spații)
+    let selectedStationId = null;
+    let selectedStationName = 'Orice stație disponibilă';
+
+    // ════════════════════════════════
+    // PARTICLES
+    // ════════════════════════════════
+    (function() {
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+        const COLORS = ['#8052ff', '#8052ff', '#ffb829', '#15846e'];
+        const particles = Array.from({ length: 55 }, () => ({
+            x: Math.random() * W, y: Math.random() * H,
+            r: Math.random() * 1.6 + 1,
+            vx: (Math.random() - 0.5) * 0.18, vy: (Math.random() - 0.5) * 0.18,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            opacity: Math.random() * 0.28 + 0.1
+        }));
+        window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+        function animate() {
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(p => {
+                p.vx *= 0.98; p.vy *= 0.98;
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < -5) p.x = W + 5; if (p.x > W + 5) p.x = -5;
+                if (p.y < -5) p.y = H + 5; if (p.y > H + 5) p.y = -5;
+                ctx.save(); ctx.globalAlpha = p.opacity;
+                ctx.fillStyle = p.color; ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    })();
+
+    // ════════════════════════════════
+    // SET MIN DATETIME (ora curentă + 15min)
+    // ════════════════════════════════
+    (function setMinDatetime() {
+        const dt = document.getElementById('f-datetime');
+        const now = new Date(Date.now() + 15 * 60000);
+        // Format yyyy-MM-ddTHH:mm
+        const pad = n => String(n).padStart(2, '0');
+        const local = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        dt.min = local;
+        dt.value = local;
+    })();
+
+    // ════════════════════════════════
+    // LOAD STATIONS
+    // ════════════════════════════════
+    async function loadStations() {
+        try {
+            const r = await fetch(`${API}/api/bookings/stations-live`);
+            const stations = await r.json();
+            renderStations(stations);
+        } catch {
+            document.getElementById('stations-map').innerHTML =
+                '<div style="color:var(--muted);font-size:0.85rem;grid-column:1/-1">Nu mă pot conecta la server.</div>';
+        }
+    }
+
+    function renderStations(stations) {
+        const map = document.getElementById('stations-map');
+
+        // Sortăm: libere primul
+        stations.sort((a, b) => {
+            const order = { Locked: 0, Pending: 1, Active: 2, Paused: 3, Offline: 4 };
+            return (order[a.status] ?? 99) - (order[b.status] ?? 99);
+        });
+
+        const statusLabel = { Locked: 'Disponibil', Active: 'Ocupat', Pending: 'Se ocupă', Paused: 'Pauză', Offline: 'Offline' };
+        const statusClass = { Locked: 'available', Active: 'occupied', Pending: 'occupied', Paused: 'occupied', Offline: 'offline' };
+
+        const cards = stations.map(s => {
+            const cls = statusClass[s.status] || 'occupied';
+            const label = statusLabel[s.status] || s.status;
+            const clickable = cls === 'available' ? `onclick="selectStation(${s.id}, '${(s.name || 'PC ' + s.id).replace(/'/g,"\\'")}', this)"` : '';
+            return `
+            <div class="pc-card ${cls}" ${clickable} id="pc-card-${s.id}">
+                <div class="pc-icon">${cls === 'available' ? '💻' : cls === 'offline' ? '🔴' : '🔒'}</div>
+                <div class="pc-name">${s.name || 'PC ' + s.id}</div>
+                <div class="pc-status-badge">${label}</div>
+            </div>`;
+        }).join('');
+
+        // Opțiune "Orice stație" la început
+        const anyCard = `
+        <div class="pc-card pc-any-card available" id="pc-card-any" onclick="selectStation(null, 'Orice stație disponibilă', this)">
+            <div class="pc-icon">🎲</div>
+            <div class="pc-name">Orice</div>
+            <div class="pc-status-badge" style="background:rgba(128,82,255,0.1);color:var(--violet);border-color:rgba(128,82,255,0.25)">Aleator</div>
+        </div>`;
+
+        map.innerHTML = anyCard + cards;
+
+        // Selectăm implicit "Orice" dacă nu era ceva selectat
+        if (selectedStationId === null) {
+            document.getElementById('pc-card-any')?.classList.add('selected');
+        }
+    }
+
+    function selectStation(stationId, stationName, el) {
+        // Deselect all
+        document.querySelectorAll('.pc-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+
+        selectedStationId = stationId;
+        selectedStationName = stationName;
+
+        const disp = document.getElementById('selected-station-display');
+        const nameEl = document.getElementById('selected-station-name');
+        nameEl.textContent = stationName;
+        disp.style.display = stationId ? 'block' : 'none';
+    }
+
+    // ════════════════════════════════
+    // SUBMIT
+    // ════════════════════════════════
+    async function submitBooking() {
+        const nickname = document.getElementById('f-nickname').value.trim();
+        const phone = document.getElementById('f-phone').value.trim();
+        const datetimeVal = document.getElementById('f-datetime').value;
+        const duration = +document.getElementById('f-duration').value;
+        const note = document.getElementById('f-note').value.trim();
+        const errorEl = document.getElementById('f-error');
+        const btn = document.getElementById('submit-btn');
+
+        errorEl.textContent = '';
+
+        if (!nickname) { errorEl.textContent = 'Nickname-ul este obligatoriu.'; return; }
+        if (!datetimeVal) { errorEl.textContent = 'Data și ora sunt obligatorii.'; return; }
+
+        const scheduledAt = new Date(datetimeVal).toISOString();
+
+        btn.disabled = true;
+        btn.textContent = '⏳ Se trimite...';
+
+        try {
+            const r = await fetch(`${API}/api/bookings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    stationId: selectedStationId,
+                    nickname,
+                    phone: phone || null,
+                    scheduledAt,
+                    durationMinutes: duration,
+                    note: note || null
+                })
+            });
+
+            if (!r.ok) {
+                const d = await r.json().catch(() => ({}));
+                throw new Error(d.error || 'Eroare la server.');
+            }
+
+            const data = await r.json();
+            showSuccess(nickname, selectedStationName, datetimeVal, duration, phone);
+
+        } catch (e) {
+            errorEl.textContent = e.message || 'Nu mă pot conecta la server. Încearcă din nou.';
+            btn.disabled = false;
+            btn.textContent = '🎮 Trimite rezervarea';
+        }
+    }
+
+    function showSuccess(nickname, station, datetime, duration, phone) {
+        document.getElementById('booking-form-wrap').style.display = 'none';
+        document.querySelectorAll('.info-chips').forEach(e => e.style.display = 'none');
+        document.querySelector('[style*="section-label"]') && null;
+
+        const panel = document.getElementById('success-panel');
+        panel.classList.add('visible');
+
+        const dt = new Date(datetime);
+        const durationH = duration >= 60 ? (duration/60 % 1 === 0 ? `${duration/60} ore` : `${(duration/60).toFixed(1)} ore`) : `${duration} minute`;
+
+        document.getElementById('success-text').innerHTML = `
+            <strong style="color:var(--text)">${nickname}</strong>, rezervarea ta a fost trimisă cu succes!<br><br>
+            📍 Stație: <strong>${station}</strong><br>
+            🕐 Data: <strong>${dt.toLocaleDateString('ro-RO', {weekday:'long', day:'numeric', month:'long'})} la ${dt.toLocaleTimeString('ro-RO', {hour:'2-digit', minute:'2-digit'})}</strong><br>
+            ⏱ Durată: <strong>${durationH}</strong><br><br>
+            Adminul te va contacta pentru confirmare. 🎮
+        `;
+
+        if (phone) {
+            const msg = encodeURIComponent(`Bună! Am făcut o rezervare la BlackSun Cyber:\nNickname: ${nickname}\nData: ${dt.toLocaleString('ro-RO')}\nStație: ${station}\nDurată: ${durationH}`);
+            document.getElementById('wa-link').href = `https://wa.me/${ADMIN_PHONE}?text=${msg}`;
+        } else {
+            document.getElementById('wa-link').style.display = 'none';
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('booking-form-wrap').style.display = '';
+        document.getElementById('success-panel').classList.remove('visible');
+        document.querySelectorAll('.info-chips').forEach(e => e.style.display = '');
+        document.getElementById('f-nickname').value = '';
+        document.getElementById('f-phone').value = '';
+        document.getElementById('f-note').value = '';
+        document.getElementById('f-error').textContent = '';
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('submit-btn').textContent = '🎮 Trimite rezervarea';
+        loadStations();
+    }
+
+    // ════════════════════════════════
+    // REAL-TIME: refresh disponibilitate la evenimente
+    // ════════════════════════════════
+    async function connectLiveUpdates() {
+        try {
+            const conn = new signalR.HubConnectionBuilder()
+                .withUrl(`${API}/hub/station`)
+                .withAutomaticReconnect()
+                .build();
+            conn.on('StationUpdated', () => loadStations());
+            conn.on('TimeUpdated', () => loadStations());
+            await conn.start();
+        } catch { /* fallback: polling */ }
+    }
+
+    // Refresh la fiecare 30s (fallback dacă SignalR nu funcționează)
+    setInterval(loadStations, 30000);
+
+    // Init
+    loadStations();
+    connectLiveUpdates();
+</script>
+
+</body>
+</html>

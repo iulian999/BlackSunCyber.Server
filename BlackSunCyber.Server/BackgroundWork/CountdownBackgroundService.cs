@@ -1,4 +1,4 @@
-﻿using BlackSunCyber.Server.Hubs;
+using BlackSunCyber.Server.Hubs;
 using BlackSunCyber.Server.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -31,37 +31,44 @@ public class CountdownBackgroundService : BackgroundService
         var interval = TimeSpan.FromSeconds(10);
         using var timer = new PeriodicTimer(interval);
 
-        while (await timer.WaitForNextTickAsync(stoppingToken))
+        try
         {
-            try
+            while (await timer.WaitForNextTickAsync(stoppingToken))
             {
-                using var scope = _scopeFactory.CreateScope();
-                var stationService = scope.ServiceProvider.GetRequiredService<StationService>();
-
-                var stations = await stationService.GetAllStationsAsync();
-
-                foreach (var station in stations.Where(s => s.Status == "Active"))
+                try
                 {
-                    var newRemaining = Math.Max(0, station.RemainingSeconds - (int)interval.TotalSeconds);
+                    using var scope = _scopeFactory.CreateScope();
+                    var stationService = scope.ServiceProvider.GetRequiredService<StationService>();
 
-                    if (newRemaining == 0)
-                    {
-                        await stationService.ForceLockAsync(station.Id);
-                        _logger.LogInformation("Timp expirat — stația {Id} blocată automat.", station.Id);
-                    }
-                    else
-                    {
-                        await stationService.SetRemainingSecondsAsync(station.Id, newRemaining);
+                    var stations = await stationService.GetAllStationsAsync();
 
-                        await _hub.Clients.Group(StationService.GroupName(station.Id))
-                            .SendAsync("TimeUpdated", newRemaining, cancellationToken: stoppingToken);
+                    foreach (var station in stations.Where(s => s.Status == "Active"))
+                    {
+                        var newRemaining = Math.Max(0, station.RemainingSeconds - (int)interval.TotalSeconds);
+
+                        if (newRemaining == 0)
+                        {
+                            await stationService.ForceLockAsync(station.Id);
+                            _logger.LogInformation("Timp expirat — stația {Id} blocată automat.", station.Id);
+                        }
+                        else
+                        {
+                            await stationService.SetRemainingSecondsAsync(station.Id, newRemaining);
+
+                            await _hub.Clients.Group(StationService.GroupName(station.Id))
+                                .SendAsync("TimeUpdated", newRemaining, cancellationToken: stoppingToken);
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Eroare în countdown background service");
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Eroare în countdown background service");
-            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Countdown background service oprit.");
         }
     }
 }

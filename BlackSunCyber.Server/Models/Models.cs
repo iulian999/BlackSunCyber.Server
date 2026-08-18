@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace BlackSunCyber.Server.Models;
 
@@ -183,3 +183,121 @@ public record SosRequest(int StationId, string Nickname, string Type, string Mes
 public record ResolveBarOrderRequest(long OrderId);
 
 public record ResolveSosRequest(long SosId);
+
+// ---- Loyalty / SunCoins ----
+
+public class PlayerProfile
+{
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
+
+    [JsonPropertyName("nickname")]
+    public string Nickname { get; set; } = string.Empty;
+
+    [JsonPropertyName("sun_coins")]
+    public int SunCoins { get; set; }
+
+    [JsonPropertyName("total_minutes_played")]
+    public int TotalMinutesPlayed { get; set; }
+
+    [JsonPropertyName("total_sessions")]
+    public int TotalSessions { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public DateTime? CreatedAt { get; set; }
+
+    [JsonPropertyName("updated_at")]
+    public DateTime? UpdatedAt { get; set; }
+}
+
+public class SunCoinTransaction
+{
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
+
+    [JsonPropertyName("nickname")]
+    public string Nickname { get; set; } = string.Empty;
+
+    [JsonPropertyName("amount")]
+    public int Amount { get; set; }
+
+    [JsonPropertyName("reason")]
+    public string? Reason { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public DateTime? CreatedAt { get; set; }
+}
+
+// ---- Chat ----
+
+public class ChatMessage
+{
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
+
+    [JsonPropertyName("station_id")]
+    public int StationId { get; set; }
+
+    [JsonPropertyName("sender")]
+    public string Sender { get; set; } = string.Empty; // "client" sau "admin"
+
+    [JsonPropertyName("sender_name")]
+    public string? SenderName { get; set; }
+
+    [JsonPropertyName("message")]
+    public string Message { get; set; } = string.Empty;
+
+    [JsonPropertyName("is_read")]
+    public bool IsRead { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public DateTime? CreatedAt { get; set; }
+}
+
+// ---- Bookings ----
+
+public class Booking
+{
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
+
+    [JsonPropertyName("station_id")]
+    public int? StationId { get; set; }
+
+    [JsonPropertyName("nickname")]
+    public string Nickname { get; set; } = string.Empty;
+
+    [JsonPropertyName("phone")]
+    public string? Phone { get; set; }
+
+    [JsonPropertyName("scheduled_at")]
+    public DateTime ScheduledAt { get; set; }
+
+    [JsonPropertyName("duration_minutes")]
+    public int DurationMinutes { get; set; } = 60;
+
+    [JsonPropertyName("status")]
+    public string Status { get; set; } = "pending"; // pending | confirmed | cancelled | completed
+
+    [JsonPropertyName("note")]
+    public string? Note { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public DateTime? CreatedAt { get; set; }
+}
+
+// ---- DTO-uri noi ----
+
+public record SpendCoinsRequest(string Nickname, int Amount, string Reason);
+
+public record SendChatMessageRequest(int StationId, string Nickname, string Sender, string Message);
+
+public record MarkReadRequest(int StationId, string Reader); // "admin" sau "client"
+
+public record CreateBookingRequest(
+    int? StationId,
+    string Nickname,
+    string? Phone,
+    DateTime ScheduledAt,
+    int DurationMinutes,
+    string? Note);

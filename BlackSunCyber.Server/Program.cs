@@ -2,7 +2,23 @@ using BlackSunCyber.Server.BackgroundWork;
 using BlackSunCyber.Server.Hubs;
 using BlackSunCyber.Server.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+// Detectăm folderul rădăcină al proiectului.
+// Când rulăm din Visual Studio (Debug), AppContext.BaseDirectory e bin\Debug\net10.0\.
+// Când rulăm ca Windows Service instalat, executabilul e chiar acolo unde e publicat,
+// deci wwwroot se află lângă executabil.
+// Logica: dacă wwwroot există lângă executabil → folosim acel folder.
+//         Dacă nu → mergem 3 niveluri mai sus (spre rădăcina proiectului sursă).
+var baseDir = AppContext.BaseDirectory;
+var projectRoot = Directory.Exists(Path.Combine(baseDir, "wwwroot"))
+    ? baseDir
+    : Path.GetFullPath(Path.Combine(baseDir, @"..\..\..\"));
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = projectRoot,
+    WebRootPath = Path.Combine(projectRoot, "wwwroot"),
+});
 
 // ------------------------------------------------------------
 // Rulare ca Windows Service: dacă executabilul e pornit ca serviciu
@@ -27,6 +43,7 @@ _ = builder.Configuration["Supabase:SecretKey"]
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<SupabaseRestClient>();
 builder.Services.AddScoped<StationService>();
+builder.Services.AddScoped<LoyaltyService>();
 builder.Services.AddHostedService<CountdownBackgroundService>();
 
 builder.Services.AddSignalR();

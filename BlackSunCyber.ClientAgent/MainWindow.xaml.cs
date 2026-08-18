@@ -32,6 +32,9 @@ public partial class MainWindow : Window
         LoadConfig();
         SystemLockHelper.SetTaskManagerDisabled(false);
 
+        // Inițializăm SDK-ul de Discord RPC
+        DiscordPresenceService.Initialize();
+
         _connection = new AgentConnection(_config);
         _connection.OnShowNicknamePrompt += minutes =>
             Dispatcher.Invoke(() => ShowPendingState(minutes));
@@ -106,6 +109,9 @@ public partial class MainWindow : Window
         _widgetWindow?.StopTimer();
         _widgetWindow?.DeactivateWidgetMode();
         SystemLockHelper.SetTaskManagerDisabled(true);
+
+        // Ștergem prezența pe Discord a sesiunii vechi
+        DiscordPresenceService.ClearPresence();
 
         // Reset toggle cabinet button for next session
         ToggleCabinetBtn.Content = "▼  Ascunde cabinet";
@@ -194,6 +200,10 @@ public partial class MainWindow : Window
 
         // Task Manager reactivat — clientul poate folosi PC-ul normal
         SystemLockHelper.SetTaskManagerDisabled(false);
+
+        // Afișăm statusul activ de gaming pe profilul de Discord al jucătorului
+        string stationName = $"PC {string.Format("{0:00}", _config.StationId)}";
+        DiscordPresenceService.SetPresence(stationName, nickname);
 
         this.Show();
         this.WindowState = WindowState.Maximized;
@@ -316,6 +326,11 @@ public partial class MainWindow : Window
             System.Windows.MessageBox.Show(
                 "Sesiune inactiva! Achitati timpul la receptie pentru utilizare.",
                 "BlackSun Cyber", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        else
+        {
+            // Oprim Discord RPC curat la închiderea programului
+            DiscordPresenceService.Shutdown();
         }
         base.OnClosing(e);
     }

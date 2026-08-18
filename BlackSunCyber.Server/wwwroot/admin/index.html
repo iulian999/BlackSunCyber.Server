@@ -972,6 +972,238 @@
         .toast-msg.show { transform: translateY(0); opacity: 1; box-shadow: 0 0 30px rgba(255,184,41,0.5); }
         .toast-msg.success { border: 2px solid var(--green); color: var(--green); box-shadow: 0 0 32px rgba(46,204,113,0.6); }
         .toast-msg.error { border: 2px solid var(--accent); color: var(--accent); box-shadow: 0 0 32px rgba(255,184,41,0.7); }
+
+        /* ═══════════════════════════════
+           ADMIN CHAT
+        ═══════════════════════════════ */
+        .chat-admin-container {
+            display: flex;
+            height: 480px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .chat-admin-sidebar {
+            width: 220px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+        }
+        .chat-sidebar-header {
+            padding: 0.8rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+        .chat-channels-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-channel-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(128,82,255,0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+        .chat-channel-item:hover {
+            background: rgba(128,82,255,0.04);
+        }
+        .chat-channel-item.active {
+            background: rgba(128,82,255,0.08);
+            border-left: 3px solid var(--violet);
+        }
+        .chat-channel-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .chat-channel-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .chat-channel-status {
+            font-size: 0.7rem;
+            color: var(--muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-channel-badge {
+            background: var(--red);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 0.15rem 0.45rem;
+        }
+        .chat-admin-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            min-height: 0;
+        }
+        .chat-admin-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            min-height: 0;
+        }
+        .chat-admin-messages::-webkit-scrollbar { width: 4px; }
+        .chat-admin-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .chat-bubble {
+            max-width: 78%;
+            padding: 0.55rem 0.9rem;
+            border-radius: 14px;
+            font-size: 0.82rem;
+            line-height: 1.4;
+        }
+        .chat-bubble.from-admin {
+            align-self: flex-end;
+            background: var(--violet);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.from-client {
+            align-self: flex-start;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+        }
+        .chat-bubble .bubble-sender {
+            font-size: 0.64rem;
+            opacity: 0.7;
+            margin-bottom: 0.15rem;
+            font-weight: 600;
+        }
+        .chat-bubble .bubble-time {
+            font-size: 0.58rem;
+            opacity: 0.5;
+            margin-top: 0.2rem;
+            text-align: right;
+        }
+        .chat-admin-input-row {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            border-top: 1px solid var(--border);
+            background: var(--surface-2);
+        }
+        .chat-admin-input {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.55rem 0.9rem;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+        }
+        .chat-admin-input:focus { border-color: var(--violet); }
+        .chat-admin-send-btn {
+            background: var(--violet);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 0.55rem 1.1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .chat-admin-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            gap: 0.5rem;
+        }
+
+        /* ═══════════════════════════════
+           ADMIN BOOKINGS
+        ═══════════════════════════════ */
+        .booking-item {
+            background: rgba(128,82,255,0.03);
+            border: 1px solid rgba(128,82,255,0.12);
+            border-radius: 14px;
+            padding: 0.9rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+        .booking-item:hover {
+            border-color: rgba(128,82,255,0.3);
+            background: rgba(128,82,255,0.06);
+        }
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(128,82,255,0.08);
+            padding-bottom: 0.4rem;
+        }
+        .booking-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .booking-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+        }
+        .booking-status.pending { background: rgba(255,184,41,0.1); color: var(--accent); }
+        .booking-status.confirmed { background: rgba(46,204,113,0.1); color: var(--green); }
+        .booking-status.cancelled { background: rgba(231,76,60,0.1); color: var(--red); }
+        .booking-status.completed { background: rgba(52,152,219,0.1); color: var(--blue); }
+        .booking-details-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+        .booking-details-row span strong {
+            color: var(--accent);
+        }
+        .booking-note {
+            font-size: 0.76rem;
+            color: var(--muted);
+            background: rgba(0,0,0,0.2);
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            border: 1px solid rgba(128,82,255,0.05);
+        }
+        .booking-actions {
+            display: flex;
+            gap: 0.4rem;
+            justify-content: flex-end;
+            margin-top: 0.2rem;
+        }
     </style>
 </head>
 <body>
@@ -1089,6 +1321,8 @@
             <button class="tab-btn" onclick="switchTab('notifications')">Cereri <span id="notif-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.68rem;margin-left:4px">0</span></button>
             <button class="tab-btn" onclick="switchTab('bar')">🥤 Bar <span id="bar-badge" style="display:none;background:var(--accent);color:#000;border-radius:10px;padding:0 5px;font-size:0.68rem;margin-left:4px">0</span></button>
             <button class="tab-btn" onclick="switchTab('sos')">🆘 SOS <span id="sos-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.68rem;margin-left:4px">0</span></button>
+            <button class="tab-btn" onclick="switchTab('bookings')">📅 Rezervări <span id="bookings-badge" style="display:none;background:var(--blue);color:#fff;border-radius:10px;padding:0 5px;font-size:0.68rem;margin-left:4px">0</span></button>
+            <button class="tab-btn" onclick="switchTab('chat')">💬 Chat <span id="admin-chat-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;padding:0 5px;font-size:0.68rem;margin-left:4px">0</span></button>
             <button class="tab-btn" onclick="switchTab('bar-products')">📦 Produse Bar</button>
             <button class="tab-btn" onclick="switchTab('revenue')">Încasări</button>
             <button class="tab-btn" onclick="switchTab('settings')">Setări</button>
@@ -1163,6 +1397,49 @@
             <div class="form-row">
                 <div class="form-group"><label>Tarif MDL / oră</label><input type="number" id="price-input" value="20" min="1" step="0.5" style="width:110px"></div>
                 <button class="btn btn-primary" onclick="updatePrice()">Salvează tariful</button>
+            </div>
+        </div>
+
+        <!-- REZERVARI -->
+        <div class="tab-content" id="tab-bookings" style="align-items:stretch">
+            <p class="hint" style="margin-bottom:0.8rem;text-align:center">Rezervări programate de la clienți.</p>
+            <div class="notif-list" id="bookings-list"><div class="notif-empty">Nicio rezervare înregistrată.</div></div>
+            <button class="btn btn-ghost" style="margin-top:0.8rem;font-size:0.76rem;align-self:center" onclick="loadBookings()">🔄 Reîncarcă</button>
+        </div>
+
+        <!-- CHAT CLIENT-ADMIN -->
+        <div class="tab-content" id="tab-chat" style="align-items:stretch">
+            <div class="chat-admin-container">
+                <!-- Sidebar cu stațiile -->
+                <div class="chat-admin-sidebar">
+                    <div class="chat-sidebar-header">Stații active</div>
+                    <div class="chat-channels-list" id="chat-channels-list">
+                        <!-- Listate din JS -->
+                    </div>
+                </div>
+                <!-- Fereastra de chat principală -->
+                <div class="chat-admin-main">
+                    <!-- Mesaj default când nu e nimic selectat -->
+                    <div class="chat-admin-empty" id="chat-admin-empty-wrap">
+                        <div style="font-size:2rem">💬</div>
+                        <div>Selectează un calculator</div>
+                        <div style="font-size:0.75rem;color:var(--muted)">pentru a discuta în timp real cu clientul</div>
+                    </div>
+                    <!-- Chat activ -->
+                    <div id="chat-admin-messages-wrap" style="display:none;flex-direction:column;flex:1;min-height:0">
+                        <div style="padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-weight:600;font-size:0.9rem;display:flex;align-items:center;justify-content:space-between">
+                            <span>Discuție cu: <strong id="chat-current-pc" style="color:var(--accent)">—</strong></span>
+                        </div>
+                        <div class="chat-admin-messages" id="chat-admin-messages">
+                            <!-- Bule mesaje -->
+                        </div>
+                        <div class="chat-admin-input-row">
+                            <input class="chat-admin-input" id="chat-admin-input" placeholder="Scrie un răspuns clientului..."
+                                   onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminChatMessage();}">
+                            <button class="chat-admin-send-btn" id="chat-admin-send-btn" onclick="sendAdminChatMessage()">Trimite</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1243,6 +1520,9 @@
     let sosRequests = [];
     let editingProductId = null;
     let serverIPs = [];
+    let bookings = [];
+    let activeChatStationId = null;
+    let chatUnreadCounts = {};
 
     // ════════════════════════════════
     // PARTICLE SYSTEM
@@ -1446,6 +1726,27 @@
         connection.on('NewSosRequest', (id, stationId, nickname, message) => {
             showToast(`🆘 SOS: ${message}`, 'error');
             loadSosRequests();
+        });
+
+        connection.on('NewBooking', (id, stationId, nickname, phone, scheduledAt, durationMinutes) => {
+            showToast(`📅 Rezervare nouă de la ${nickname}`, 'success');
+            loadBookings();
+        });
+
+        connection.on('OnChatMessage', (msg) => {
+            if (msg.sender === 'client') {
+                showToast(`💬 Mesaj PC ${msg.stationId}: ${msg.message.substring(0, 30)}${msg.message.length > 30 ? '...' : ''}`, 'success');
+                if (activeChatStationId === msg.stationId && document.getElementById('tab-chat').classList.contains('active')) {
+                    appendAdminChatBubble(msg.senderName || 'Client', msg.message, 'client', msg.createdAt);
+                    fetch(`${API}/api/chat/${msg.stationId}/mark-read`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ stationId: msg.stationId, reader: 'admin' })
+                    }).catch(() => {});
+                } else {
+                    chatUnreadCounts[msg.stationId] = (chatUnreadCounts[msg.stationId] || 0) + 1;
+                    updateChatBadges();
+                }
+            }
         });
 
         connection.on('StationUpdated', () => { loadStations(); });
@@ -1839,16 +2140,236 @@
     }
 
     // ════════════════════════════════
+    // BOOKINGS (NEW)
+    // ════════════════════════════════
+    async function loadBookings() {
+        try {
+            const r = await fetch(`${API}/api/bookings`);
+            if (!r.ok) return;
+            bookings = await r.json();
+            renderBookings();
+            const pendingCount = bookings.filter(b => b.status === 'pending').length;
+            updateBadge('bookings-badge', pendingCount);
+        } catch (e) {}
+    }
+
+    function renderBookings() {
+        const list = document.getElementById('bookings-list');
+        if (!list) return;
+        if (!bookings.length) {
+            list.innerHTML = '<div class="notif-empty">Nicio rezervare înregistrată.</div>';
+            return;
+        }
+        list.innerHTML = bookings.map(b => {
+            const dt = new Date(b.scheduled_at);
+            const dateStr = dt.toLocaleDateString('ro-RO', { weekday: 'short', day: 'numeric', month: 'short' });
+            const timeStr = dt.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' });
+            const durationH = b.duration_minutes >= 60 
+                ? (b.duration_minutes / 60 % 1 === 0 ? `${b.duration_minutes / 60}h` : `${(b.duration_minutes / 60).toFixed(1)}h`) 
+                : `${b.duration_minutes}m`;
+            const pcLabel = b.station_id ? `PC ${String(b.station_id).padStart(2, '0')}` : 'Orice PC';
+            const phoneClean = b.phone ? b.phone.replace(/[^0-9]/g, '') : '';
+            const waLink = phoneClean 
+                ? `<a href="https://wa.me/${phoneClean}" target="_blank" style="color:var(--green);text-decoration:none;margin-left:0.5rem">📱 WhatsApp</a>`
+                : '';
+            let actionsHtml = '';
+            if (b.status === 'pending') {
+                actionsHtml = `
+                <div class="booking-actions">
+                    <button class="btn btn-success" style="padding:0.28rem 0.8rem;font-size:0.76rem" onclick="confirmBooking(${b.id})">✓ Confirmă</button>
+                    <button class="btn btn-danger" style="padding:0.28rem 0.8rem;font-size:0.76rem" onclick="cancelBooking(${b.id})">✗ Respinge</button>
+                </div>`;
+            } else if (b.status === 'confirmed') {
+                actionsHtml = `
+                <div class="booking-actions">
+                    <button class="btn btn-primary" style="padding:0.28rem 0.8rem;font-size:0.76rem" onclick="completeBooking(${b.id})">✓ Finalizată / Ocupat</button>
+                    <button class="btn btn-danger" style="padding:0.28rem 0.8rem;font-size:0.76rem" onclick="cancelBooking(${b.id})">✗ Anulează</button>
+                </div>`;
+            }
+            const noteHtml = b.note ? `<div class="booking-note">📝 Obs: ${b.note}</div>` : '';
+            return `
+            <div class="booking-item" style="border-left: 3px solid ${b.status === 'pending' ? 'var(--accent)' : b.status === 'confirmed' ? 'var(--green)' : 'var(--muted)'}">
+                <div class="booking-header">
+                    <div class="booking-title">👤 ${b.nickname} ${waLink}</div>
+                    <span class="booking-status ${b.status}">${b.status}</span>
+                </div>
+                <div class="booking-details-row">
+                    <span>Dată: <strong>${dateStr} la ${timeStr}</strong></span>
+                    <span>Durată: <strong>${durationH}</strong></span>
+                    <span>Stație: <strong>${pcLabel}</strong></span>
+                    ${b.phone ? `<span>Tel: <strong>${b.phone}</strong></span>` : ''}
+                </div>
+                ${noteHtml}
+                ${actionsHtml}
+            </div>`;
+        }).join('');
+    }
+
+    async function confirmBooking(id) {
+        try {
+            const r = await fetch(`${API}/api/bookings/${id}/confirm`, { method: 'POST' });
+            if (r.ok) { showToast('✅ Rezervare confirmată!', 'success'); loadBookings(); }
+        } catch(e) {}
+    }
+
+    async function cancelBooking(id) {
+        if (!confirm('Anulezi această rezervare?')) return;
+        try {
+            const r = await fetch(`${API}/api/bookings/${id}/cancel`, { method: 'POST' });
+            if (r.ok) { showToast('❌ Rezervare anulată/respinsă.', 'success'); loadBookings(); }
+        } catch(e) {}
+    }
+
+    async function completeBooking(id) {
+        try {
+            const r = await fetch(`${API}/api/bookings/${id}/complete`, { method: 'POST' });
+            if (r.ok) { showToast('✅ Rezervare marcată ca finalizată.', 'success'); loadBookings(); }
+        } catch(e) {}
+    }
+
+    // ════════════════════════════════
+    // CHAT (NEW)
+    // ════════════════════════════════
+    async function loadUnreadChatCounts() {
+        try {
+            const r = await fetch(`${API}/api/chat/unread-counts`);
+            if (!r.ok) return;
+            const data = await r.json();
+            chatUnreadCounts = {};
+            data.forEach(item => { chatUnreadCounts[item.stationId] = item.count; });
+            updateChatBadges();
+        } catch (e) {}
+    }
+
+    function updateChatBadges() {
+        let totalUnread = 0;
+        stations.forEach(s => {
+            const count = chatUnreadCounts[s.id] || 0;
+            totalUnread += count;
+            const badgeEl = document.getElementById(`chat-sidebar-badge-${s.id}`);
+            if (badgeEl) {
+                badgeEl.textContent = count;
+                badgeEl.style.display = count > 0 ? 'inline' : 'none';
+            }
+        });
+        updateBadge('admin-chat-badge', totalUnread);
+    }
+
+    function initChatSidebar() {
+        const list = document.getElementById('chat-channels-list');
+        if (!list) return;
+        list.innerHTML = stations.map(s => {
+            const count = chatUnreadCounts[s.id] || 0;
+            const isActive = activeChatStationId === s.id;
+            const user = s.current_user_name || 'PC Liber';
+            const userColor = s.status === 'Active' ? 'var(--green)' : 'var(--muted)';
+            return `
+            <div class="chat-channel-item${isActive ? ' active' : ''}" onclick="selectChatStation(${s.id})">
+                <div class="chat-channel-info">
+                    <span class="chat-channel-name">${s.station_name}</span>
+                    <span class="chat-channel-status" style="color:${userColor}">${user}</span>
+                </div>
+                <span class="chat-channel-badge" id="chat-sidebar-badge-${s.id}" style="display:${count > 0 ? 'inline' : 'none'}">${count}</span>
+            </div>`;
+        }).join('');
+    }
+
+    function selectChatStation(stationId) {
+        activeChatStationId = stationId;
+        initChatSidebar();
+        chatUnreadCounts[stationId] = 0;
+        updateChatBadges();
+        document.getElementById('chat-admin-messages-wrap').style.display = 'flex';
+        document.getElementById('chat-admin-empty-wrap').style.display = 'none';
+        const s = stations.find(x => x.id === stationId);
+        document.getElementById('chat-current-pc').textContent = s ? s.station_name : `PC ${stationId}`;
+        loadAdminChatHistory(stationId);
+    }
+
+    async function loadAdminChatHistory(stationId) {
+        const container = document.getElementById('chat-admin-messages');
+        if (!container) return;
+        container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:2rem">Se încarcă istoricul...</div>';
+        try {
+            const r = await fetch(`${API}/api/chat/${stationId}?limit=50`);
+            if (!r.ok) return;
+            const msgs = await r.json();
+            container.innerHTML = '';
+            if (msgs.length === 0) {
+                container.innerHTML = '<div style="color:var(--muted);text-align:center;padding:2rem">Niciun mesaj. Scrie un răspuns pentru a începe conversația.</div>';
+            } else {
+                msgs.forEach(m => {
+                    appendAdminChatBubble(m.sender === 'admin' ? 'Admin' : m.sender_name || 'Client', m.message, m.sender, m.created_at, false);
+                });
+                scrollAdminChatToBottom();
+            }
+            await fetch(`${API}/api/chat/${stationId}/mark-read`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stationId, reader: 'admin' })
+            }).catch(() => {});
+        } catch (e) {
+            container.innerHTML = '<div style="color:var(--red);text-align:center;padding:2rem">Eroare la încărcare.</div>';
+        }
+    }
+
+    async function sendAdminChatMessage() {
+        const input = document.getElementById('chat-admin-input');
+        const msg = input.value.trim();
+        if (!msg || !activeChatStationId) return;
+        const btn = document.getElementById('chat-admin-send-btn');
+        btn.disabled = true;
+        input.value = '';
+        try {
+            const r = await fetch(`${API}/api/chat/send`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stationId: activeChatStationId, nickname: 'Admin', sender: 'admin', message: msg })
+            });
+            if (r.ok) {
+                const container = document.getElementById('chat-admin-messages');
+                if (container.querySelector('[style*="color:var(--muted)"]')) { container.innerHTML = ''; }
+                appendAdminChatBubble('Admin', msg, 'admin', new Date().toISOString());
+            } else {
+                alert("Mesajul nu s-a putut trimite.");
+                input.value = msg;
+            }
+        } catch (e) { input.value = msg; }
+        btn.disabled = false;
+        input.focus();
+    }
+
+    function appendAdminChatBubble(senderName, message, sender, isoDate, scroll = true) {
+        const container = document.getElementById('chat-admin-messages');
+        if (!container) return;
+        const isAdmin = sender === 'admin';
+        const time = isoDate ? new Date(isoDate).toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }) : '';
+        const div = document.createElement('div');
+        div.className = `chat-bubble from-${isAdmin ? 'admin' : 'client'}`;
+        div.innerHTML = `
+            <div class="bubble-sender">${isAdmin ? 'Tu (Admin)' : senderName}</div>
+            <div>${message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+            <div class="bubble-time">${time}</div>`;
+        container.appendChild(div);
+        if (scroll) scrollAdminChatToBottom();
+    }
+
+    function scrollAdminChatToBottom() {
+        const c = document.getElementById('chat-admin-messages');
+        if (c) c.scrollTop = c.scrollHeight;
+    }
+
+    // ════════════════════════════════
     // UI HELPERS
     // ════════════════════════════════
     function switchTab(name) {
-        const names = ['allocate', 'addtime', 'notifications', 'bar', 'sos', 'bar-products', 'revenue', 'settings'];
+        const names = ['allocate', 'addtime', 'notifications', 'bar', 'sos', 'bookings', 'chat', 'bar-products', 'revenue', 'settings'];
         document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', names[i] === name));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.getElementById(`tab-${name}`).classList.add('active');
         if (name === 'revenue') loadRevenue();
         if (name === 'bar') loadBarOrders();
         if (name === 'sos') loadSosRequests();
+        if (name === 'bookings') loadBookings();
+        if (name === 'chat') { initChatSidebar(); loadUnreadChatCounts(); }
         if (name === 'bar-products') loadAdminProducts();
     }
 
@@ -1891,10 +2412,14 @@
     // INIT
     // ════════════════════════════════
     setInterval(loadStations, 30000);
+    setInterval(loadUnreadChatCounts, 15000); // Poll unread chat counts every 15s
+    setInterval(loadBookings, 45000);        // Poll bookings every 45s
     loadServerInfo();
     connectSignalR();
     loadStations();
     loadPrice();
+    loadBookings();
+    loadUnreadChatCounts();
 </script>
 </body>
 </html>
