@@ -1234,6 +1234,7 @@
     </div>
     <div class="header-right">
         <div id="price-badge">Tarif: <span id="price-display">...</span> MDL/oră</div>
+        <button class="qr-header-btn" style="background:linear-gradient(135deg,#ff6b35,#f7c948);color:#000;border-color:#ff6b35;font-weight:700;" onclick="partyMode()">🎉 Party Mode</button>
         <button class="qr-header-btn" onclick="openQR()">📱 QR Acces Admin</button>
         <div id="conn-status">● Conectare...</div>
     </div>
@@ -1878,6 +1879,35 @@
             showToast(`🔒 PC ${stationId} blocat.`, 'success');
             await loadStations();
         } catch (e) { showToast('Eroare.', 'error'); }
+    }
+
+    // ════════════════════════════════
+    // PARTY MODE — 9999 min la TOATE PC-urile
+    // ════════════════════════════════
+    async function partyMode() {
+        if (!confirm('🎉 Activezi PARTY MODE?\n\nToate PC-urile vor primi 9999 minute!\nPoti opri oricand individual cu butonul 🔒 Blocheaza.')) return;
+        let ok = 0, fail = 0;
+        for (const s of stations) {
+            try {
+                if (s.status === 'Locked') {
+                    await fetch(`${API}/api/admin/allocate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ stationId: s.id, minutes: 9999, paymentMethod: 'FREE' })
+                    });
+                    ok++;
+                } else if (s.status === 'Active' || s.status === 'Pending') {
+                    await fetch(`${API}/api/admin/add-time`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ stationId: s.id, minutes: 9999, amountPaid: 0, note: 'Party Mode' })
+                    });
+                    ok++;
+                }
+            } catch (e) { fail++; }
+        }
+        showToast(`🎉 Party Mode activat! ${ok} PC-uri pornite${fail ? `, ${fail} erori` : ''}!`, fail ? 'warning' : 'success');
+        await loadStations();
     }
 
     // ════════════════════════════════

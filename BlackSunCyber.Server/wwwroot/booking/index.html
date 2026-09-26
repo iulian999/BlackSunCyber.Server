@@ -282,15 +282,16 @@
         }
         .success-text { font-size: 0.9rem; color: var(--muted); line-height: 1.7; max-width: 360px; }
 
-        .wa-btn {
+        .tg-btn {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: #25D366; color: #fff;
+            background: #0088cc; color: #fff;
             border: none; border-radius: 14px;
             padding: 0.7rem 1.5rem;
             font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600;
             text-decoration: none; cursor: pointer;
+            transition: opacity 0.2s;
         }
-        .wa-btn:hover { opacity: 0.88; }
+        .tg-btn:hover { opacity: 0.88; }
 
         .new-booking-btn {
             background: transparent;
@@ -395,7 +396,7 @@
                 <input type="text" id="f-nickname" placeholder="ex: GamerulTău" autocomplete="off" maxlength="32">
             </div>
             <div class="form-group">
-                <label>Telefon (WhatsApp)</label>
+                <label>Telefon (Telegram)</label>
                 <input type="tel" id="f-phone" placeholder="+373 xxx xxx xxx" autocomplete="tel">
             </div>
         </div>
@@ -435,11 +436,11 @@
         <div class="success-icon">🎉</div>
         <div class="success-title">Rezervare trimisă!</div>
         <div class="success-text" id="success-text">
-            Adminul a primit cererea ta și te va contacta pe WhatsApp pentru confirmare.
+            Adminul a primit cererea ta și te va contacta pe Telegram pentru confirmare.
         </div>
-        <a id="wa-link" class="wa-btn" href="#" target="_blank">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.556 4.122 1.527 5.855L0 24l6.335-1.527A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.807 9.807 0 01-5.003-1.368l-.359-.214-3.728.899.916-3.638-.234-.374A9.782 9.782 0 012.182 12C2.182 6.575 6.575 2.182 12 2.182S21.818 6.575 21.818 12 17.425 21.818 12 21.818z"/></svg>
-            Confirmă pe WhatsApp
+        <a id="tg-link" class="tg-btn" href="#" target="_blank">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.24-5.54 3.65-.52.36-.97.53-1.34.52-.42-.01-1.22-.24-1.82-.44-.73-.24-1.31-.37-1.26-.78.03-.22.33-.44.9-.67 3.52-1.53 5.87-2.54 7.05-3.03 3.35-1.39 4.05-1.63 4.51-1.64.1 0 .33.02.47.14.12.1.16.24.18.34.02.09.02.26 0 .38z"/></svg>
+            Trimite pe Telegram (@S1mple58)
         </a>
         <button class="new-booking-btn" onclick="resetForm()">← Fă altă rezervare</button>
     </div>
@@ -447,7 +448,7 @@
 
 <script>
     const API = '';
-    const ADMIN_PHONE = '37369494437'; // ← Înlocuiește cu numărul adminului (fără + sau spații)
+    const ADMIN_TELEGRAM = 'S1mple58'; // Username-ul de Telegram al clubului
     let selectedStationId = null;
     let selectedStationName = 'Orice stație disponibilă';
 
@@ -635,12 +636,14 @@
             Adminul te va contacta pentru confirmare. 🎮
         `;
 
-        if (phone) {
-            const msg = encodeURIComponent(`Bună! Am făcut o rezervare la BlackSun Cyber:\nNickname: ${nickname}\nData: ${dt.toLocaleString('ro-RO')}\nStație: ${station}\nDurată: ${durationH}`);
-            document.getElementById('wa-link').href = `https://wa.me/${ADMIN_PHONE}?text=${msg}`;
-        } else {
-            document.getElementById('wa-link').style.display = 'none';
-        }
+        const msg = `Bună! Am făcut o rezervare la BlackSun Cyber:\nNickname: ${nickname}\nData: ${dt.toLocaleString('ro-RO')}\nStație: ${station}\nDurată: ${durationH}`;
+        
+        // Copiem detaliile rezervării în clipboard automat
+        navigator.clipboard.writeText(msg).then(() => {
+            document.getElementById('success-text').innerHTML += `<br><span style="font-size:0.78rem;color:var(--accent)">📋 Detaliile au fost copiate în clipboard! Le poți lipi (Paste) în chat-ul de Telegram.</span>`;
+        }).catch(() => {});
+
+        document.getElementById('tg-link').href = `https://t.me/${ADMIN_TELEGRAM}`;
     }
 
     function resetForm() {
