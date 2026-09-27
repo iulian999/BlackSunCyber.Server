@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -45,13 +45,66 @@ public class AgentConnection
         _hub.On<int>("TimeUpdated", seconds => OnTimeUpdated?.Invoke(seconds));
         _hub.On("ForceLock", () => OnForceLock?.Invoke());
 
-        _hub.Reconnected += _ => { OnConnectionStateChanged?.Invoke(true); return Task.CompletedTask; };
+        _hub.Reconnected += async _ =>
+        {
+            // CRITICAL: La reconectare, Connection ID se schimbă și grupul se pierde.
+            // Trebuie să ne re-înregistrăm în grupul stației, altfel nu mai primim
+            // comenzi de la server (Unlock, ForceLock, TimeUpdated etc.)
+            try
+            {
+                await _hub.InvokeAsync("RegisterStation", _config.StationId, _config.AccessToken);
+
+                // Sincronizăm starea curentă de pe server (poate s-a schimbat cât eram deconectați)
+                await SyncStateFromServerAsync();
+            }
+            catch { /* va reîncerca la următorul reconnect */ }
+            OnConnectionStateChanged?.Invoke(true);
+        };
         _hub.Reconnecting += _ => { OnConnectionStateChanged?.Invoke(false); return Task.CompletedTask; };
         _hub.Closed += _ => { OnConnectionStateChanged?.Invoke(false); return Task.CompletedTask; };
 
         await _hub.StartAsync();
         await _hub.InvokeAsync("RegisterStation", _config.StationId, _config.AccessToken);
         OnConnectionStateChanged?.Invoke(true);
+
+        // Sincronizăm starea la prima conectare (în caz că serverul a alocat timp cât clientul era oprit)
+        await SyncStateFromServerAsync();
+    }
+
+    /// <summary>
+    /// Cere starea curentă de la server și invocă evenimentele corecte
+    /// (ShowNicknamePrompt / Unlock / ForceLock) pentru a sincroniza UI-ul.
+    /// </summary>
+    private async Task SyncStateFromServerAsync()
+    {
+        try
+        {
+            var response = await _http.GetAsync($"api/client/station/{_config.StationId}");
+            if (!response.IsSuccessStatusCode) return;
+
+            var json = await response.Content.ReadAsStringAsync();
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            var status = root.GetProperty("status").GetString() ?? "Locked";
+            var remainingSeconds = root.TryGetProperty("remaining_seconds", out var rs) ? rs.GetInt32() : 0;
+            var nickname = root.TryGetProperty("current_user_name", out var un) ? un.GetString() : null;
+
+            switch (status)
+            {
+                case "Pending":
+                    var minutes = remainingSeconds / 60;
+                    OnShowNicknamePrompt?.Invoke(minutes > 0 ? minutes : 1);
+                    break;
+                case "Active" when !string.IsNullOrEmpty(nickname):
+                    OnUnlock?.Invoke(nickname, remainingSeconds);
+                    break;
+                default:
+                    OnForceLock?.Invoke();
+                    break;
+            }
+        }
+        catch { /* non-critical — dacă serverul nu e accesibil, rămânem în starea curentă */ }
     }
 
     public async Task SendNicknameAsync(string nickname)

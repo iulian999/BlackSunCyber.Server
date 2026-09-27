@@ -1752,7 +1752,13 @@
 
         connection.on('StationUpdated', () => { loadStations(); });
 
-        connection.onreconnected(() => setConnStatus(true));
+        connection.onreconnected(async () => {
+            setConnStatus(true);
+            try {
+                await connection.invoke('RegisterAdmin');
+                await loadStations();
+            } catch (e) { console.error("Error re-registering admin", e); }
+        });
         connection.onreconnecting(() => setConnStatus(false));
         connection.onclose(() => { setConnStatus(false); setTimeout(connectSignalR, 3000); });
 
